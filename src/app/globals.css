@@ -8,20 +8,28 @@
 
 @theme {
   /* Brand surfaces */
-  --color-ink: #090b1b; /* page background */
+  --color-ink: #090b1b;
+  /* page background */
   --color-ink-700: #0c0f24;
-  --color-panel: #10132e; /* raised surface */
+  --color-panel: #10132e;
+  /* raised surface */
   --color-panel-soft: #141838;
 
   /* Brand gradient stops */
-  --color-violet: #8131f0; /* primary */
-  --color-violet-bright: #9a55ff; /* glow / hover */
-  --color-grape: #4a1c8a; /* gradient end */
+  --color-violet: #8131f0;
+  /* primary */
+  --color-violet-bright: #9a55ff;
+  /* glow / hover */
+  --color-grape: #4a1c8a;
+  /* gradient end */
 
   /* Text */
-  --color-cloud: #eef0fb; /* primary text */
-  --color-mist: #9ca3c9; /* muted text */
-  --color-faint: #6b7099; /* placeholder */
+  --color-cloud: #eef0fb;
+  /* primary text */
+  --color-mist: #9ca3c9;
+  /* muted text */
+  --color-faint: #6b7099;
+  /* placeholder */
 
   /* Lines */
   --color-hairline: rgba(255, 255, 255, 0.08);
@@ -107,7 +115,11 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
@@ -122,14 +134,17 @@
     width: 10px;
     height: 10px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--color-ink);
   }
+
   ::-webkit-scrollbar-thumb {
     background: rgba(129, 49, 240, 0.35);
     border-radius: 999px;
     border: 2px solid var(--color-ink);
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(129, 49, 240, 0.6);
   }
@@ -139,6 +154,7 @@
    Signature utilities — glow, glass, gradient hairline borders
    ============================================================ */
 @layer utilities {
+
   /* Brand gradient as text or background */
   .text-gradient {
     background: linear-gradient(120deg, #a874ff 0%, var(--color-violet) 45%, var(--color-grape) 100%);
@@ -168,10 +184,21 @@
     -webkit-backdrop-filter: blur(18px);
   }
 
+  .glass-dark {
+    /* Darker base with subtle gradient to give it depth */
+    background: linear-gradient(180deg, rgba(43, 43, 61, 0.85), rgba(35, 35, 50, 0.85));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    /* A very faint border gives it that crisp, physical edge */
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+  }
+
   /* 1px gradient hairline border via mask compositing */
   .border-gradient {
     position: relative;
   }
+
   .border-gradient::before {
     content: "";
     position: absolute;
@@ -189,6 +216,7 @@
   .glow-violet {
     box-shadow: 0 0 0 1px rgba(129, 49, 240, 0.25), 0 18px 50px -18px rgba(129, 49, 240, 0.65);
   }
+
   .glow-soft {
     box-shadow: 0 24px 60px -28px rgba(129, 49, 240, 0.55);
   }
@@ -221,6 +249,7 @@
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
+
 [data-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -228,16 +257,37 @@
 
 /* Ambient drift for the hero aurora */
 @keyframes drift {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(0, -18px, 0) scale(1.05); }
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.05);
+  }
 }
+
 .animate-drift {
   animation: drift 14s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  [data-reveal] { opacity: 1; transform: none; transition: none; }
-  .animate-drift { animation: none; }
-  * { transition-duration: 0.01ms !important; }
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .animate-drift {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
 }
