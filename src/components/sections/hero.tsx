@@ -13,23 +13,23 @@ export function Hero() {
       {/* Ambient signature glow */}
       <Aurora
         animated
-        className="-top-20 left-1/2 h-[34rem] w-[44rem] -translate-x-1/2 opacity-60"
+        className="-top-20 left-1/2 h-136 w-176 -translate-x-1/2 opacity-60"
       />
       <Aurora className="right-0 top-40 hidden h-72 w-72 opacity-30 md:block" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Banner image — no text on top, per brief */}
         <Reveal>
-          <div className="border-gradient relative aspect-[16/7] w-full overflow-hidden rounded-[1.75rem] glow-soft">
+          <div className="border-gradient relative aspect-16/7 w-full overflow-hidden rounded-[1.75rem] glow-soft">
             <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80"
+              src="/assets/images/hero/hero-bg.jpg"
               alt="Entrepreneurs collaborating in a modern workspace"
               fill
               priority
               sizes="(max-width: 768px) 100vw, 1152px"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
           </div>
         </Reveal>
 
