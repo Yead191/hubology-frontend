@@ -1,0 +1,243 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============================================================
+   HUBOLOGY — Design tokens
+   Dark premium business hub. Deep navy base + violet gradient.
+   ============================================================ */
+
+@theme {
+  /* Brand surfaces */
+  --color-ink: #090b1b; /* page background */
+  --color-ink-700: #0c0f24;
+  --color-panel: #10132e; /* raised surface */
+  --color-panel-soft: #141838;
+
+  /* Brand gradient stops */
+  --color-violet: #8131f0; /* primary */
+  --color-violet-bright: #9a55ff; /* glow / hover */
+  --color-grape: #4a1c8a; /* gradient end */
+
+  /* Text */
+  --color-cloud: #eef0fb; /* primary text */
+  --color-mist: #9ca3c9; /* muted text */
+  --color-faint: #6b7099; /* placeholder */
+
+  /* Lines */
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-hairline-strong: rgba(255, 255, 255, 0.14);
+
+  /* Radii */
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-pill: 999px;
+
+  /* Fonts (wired to next/font CSS variables) */
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  /* Easing */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* shadcn semantic tokens mapped onto the brand palette */
+:root {
+  --background: var(--color-ink);
+  --foreground: var(--color-cloud);
+  --card: var(--color-panel);
+  --card-foreground: var(--color-cloud);
+  --popover: #0d1026;
+  --popover-foreground: var(--color-cloud);
+  --primary: var(--color-violet);
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: var(--color-cloud);
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: var(--color-mist);
+  --accent: rgba(129, 49, 240, 0.16);
+  --accent-foreground: var(--color-cloud);
+  --destructive: #f0436a;
+  --destructive-foreground: #ffffff;
+  --border: var(--color-hairline);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: var(--color-violet-bright);
+  --radius: 0.875rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-cloud);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: rgba(129, 49, 240, 0.4);
+    color: #fff;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(129, 49, 240, 0.35);
+    border-radius: 999px;
+    border: 2px solid var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(129, 49, 240, 0.6);
+  }
+}
+
+/* ============================================================
+   Signature utilities — glow, glass, gradient hairline borders
+   ============================================================ */
+@layer utilities {
+  /* Brand gradient as text or background */
+  .text-gradient {
+    background: linear-gradient(120deg, #a874ff 0%, var(--color-violet) 45%, var(--color-grape) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-brand-gradient {
+    background: linear-gradient(120deg, var(--color-violet) 0%, var(--color-grape) 100%);
+  }
+
+  /* Soft violet aurora — the signature ambient light */
+  .aurora {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(129, 49, 240, 0.9), rgba(74, 28, 138, 0) 70%);
+  }
+
+  /* Glass panel */
+  .glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  /* 1px gradient hairline border via mask compositing */
+  .border-gradient {
+    position: relative;
+  }
+  .border-gradient::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg, rgba(154, 85, 255, 0.6), rgba(255, 255, 255, 0.04) 40%, rgba(74, 28, 138, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Glow shadow used on highlighted / hovered elements */
+  .glow-violet {
+    box-shadow: 0 0 0 1px rgba(129, 49, 240, 0.25), 0 18px 50px -18px rgba(129, 49, 240, 0.65);
+  }
+  .glow-soft {
+    box-shadow: 0 24px 60px -28px rgba(129, 49, 240, 0.55);
+  }
+
+  /* Section eyebrow label */
+  .eyebrow {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-violet-bright);
+  }
+
+  .container-px {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* ============================================================
+   Scroll reveal — driven by useReveal hook (no JS animation lib)
+   ============================================================ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s var(--ease-out-soft),
+    transform 0.7s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ambient drift for the hero aurora */
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -18px, 0) scale(1.05); }
+}
+.animate-drift {
+  animation: drift 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .animate-drift { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
