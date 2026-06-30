@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export function VendorCard({ vendor }: { vendor: Vendor }) {
   return (
-    <article className="border-gradient group flex h-full flex-col rounded-3xl bg-panel/40 p-6 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet">
+    <article className="border-gradient group flex h-full flex-col rounded-3xl bg-panel/40 p-6 transition-all duration-500 ease-out-soft hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet">
       <div className="flex items-start gap-4">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl ring-2 ring-violet/25">
           <Image

@@ -10,7 +10,7 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
   return (
     <div
       className={cn(
-        "border-gradient group relative flex h-full flex-col rounded-3xl p-8 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5",
+        "border-gradient group relative flex h-full flex-col rounded-3xl p-8 transition-all duration-500 ease-out-soft hover:-translate-y-1.5",
         pkg.featured
           ? "bg-panel/70 glow-violet"
           : "bg-panel/40 hover:bg-panel/70 hover:glow-violet",
@@ -54,6 +54,10 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
         asChild
         variant={pkg.featured ? "default" : "outline"}
         className="mt-8 w-full"
+        style={{
+          background: pkg.featured ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)" : "",
+          // border: pkg.featured ? "1px solid #fff" : ""
+        }}
       >
         <Link href={`/services/${pkg.slug}`}>
           View verified vendors

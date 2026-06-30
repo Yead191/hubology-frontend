@@ -17,7 +17,7 @@ export function RoleCard({ option }: { option: RegistrationOption }) {
   return (
     <div
       className={cn(
-        "border-gradient group relative flex h-full flex-col rounded-[1.75rem] p-8 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5",
+        "border-gradient group relative flex h-full flex-col rounded-[1.75rem] p-8 transition-all duration-500 ease-out-soft hover:-translate-y-1.5",
         isSolid
           ? "bg-panel/70 glow-violet"
           : "bg-panel/40 hover:bg-panel/70 hover:glow-violet",

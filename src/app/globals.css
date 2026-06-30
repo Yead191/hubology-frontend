@@ -272,6 +272,157 @@
   animation: drift 14s ease-in-out infinite;
 }
 
+/* ============================================================
+   Brand loader + animated logo
+   Hub mark: dual counter-rotating gradient rings, pulsing core,
+   orbiting node. Wordmark: light-sweep masked to the logo shape.
+   ============================================================ */
+
+/* Counter-rotating rings of the hub spinner */
+@keyframes hub-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hub-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Breathing core */
+@keyframes hub-pulse {
+
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* A single node tracing the outer orbit */
+@keyframes hub-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ambient glow breathing behind the mark */
+@keyframes loader-glow {
+
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+/* Soft fade-in for the fullscreen overlay */
+@keyframes loader-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Light sweep travelling across the masked logo silhouette */
+@keyframes logo-sweep {
+  0% {
+    background-position: 150% 0;
+  }
+
+  100% {
+    background-position: -50% 0;
+  }
+}
+
+/* SVG group rotations — origin at the view-box centre */
+.hub-rot,
+.hub-rot-rev,
+.hub-orbit {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.hub-rot {
+  animation: hub-spin 2.6s linear infinite;
+}
+
+.hub-rot-rev {
+  animation: hub-spin-rev 1.9s linear infinite;
+}
+
+.hub-orbit {
+  animation: hub-orbit 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.hub-core {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: hub-pulse 1.8s ease-in-out infinite;
+}
+
+.loader-glow {
+  animation: loader-glow 2.6s ease-in-out infinite;
+}
+
+.loader-in {
+  animation: loader-in 0.4s var(--ease-out-soft) both;
+}
+
+/* The masked wordmark + its travelling highlight.
+   --logo-src points at the brand SVG so the sweep is clipped
+   to the exact logo silhouette. */
+.logo-sweep {
+  position: relative;
+}
+
+.logo-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg,
+      transparent 38%,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 62%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-mask: var(--logo-src) center / contain no-repeat;
+  mask: var(--logo-src) center / contain no-repeat;
+  mix-blend-mode: screen;
+}
+
+/* Loader wordmark sweeps continuously */
+.logo-sweep-loop::after {
+  animation: logo-sweep 2.6s var(--ease-out-soft) infinite;
+}
+
+/* Navbar wordmark only sweeps on hover/focus */
+.logo-sweep-hover::after {
+  opacity: 0;
+}
+
+.logo-sweep-hover:hover::after,
+.logo-sweep-hover:focus-visible::after {
+  opacity: 1;
+  animation: logo-sweep 1.1s var(--ease-out-soft);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -285,6 +436,25 @@
 
   .animate-drift {
     animation: none;
+  }
+
+  /* Brand loader / logo: hold a calm static state */
+  .hub-rot,
+  .hub-rot-rev,
+  .hub-orbit,
+  .hub-core,
+  .loader-glow,
+  .loader-in {
+    animation: none !important;
+  }
+
+  .hub-core {
+    transform: scale(1);
+  }
+
+  .logo-sweep::after {
+    animation: none !important;
+    opacity: 0 !important;
   }
 
   * {

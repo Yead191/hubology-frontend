@@ -38,7 +38,7 @@ export function WhyHubology() {
           <Reveal
             key={reason.title}
             delay={i * 90}
-            className="border-gradient group relative flex flex-col gap-5 rounded-3xl bg-panel/40 p-7 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet"
+            className="border-gradient group relative flex flex-col gap-5 rounded-3xl bg-panel/40 p-7 transition-all duration-500 ease-out-soft hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet"
           >
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-gradient text-white shadow-[0_8px_24px_-8px_rgba(129,49,240,0.8)] transition-transform duration-500 group-hover:scale-110">
               <reason.icon className="h-6 w-6" />

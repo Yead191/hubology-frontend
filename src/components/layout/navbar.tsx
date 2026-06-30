@@ -107,7 +107,7 @@ export function Navbar() {
         {/* Mobile sheet */}
         <div
           className={cn(
-            "fixed inset-x-4 top-[5.25rem] z-40 origin-top rounded-3xl border border-hairline-strong glass p-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden",
+            "fixed inset-x-4 top-[5.25rem] z-40 origin-top rounded-3xl border border-hairline-strong glass p-4 transition-all duration-300 ease-out-soft lg:hidden",
             mobileOpen
               ? "pointer-events-auto scale-100 opacity-100"
               : "pointer-events-none -translate-y-2 scale-95 opacity-0",
