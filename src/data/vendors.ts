@@ -36,7 +36,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-003",
-    serviceSlug: "tax-strategy",
+    serviceSlug: "ein",
     profile: "https://i.pravatar.cc/400?img=5",
     name: "Dr. Helena Thorne",
     role: "Tax Strategist",
@@ -50,7 +50,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-004",
-    serviceSlug: "tax-strategy",
+    serviceSlug: "ein",
     profile: "https://i.pravatar.cc/400?img=15",
     name: "Priya Nair",
     role: "CPA & Advisor",
@@ -64,7 +64,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-005",
-    serviceSlug: "brand-strategy",
+    serviceSlug: "llc",
     profile: "https://i.pravatar.cc/400?img=68",
     name: "Diego Alvarez",
     role: "Brand Strategist",
@@ -78,7 +78,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-006",
-    serviceSlug: "growth-marketing",
+    serviceSlug: "bookkeeping",
     profile: "https://i.pravatar.cc/400?img=51",
     name: "Sarah Whitfield",
     role: "Growth Lead",
@@ -92,7 +92,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-007",
-    serviceSlug: "legal-counsel",
+    serviceSlug: "billing",
     profile: "https://i.pravatar.cc/400?img=60",
     name: "Jonathan Pierce",
     role: "Business Attorney",
@@ -106,7 +106,7 @@ export const vendors: Vendor[] = [
   },
   {
     id: "v-008",
-    serviceSlug: "fundraising",
+    serviceSlug: "consultation",
     profile: "https://i.pravatar.cc/400?img=47",
     name: "Amara Okafor",
     role: "Fundraising Advisor",

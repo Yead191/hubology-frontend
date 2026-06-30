@@ -5,70 +5,72 @@ import type { ServiceDetail, ServicePackage } from "@/types";
  * ------------------------------------------------------------------ */
 export const servicePackages: ServicePackage[] = [
   {
+    slug: "ein",
+    title: "EIN",
+    tagline: "Get your EIN hassle-free with verified tax experts.",
+    price: { currency: "$", amount: 29, frequency: "per session" },
+    features: [
+      "Fast EIN application",
+      "IRS-compliant filing",
+      "Expert guidance",
+    ],
+  },
+  {
+    slug: "llc",
+    title: "LLC",
+    tagline: "Get your LLC formed by verified experts — fast and reliable.",
+    price: { currency: "$", amount: 120, frequency: "per session" },
+    features: [
+      "State filing included",
+      "Operating agreement guidance",
+      "Formation support",
+    ],
+  },
+  {
     slug: "corporation",
     title: "Corporation",
     tagline: "Form your company the right way, fast.",
     price: { currency: "$", amount: 59, frequency: "per session" },
     features: [
-      "Completed EIN application",
+      "Corporation filing",
+      "Corporate compliance",
       "Official documentation",
-      "100% accuracy guarantee",
-    ],
-  },
-  {
-    slug: "tax-strategy",
-    title: "Tax Strategy",
-    tagline: "Keep more of what you earn, legally.",
-    price: { currency: "$", amount: 89, frequency: "per session" },
-    features: [
-      "Personalized tax planning",
-      "Deduction & credit review",
-      "Quarterly filing roadmap",
     ],
     featured: true,
   },
   {
-    slug: "brand-strategy",
-    title: "Brand Strategy",
-    tagline: "Build a brand people remember.",
-    price: { currency: "$", amount: 120, frequency: "per session" },
-    features: [
-      "Positioning & messaging audit",
-      "Visual identity direction",
-      "Go-to-market playbook",
-    ],
-  },
-  {
-    slug: "growth-marketing",
-    title: "Growth Marketing",
-    tagline: "Turn attention into revenue.",
+    slug: "bookkeeping",
+    title: "Bookkeeping",
+    tagline:
+      "Professional bookkeeping services to keep your finances organized and accurate.",
     price: { currency: "$", amount: 99, frequency: "per session" },
     features: [
-      "Channel & funnel teardown",
-      "Paid + organic growth plan",
-      "Conversion optimization",
+      "Monthly bookkeeping",
+      "Expense tracking",
+      "Financial reports",
     ],
   },
   {
-    slug: "legal-counsel",
-    title: "Legal Counsel",
-    tagline: "Contracts and compliance, handled.",
+    slug: "billing",
+    title: "Billing",
+    tagline:
+      "Professional billing services to streamline your invoicing and accounts receivable.",
     price: { currency: "$", amount: 140, frequency: "per session" },
     features: [
-      "Contract drafting & review",
-      "Entity & IP protection",
-      "Compliance health check",
+      "Invoice management",
+      "Payment tracking",
+      "Accounts receivable",
     ],
   },
   {
-    slug: "fundraising",
-    title: "Fundraising",
-    tagline: "Get investor-ready and raise with confidence.",
+    slug: "consultation",
+    title: "Consultation",
+    tagline: "Get expert guidance on business strategy and growth.",
     price: { currency: "$", amount: 160, frequency: "per session" },
     features: [
-      "Pitch deck & narrative review",
-      "Financial model stress-test",
-      "Investor intro strategy",
+      "One-on-one consultation",
+      "Business strategy",
+      "Action plan",
     ],
   },
 ];
@@ -77,106 +79,111 @@ export const servicePackages: ServicePackage[] = [
  * Service detail content — the overview shown on /services/[slug].
  * ------------------------------------------------------------------ */
 export const serviceDetails: Record<string, ServiceDetail> = {
-  corporation: {
-    slug: "corporation",
-    title: "Corporation Formation",
-    category: "Legal & Formation",
+  ein: {
+    slug: "ein",
+    title: "Employer Identification Number (EIN)",
+    category: "Business Formation",
     overview:
-      "Stand up a compliant business entity without the guesswork. Our verified formation experts handle filings, EINs, and the paperwork that trips most founders up — so you can focus on building.",
+      "Obtain your Employer Identification Number quickly and accurately with help from experienced professionals.",
     longDescription:
-      "From choosing the right structure to filing your articles of incorporation and securing your EIN, the right advisor turns a confusing process into a single afternoon. Every expert on Hubology has been manually vetted for accuracy and reliability.",
-    image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80",
-    highlights: [
-      "Entity selection guidance",
-      "EIN & state filings",
-      "Operating agreements",
-      "Ongoing compliance",
-    ],
-  },
-  "tax-strategy": {
-    slug: "tax-strategy",
-    title: "Tax Strategy",
-    category: "Finance",
-    overview:
-      "Stop overpaying. Work with seasoned tax strategists who map out a plan tailored to your business so every dollar works harder for you.",
-    longDescription:
-      "Proactive tax planning is the difference between scrambling in April and keeping more of what you earn all year. Our experts review your structure, surface deductions you are missing, and build a quarterly roadmap you can actually follow.",
+      "Whether you're starting a new business, opening a business bank account, or hiring employees, an EIN is essential. Our experts handle the application process efficiently, ensuring your registration is completed correctly and without unnecessary delays.",
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80",
     highlights: [
-      "Personalized planning",
-      "Deduction discovery",
-      "Quarterly roadmap",
-      "Audit-ready records",
+      "Fast IRS filing",
+      "Accurate application",
+      "Business registration support",
+      "Expert assistance",
     ],
   },
-  "brand-strategy": {
-    slug: "brand-strategy",
-    title: "Brand Strategy",
-    category: "Marketing",
+
+  llc: {
+    slug: "llc",
+    title: "LLC Formation",
+    category: "Business Formation",
     overview:
-      "Clarify who you are and why it matters. Our brand strategists sharpen your positioning, voice, and identity into something customers remember.",
+      "Launch your Limited Liability Company with confidence through our streamlined formation service.",
     longDescription:
-      "A strong brand compounds. Work with experts who audit your positioning, define your messaging, and hand you a go-to-market playbook your whole team can rally behind.",
+      "We help entrepreneurs establish their LLC quickly while ensuring compliance with state regulations. From filing formation documents to providing guidance on operating agreements, our experts simplify the entire process.",
     image:
       "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80",
     highlights: [
-      "Positioning audit",
-      "Messaging framework",
-      "Visual direction",
-      "Launch playbook",
+      "State filing",
+      "Operating agreement guidance",
+      "Compliance support",
+      "Professional filing assistance",
     ],
   },
-  "growth-marketing": {
-    slug: "growth-marketing",
-    title: "Growth Marketing",
-    category: "Marketing",
+
+  corporation: {
+    slug: "corporation",
+    title: "Corporation Formation",
+    category: "Business Formation",
     overview:
-      "Turn attention into revenue with operators who have scaled real businesses. Get a channel strategy and funnel built to convert.",
+      "Establish your corporation with expert guidance and ensure every legal requirement is handled correctly.",
     longDescription:
-      "Whether you are starting from zero or plateauing, our growth experts tear down your funnel, find the leaks, and build a paid-plus-organic plan tuned to your numbers.",
+      "Starting a corporation involves more than paperwork. Our professionals assist with incorporation documents, compliance requirements, and organizational setup so your business starts on the right foundation.",
+    image:
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80",
+    highlights: [
+      "Articles of incorporation",
+      "Corporate compliance",
+      "Official documentation",
+      "Formation guidance",
+    ],
+  },
+
+  bookkeeping: {
+    slug: "bookkeeping",
+    title: "Bookkeeping Services",
+    category: "Accounting",
+    overview:
+      "Keep your financial records accurate, organized, and up-to-date with professional bookkeeping services.",
+    longDescription:
+      "Our bookkeeping specialists manage your daily financial transactions, organize expenses, reconcile accounts, and generate reports that help you make informed business decisions.",
     image:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
     highlights: [
-      "Funnel teardown",
-      "Channel strategy",
-      "Conversion optimization",
-      "Analytics setup",
+      "Monthly bookkeeping",
+      "Bank reconciliation",
+      "Expense tracking",
+      "Financial reporting",
     ],
   },
-  "legal-counsel": {
-    slug: "legal-counsel",
-    title: "Legal Counsel",
-    category: "Legal & Formation",
+
+  billing: {
+    slug: "billing",
+    title: "Billing Services",
+    category: "Financial Management",
     overview:
-      "Protect what you are building. Get contracts, IP, and compliance reviewed by experienced business attorneys before it costs you.",
+      "Simplify your invoicing and payment collection with efficient billing solutions tailored to your business.",
     longDescription:
-      "From your first contract to your next funding round, the right legal advisor keeps you protected. Our verified attorneys draft, review, and de-risk the agreements that matter.",
-    image:
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1400&q=80",
-    highlights: [
-      "Contract drafting",
-      "IP protection",
-      "Entity structuring",
-      "Compliance review",
-    ],
-  },
-  fundraising: {
-    slug: "fundraising",
-    title: "Fundraising",
-    category: "Finance",
-    overview:
-      "Walk into investor meetings prepared. Our fundraising experts pressure-test your story, your model, and your strategy.",
-    longDescription:
-      "Raising capital is a craft. Work with advisors who have sat on both sides of the table to refine your narrative, stress-test your model, and open the right doors.",
+      "We help businesses manage invoices, track payments, follow up on outstanding balances, and maintain organized billing records, improving cash flow and reducing administrative work.",
     image:
       "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1400&q=80",
     highlights: [
-      "Deck & narrative",
-      "Financial modeling",
-      "Investor strategy",
-      "Negotiation prep",
+      "Invoice generation",
+      "Payment tracking",
+      "Accounts receivable",
+      "Billing management",
+    ],
+  },
+
+  consultation: {
+    slug: "consultation",
+    title: "Business Consultation",
+    category: "Business Advisory",
+    overview:
+      "Receive personalized advice from experienced professionals to help your business grow and succeed.",
+    longDescription:
+      "Whether you're launching a startup, expanding operations, or solving business challenges, our consultants provide practical recommendations and actionable strategies tailored to your goals.",
+    image:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80",
+    highlights: [
+      "Business strategy",
+      "Growth planning",
+      "One-on-one consultation",
+      "Actionable recommendations",
     ],
   },
 };

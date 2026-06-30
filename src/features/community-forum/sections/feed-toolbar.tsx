@@ -30,7 +30,7 @@ export function FeedToolbar({
           placeholder="Search posts, people, topics…"
           aria-label="Search the forum"
           className={cn(
-            "h-11 w-full rounded-full border border-input bg-white/[0.03] pl-11 pr-10 text-sm text-cloud transition-colors",
+            "h-11 w-full rounded-full border border-input bg-white/3 pl-11 pr-10 text-sm text-cloud transition-colors",
             "placeholder:text-faint focus-visible:outline-none focus-visible:border-violet/60 focus-visible:ring-2 focus-visible:ring-violet/25",
           )}
         />
@@ -88,7 +88,7 @@ function Chip({
         "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
         active
           ? "border-transparent bg-brand-gradient text-white shadow-[0_8px_22px_-10px_rgba(129,49,240,0.9)]"
-          : "border-hairline-strong bg-white/[0.02] text-mist hover:bg-white/[0.06] hover:text-cloud",
+          : "border-hairline-strong bg-white/2 text-mist hover:bg-white/6 hover:text-cloud",
       )}
     >
       {children}
