@@ -56,7 +56,7 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
         className="mt-8 w-full"
         style={{
           background: pkg.featured ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)" : "",
-          // border: pkg.featured ? "1px solid #fff" : ""
+          border: pkg.featured ? "1px solid #fff" : ""
         }}
       >
         <Link href={`/services/${pkg.slug}`}>
