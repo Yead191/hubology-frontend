@@ -39,7 +39,7 @@ export function Navbar() {
       <div className="max-w-6xl w-full px-4 lg:px-6">
         <nav
           className={cn(
-            "flex w-full items-center justify-between gap-4 rounded-full border  px-3 py-2.5 transition-all duration-500 ease-out-soft glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]",
+            "flex w-full items-center justify-between gap-4 rounded-full border  px-3 py-2.5 transition-all duration-500 ease-out-soft glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl",
             // scrolled
             //   ? "glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
             //   : "bg-white/2 backdrop-blur-2xl",
