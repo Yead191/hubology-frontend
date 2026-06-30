@@ -55,6 +55,47 @@ export interface Testimonial {
   avatar: string;
 }
 
+/* ------------------------------------------------------------------ *
+ * Community forum
+ * ------------------------------------------------------------------ */
+export type ForumCategory =
+  | "Taxation"
+  | "Audit"
+  | "Funding"
+  | "Legal"
+  | "Hiring"
+  | "Others";
+
+/** Whether a post/comment author is a founder (member) or an expert (vendor). */
+export type ForumAuthorRole = "member" | "vendor";
+
+export interface ForumAuthor {
+  name: string;
+  avatarUrl: string;
+  role: ForumAuthorRole;
+  /** Optional one-line headline, e.g. "Tax Strategist". */
+  headline?: string;
+}
+
+export interface ForumComment {
+  id: string;
+  author: ForumAuthor;
+  text: string;
+  timeAgo: string;
+}
+
+export interface ForumPost {
+  id: string;
+  author: ForumAuthor;
+  category: ForumCategory;
+  content: string;
+  timeAgo: string;
+  likes: number;
+  /** True when the current viewer has liked this post. */
+  likedByMe: boolean;
+  comments: ForumComment[];
+}
+
 export type RegisterRole = "member" | "expert";
 
 export interface RegistrationOption {
