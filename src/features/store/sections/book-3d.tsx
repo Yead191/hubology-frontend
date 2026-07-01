@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { Book } from "@/types";
@@ -112,7 +112,6 @@ export function Book3D({
 }) {
   const group = React.useRef<THREE.Group>(null);
   const [hovered, setHovered] = React.useState(false);
-  const cover = useCoverTexture(book);
   const phase = React.useMemo(() => Math.abs(position[0]) + position[2], [position]);
 
   useFrame((state, delta) => {
@@ -183,17 +182,49 @@ export function Book3D({
         />
       </mesh>
 
-      {/* Front cover art */}
-      <mesh position={[0, 0, D / 2 + 0.001]}>
-        <planeGeometry args={[W - 0.02, H - 0.02]} />
-        <meshStandardMaterial
-          map={cover}
-          roughness={0.4}
-          metalness={0.05}
-          transparent
-          opacity={dim ? 0.4 : 1}
-        />
-      </mesh>
+      {/* Front cover art — real image when available, else procedural */}
+      {book.coverImage ? (
+        <React.Suspense fallback={<ProceduralCoverMesh book={book} dim={dim} />}>
+          <ImageCoverMesh url={book.coverImage} dim={dim} />
+        </React.Suspense>
+      ) : (
+        <ProceduralCoverMesh book={book} dim={dim} />
+      )}
     </group>
+  );
+}
+
+/** Front-cover mesh textured with a real cover image. */
+function ImageCoverMesh({ url, dim }: { url: string; dim: boolean }) {
+  const texture = useTexture(url);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return (
+    <mesh position={[0, 0, D / 2 + 0.001]}>
+      <planeGeometry args={[W - 0.02, H - 0.02]} />
+      <meshStandardMaterial
+        map={texture}
+        roughness={0.4}
+        metalness={0.05}
+        transparent
+        opacity={dim ? 0.4 : 1}
+      />
+    </mesh>
+  );
+}
+
+/** Front-cover mesh textured with the procedural brand cover. */
+function ProceduralCoverMesh({ book, dim }: { book: Book; dim: boolean }) {
+  const cover = useCoverTexture(book);
+  return (
+    <mesh position={[0, 0, D / 2 + 0.001]}>
+      <planeGeometry args={[W - 0.02, H - 0.02]} />
+      <meshStandardMaterial
+        map={cover}
+        roughness={0.4}
+        metalness={0.05}
+        transparent
+        opacity={dim ? 0.4 : 1}
+      />
+    </mesh>
   );
 }

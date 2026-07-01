@@ -8,46 +8,7 @@ import type { Book } from "@/types";
 const PDF = "/assets/books/book-1.pdf";
 
 export const books: Book[] = [
-  {
-    id: "book-01",
-    slug: "scaling-fear",
-    title: "Scaling Fear",
-    subtitle: "The founder's psychology guide.",
-    price: 220,
-    currency: "USD",
-    shares: 5062,
-    description:
-      "Scaling Fear is the definitive guide for entrepreneurs navigating the immense psychological pressures of building a startup. From managing imposter syndrome and overcoming the paralyzing fear of failure to maintaining mental clarity during high-stakes decisions, this book provides actionable strategies. Drawing on years of research and interviews with successful founders, it offers a roadmap to harness anxiety as a tool for growth, ensuring you can scale your business without sacrificing your mental health.",
-    coverImage: "/assets/images/book/book-cover.png",
-    accent: ["#8131f0", "#4a1c8a"],
-    fileUrl: PDF,
-    details: {
-      publisher: "Asad Ujjaman",
-      firstPublish: "December 30, 2026",
-      edition: "2026",
-      pages: 200,
-    },
-    rating: {
-      average: 4.5,
-      totalReviews: 120,
-      reviews: [
-        {
-          reviewerName: "Arshad Bhuiyan",
-          reviewerTitle: "Entrepreneur",
-          rating: 5,
-          date: "12/12/2026",
-          text: "This book completely changed my perspective on startup anxiety. The chapters on decision fatigue and managing investor expectations are incredibly practical. Highly recommended for any founder feeling overwhelmed.",
-        },
-        {
-          reviewerName: "Marina Cole",
-          reviewerTitle: "Seed-stage Founder",
-          rating: 4,
-          date: "11/28/2026",
-          text: "A must-read for any first-time founder. It felt like the author was speaking directly to my daily struggles. The actionable advice on reframing fear into a driving force is worth the price of the book alone.",
-        },
-      ],
-    },
-  },
+
   {
     id: "book-02",
     slug: "the-quiet-runway",
@@ -108,6 +69,46 @@ export const books: Book[] = [
           rating: 5,
           date: "07/18/2026",
           text: "Delegation finally clicked for me after chapter four. Warm, direct, and immediately useful.",
+        },
+      ],
+    },
+  },
+  {
+    id: "book-01",
+    slug: "the-business-plan",
+    title: "The Business Plan",
+    subtitle: "The founder's psychology guide.",
+    price: 220,
+    currency: "USD",
+    shares: 5062,
+    description:
+      "The Business Plan is the definitive guide for entrepreneurs navigating the immense psychological pressures of building a startup. From managing imposter syndrome and overcoming the paralyzing fear of failure to maintaining mental clarity during high-stakes decisions, this book provides actionable strategies. Drawing on years of research and interviews with successful founders, it offers a roadmap to harness anxiety as a tool for growth, ensuring you can scale your business without sacrificing your mental health.",
+    coverImage: "/assets/images/book/book-cover.png",
+    accent: ["#8131f0", "#4a1c8a"],
+    fileUrl: PDF,
+    details: {
+      publisher: "Asad Ujjaman",
+      firstPublish: "December 30, 2026",
+      edition: "2026",
+      pages: 200,
+    },
+    rating: {
+      average: 4.5,
+      totalReviews: 120,
+      reviews: [
+        {
+          reviewerName: "Arshad Bhuiyan",
+          reviewerTitle: "Entrepreneur",
+          rating: 5,
+          date: "12/12/2026",
+          text: "This book completely changed my perspective on startup anxiety. The chapters on decision fatigue and managing investor expectations are incredibly practical. Highly recommended for any founder feeling overwhelmed.",
+        },
+        {
+          reviewerName: "Marina Cole",
+          reviewerTitle: "Seed-stage Founder",
+          rating: 4,
+          date: "11/28/2026",
+          text: "A must-read for any first-time founder. It felt like the author was speaking directly to my daily struggles. The actionable advice on reframing fear into a driving force is worth the price of the book alone.",
         },
       ],
     },

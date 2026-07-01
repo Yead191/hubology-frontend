@@ -81,7 +81,7 @@ export default function StoreExperience() {
             <div
               role="tablist"
               aria-label="Store view"
-              className="inline-flex shrink-0 items-center gap-1 self-start rounded-full border border-hairline-strong bg-white/[0.03] p-1"
+              className="inline-flex shrink-0 items-center gap-1 self-start rounded-full border border-hairline-strong bg-white/3 p-1"
             >
               <ModeButton
                 active={mode === "3d"}
@@ -102,7 +102,7 @@ export default function StoreExperience() {
         {/* Experience */}
         <div className="mt-10">
           {mode === "3d" && canUse3D ? (
-            <div className="border-gradient relative h-[62vh] min-h-112 overflow-hidden rounded-[2rem] bg-ink/60">
+            <div className="border-gradient relative h-[62vh] min-h-112 overflow-hidden rounded-4xl bg-ink/60">
               <Gallery3D
                 books={books}
                 selectedSlug={selected?.slug ?? null}
