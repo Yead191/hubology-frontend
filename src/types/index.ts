@@ -133,6 +133,46 @@ export interface MembershipPlan {
   highlight?: string;
 }
 
+/* ------------------------------------------------------------------ *
+ * Store — books
+ * ------------------------------------------------------------------ */
+export interface BookReview {
+  reviewerName: string;
+  reviewerTitle: string;
+  rating: number;
+  date: string;
+  text: string;
+}
+
+export interface Book {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  price: number;
+  currency: string;
+  /** Social proof — number of shares. */
+  shares: number;
+  description: string;
+  /** Real cover image, when available. */
+  coverImage?: string;
+  /** Two-stop gradient [from, to] for the procedural cover / 3D spine. */
+  accent: [string, string];
+  /** Downloadable file, unlocked after purchase. */
+  fileUrl: string;
+  details: {
+    publisher: string;
+    firstPublish: string;
+    edition: string;
+    pages: number;
+  };
+  rating: {
+    average: number;
+    totalReviews: number;
+    reviews: BookReview[];
+  };
+}
+
 export type RegisterRole = "member" | "expert";
 
 export interface RegistrationOption {
