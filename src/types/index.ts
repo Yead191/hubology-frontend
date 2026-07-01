@@ -56,8 +56,6 @@ export interface Vendor {
   /** Consultation formats offered (from consultationTypeOptions). */
   consultationTypes: string[];
   location: string;
-  rating: number;
-  reviews: number;
   contact: {
     email: string;
     phone: string;

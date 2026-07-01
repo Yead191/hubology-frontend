@@ -4,7 +4,7 @@ import type { Vendor } from "@/types";
  * Vendors / experts — a directory of manually-verified consultants.
  * Fields mirror the expert registration form (role, company, bio,
  * expertise, experience, degree, LinkedIn, hourly rate, availability,
- * consultation types) plus directory metadata (location, rating).
+ * consultation types) plus location.
  * Contact details are exposed so members can reach out directly.
  * ------------------------------------------------------------------ */
 export const vendors: Vendor[] = [
@@ -26,8 +26,6 @@ export const vendors: Vendor[] = [
     availability: "Part-time (5-15 hrs/week)",
     consultationTypes: ["1-on-1 Calls", "Long-term Projects"],
     location: "Sydney, AU",
-    rating: 4.9,
-    reviews: 128,
     contact: { email: "ahsanchowdhury12@gmail.com", phone: "+61 123 456 789" },
   },
   {
@@ -48,8 +46,6 @@ export const vendors: Vendor[] = [
     availability: "Full-time (40+ hrs/week)",
     consultationTypes: ["1-on-1 Calls", "Document Review"],
     location: "Austin, US",
-    rating: 4.8,
-    reviews: 96,
     contact: { email: "marcus.v@formationlab.co", phone: "+1 512 555 0142" },
   },
   {
@@ -70,8 +66,6 @@ export const vendors: Vendor[] = [
     availability: "Project-based",
     consultationTypes: ["1-on-1 Calls", "Document Review", "Workshops & Training"],
     location: "London, UK",
-    rating: 5.0,
-    reviews: 211,
     contact: { email: "helena.thorne@thornetax.com", phone: "+44 20 7946 0958" },
   },
   {
@@ -92,8 +86,6 @@ export const vendors: Vendor[] = [
     availability: "Part-time (5-15 hrs/week)",
     consultationTypes: ["1-on-1 Calls", "Async Q&A"],
     location: "Toronto, CA",
-    rating: 4.9,
-    reviews: 143,
     contact: { email: "priya@nairadvisory.ca", phone: "+1 416 555 0188" },
   },
   {
@@ -114,8 +106,6 @@ export const vendors: Vendor[] = [
     availability: "Project-based",
     consultationTypes: ["Long-term Projects", "Workshops & Training"],
     location: "Barcelona, ES",
-    rating: 4.8,
-    reviews: 87,
     contact: { email: "diego@alvarezbrand.studio", phone: "+34 600 123 456" },
   },
   {
@@ -136,8 +126,6 @@ export const vendors: Vendor[] = [
     availability: "Full-time (40+ hrs/week)",
     consultationTypes: ["1-on-1 Calls", "Long-term Projects"],
     location: "New York, US",
-    rating: 4.9,
-    reviews: 174,
     contact: { email: "sarah@whitfieldgrowth.com", phone: "+1 212 555 0117" },
   },
   {
@@ -158,8 +146,6 @@ export const vendors: Vendor[] = [
     availability: "Limited / by request",
     consultationTypes: ["Document Review", "1-on-1 Calls"],
     location: "San Francisco, US",
-    rating: 5.0,
-    reviews: 102,
     contact: { email: "jpierce@piercelegal.com", phone: "+1 415 555 0193" },
   },
   {
@@ -180,8 +166,6 @@ export const vendors: Vendor[] = [
     availability: "Project-based",
     consultationTypes: ["1-on-1 Calls", "Workshops & Training"],
     location: "Singapore, SG",
-    rating: 4.9,
-    reviews: 119,
     contact: { email: "amara@okaforcapital.com", phone: "+65 6123 4567" },
   },
 ];

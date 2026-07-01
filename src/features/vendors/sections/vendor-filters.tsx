@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X, SlidersHorizontal } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import {
   expertiseOptions,
@@ -16,14 +16,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export type SortKey = "rating" | "reviews" | "rate-asc" | "rate-desc";
-
 export interface VendorFilterState {
   query: string;
   expertise: string;
   rate: string;
   availability: string;
-  sort: SortKey;
 }
 
 export const DEFAULT_FILTERS: VendorFilterState = {
@@ -31,17 +28,9 @@ export const DEFAULT_FILTERS: VendorFilterState = {
   expertise: "all",
   rate: "all",
   availability: "all",
-  sort: "rating",
 };
 
-const SORT_LABELS: Record<SortKey, string> = {
-  rating: "Top rated",
-  reviews: "Most reviews",
-  "rate-asc": "Rate: low to high",
-  "rate-desc": "Rate: high to low",
-};
-
-/** Search + faceted filters + sort for the vendors directory. */
+/** Search + faceted filters for the vendors directory. */
 export function VendorFilters({
   filters,
   onChange,
@@ -79,7 +68,7 @@ export function VendorFilters({
             type="button"
             onClick={() => onChange("query", "")}
             aria-label="Clear search"
-            className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-faint transition-colors hover:bg-white/[0.06] hover:text-cloud"
+            className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-faint transition-colors hover:bg-white/6 hover:text-cloud"
           >
             <X className="h-4 w-4" />
           </button>
@@ -87,7 +76,7 @@ export function VendorFilters({
       </div>
 
       {/* Facets */}
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <FacetSelect
           label="Expertise"
           value={filters.expertise}
@@ -109,27 +98,6 @@ export function VendorFilters({
           placeholder="Any availability"
           options={availabilityOptions}
         />
-
-        <div className="flex flex-col gap-1.5">
-          <span className="flex items-center gap-1.5 pl-1 text-xs font-medium text-faint">
-            <SlidersHorizontal className="h-3 w-3" /> Sort
-          </span>
-          <Select
-            value={filters.sort}
-            onValueChange={(v) => onChange("sort", v as SortKey)}
-          >
-            <SelectTrigger aria-label="Sort vendors">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
-                <SelectItem key={key} value={key}>
-                  {SORT_LABELS[key]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       {/* Result meta */}

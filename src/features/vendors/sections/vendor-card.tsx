@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, BadgeCheck, ArrowRight } from "lucide-react";
+import { MapPin, BadgeCheck, ArrowRight } from "lucide-react";
 
 import type { Vendor } from "@/types";
 
@@ -33,16 +33,9 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             {vendor.role}
             <span className="text-mist"> · {vendor.company}</span>
           </p>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-mist">
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              {vendor.rating.toFixed(1)}
-              <span className="text-faint">({vendor.reviews})</span>
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
-              {vendor.location}
-            </span>
+          <div className="mt-1 flex items-center gap-1 text-xs text-mist">
+            <MapPin className="h-3.5 w-3.5" />
+            {vendor.location}
           </div>
         </div>
       </div>
@@ -56,13 +49,13 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
         {shownExpertise.map((e) => (
           <span
             key={e}
-            className="rounded-full border border-hairline-strong bg-white/[0.03] px-2.5 py-1 text-xs text-cloud/80"
+            className="rounded-full border border-hairline-strong bg-white/3 px-2.5 py-1 text-xs text-cloud/80"
           >
             {e}
           </span>
         ))}
         {extra > 0 && (
-          <span className="rounded-full border border-hairline-strong bg-white/[0.03] px-2.5 py-1 text-xs text-faint">
+          <span className="rounded-full border border-hairline-strong bg-white/3 px-2.5 py-1 text-xs text-faint">
             +{extra}
           </span>
         )}
@@ -79,7 +72,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
 
       <Link
         href={`/vendors/${vendor.slug}`}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-hairline-strong bg-white/[0.03] px-6 py-2.5 text-sm font-semibold text-cloud transition-all duration-300 ease-out-soft hover:border-violet/50 hover:bg-white/[0.07]"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-hairline-strong bg-white/3 px-6 py-2.5 text-sm font-semibold text-cloud transition-all duration-300 ease-out-soft hover:border-violet/50 hover:bg-white/[0.07]"
       >
         View profile
         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />

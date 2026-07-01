@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowLeft,
-  Star,
   MapPin,
   BadgeCheck,
   Mail,
@@ -29,7 +28,7 @@ function MetaTile({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-hairline bg-white/[0.02] px-4 py-3">
+    <div className="flex items-center gap-3 rounded-2xl border border-hairline bg-white/2 px-4 py-3">
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet-bright">
         <Icon className="h-4 w-4" />
       </span>
@@ -63,7 +62,7 @@ export function VendorDetail({ vendor }: { vendor: Vendor }) {
 
         <div className="grid gap-8 lg:grid-cols-[1fr_0.7fr] lg:items-start">
           {/* Main profile */}
-          <Reveal className="border-gradient rounded-[2rem] bg-panel/50 p-6 sm:p-8">
+          <Reveal className="border-gradient rounded-4xl bg-panel/50 p-6 sm:p-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
               <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-3xl ring-2 ring-violet/25">
                 <Image
@@ -87,18 +86,9 @@ export function VendorDetail({ vendor }: { vendor: Vendor }) {
                   {vendor.role}
                   <span className="text-mist"> · {vendor.company}</span>
                 </p>
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-mist">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                    <span className="font-medium text-cloud">
-                      {vendor.rating.toFixed(1)}
-                    </span>
-                    <span className="text-faint">({vendor.reviews} reviews)</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4" />
-                    {vendor.location}
-                  </span>
+                <div className="mt-2 flex items-center gap-1.5 text-sm text-mist">
+                  <MapPin className="h-4 w-4" />
+                  {vendor.location}
                 </div>
               </div>
             </div>
@@ -184,7 +174,7 @@ export function VendorDetail({ vendor }: { vendor: Vendor }) {
 
           {/* Contact card */}
           <Reveal delay={120} className="lg:sticky lg:top-28">
-            <div className="border-gradient glow-soft rounded-[2rem] bg-panel/60 p-6 sm:p-7">
+            <div className="border-gradient glow-soft rounded-4xl bg-panel/60 p-6 sm:p-7">
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display text-3xl font-bold text-cloud">
                   {vendor.hourlyRate}
