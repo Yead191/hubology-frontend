@@ -28,7 +28,7 @@ export default function JoinPage() {
               <span className="text-gradient">show up</span>
             </>
           }
-          subtitle="Whether you are looking for guidance or ready to share your expertise, there is a place for you at Hubology."
+          subtitle="Whether you are looking for guidance or ready to share your expertise, there is a place for you at Hubology"
         />
 
         <div className="mt-16 grid gap-6 md:grid-cols-2">
