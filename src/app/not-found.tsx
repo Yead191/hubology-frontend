@@ -9,10 +9,10 @@ export default function NotFound() {
     <section className="relative flex min-h-screen items-center overflow-hidden px-6 pt-28 pb-20">
       <Aurora
         animated
-        className="left-1/2 top-1/3 h-[30rem] w-[40rem] -translate-x-1/2 opacity-45"
+        className="left-1/2 top-1/3 h-120 w-160 -translate-x-1/2 opacity-45"
       />
       <div className="relative mx-auto max-w-xl text-center">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl border border-hairline-strong bg-white/[0.04] text-violet-bright">
+        <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl border border-hairline-strong bg-white/4 text-violet-bright">
           <Compass className="h-8 w-8" />
         </span>
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.28em] text-violet-bright">

@@ -1,131 +1,201 @@
 import type { Vendor } from "@/types";
 
 /* ------------------------------------------------------------------ *
- * Vendors / experts. Each is tied to a service via `serviceSlug`.
- * Contact details are intentionally exposed to logged-in members so
- * they can reach out directly — no payments handled on-platform.
+ * Vendors / experts — a directory of manually-verified consultants.
+ * Fields mirror the expert registration form (role, company, bio,
+ * expertise, experience, degree, LinkedIn, hourly rate, availability,
+ * consultation types) plus directory metadata (location, rating).
+ * Contact details are exposed so members can reach out directly.
  * ------------------------------------------------------------------ */
 export const vendors: Vendor[] = [
   {
     id: "v-001",
-    serviceSlug: "corporation",
+    slug: "akm-ahsan-chowdhury",
     profile: "https://i.pravatar.cc/400?img=12",
     name: "AKM Ahsan Chowdhury",
     role: "Business Consultant",
-    description:
-      "Business consultancy services to help organisations improve their performance, from formation to scaling operations cleanly.",
-    startingPrice: 240,
+    company: "Chowdhury Advisory",
+    bio: "Helps organisations improve performance, from formation to scaling operations cleanly.",
+    about:
+      "Business consultant with two decades guiding founders and executive teams through formation, operational restructuring, and clean scaling. Known for turning messy early-stage operations into repeatable systems that hold up as headcount grows.",
+    expertise: ["Operations", "Corporation & Formation", "Growth Marketing"],
+    yearsExperience: "15 - 20 years",
+    degree: "MBA",
+    linkedin: "https://linkedin.com/in/akm-ahsan-chowdhury",
+    hourlyRate: "$100 - $250",
+    availability: "Part-time (5-15 hrs/week)",
+    consultationTypes: ["1-on-1 Calls", "Long-term Projects"],
+    location: "Sydney, AU",
     rating: 4.9,
     reviews: 128,
-    location: "Sydney, AU",
     contact: { email: "ahsanchowdhury12@gmail.com", phone: "+61 123 456 789" },
   },
   {
     id: "v-002",
-    serviceSlug: "corporation",
+    slug: "marcus-verlaine",
     profile: "https://i.pravatar.cc/400?img=32",
     name: "Marcus Verlaine",
     role: "Formation Specialist",
-    description:
-      "15 years guiding founders through entity selection, EIN filings, and compliance so they launch on solid legal footing.",
-    startingPrice: 180,
+    company: "FormationLab",
+    bio: "15 years guiding founders through entity selection, EIN filings, and compliance.",
+    about:
+      "Formation specialist who has taken hundreds of founders from idea to incorporated. Handles entity selection, EIN filings, operating agreements, and state compliance so companies launch on solid legal footing and avoid costly retrofits later.",
+    expertise: ["Corporation & Formation", "Legal Counsel"],
+    yearsExperience: "11 - 15 years",
+    degree: "JD",
+    linkedin: "https://linkedin.com/in/marcus-verlaine",
+    hourlyRate: "$100 - $250",
+    availability: "Full-time (40+ hrs/week)",
+    consultationTypes: ["1-on-1 Calls", "Document Review"],
+    location: "Austin, US",
     rating: 4.8,
     reviews: 96,
-    location: "Austin, US",
     contact: { email: "marcus.v@formationlab.co", phone: "+1 512 555 0142" },
   },
   {
     id: "v-003",
-    serviceSlug: "ein",
+    slug: "helena-thorne",
     profile: "https://i.pravatar.cc/400?img=5",
     name: "Dr. Helena Thorne",
     role: "Tax Strategist",
-    description:
-      "Former Big Four advisor helping founders build proactive tax plans that protect margin and keep filings audit-ready.",
-    startingPrice: 320,
+    company: "Thorne Tax Advisory",
+    bio: "Former Big Four advisor building proactive, audit-ready tax plans that protect margin.",
+    about:
+      "Former Big Four advisor with a doctorate in taxation. Builds proactive tax strategies that protect margin and keep filings audit-ready, working with founders and finance teams on everything from entity structure to cross-border planning.",
+    expertise: ["Tax Strategy", "Finance & Accounting"],
+    yearsExperience: "20+ years",
+    degree: "Ph.D, CPA",
+    linkedin: "https://linkedin.com/in/helena-thorne",
+    hourlyRate: "$250 - $500",
+    availability: "Project-based",
+    consultationTypes: ["1-on-1 Calls", "Document Review", "Workshops & Training"],
+    location: "London, UK",
     rating: 5.0,
     reviews: 211,
-    location: "London, UK",
     contact: { email: "helena.thorne@thornetax.com", phone: "+44 20 7946 0958" },
   },
   {
     id: "v-004",
-    serviceSlug: "ein",
+    slug: "priya-nair",
     profile: "https://i.pravatar.cc/400?img=15",
     name: "Priya Nair",
     role: "CPA & Advisor",
-    description:
-      "CPA specializing in small-business tax planning, deduction discovery, and clean quarterly filing systems.",
-    startingPrice: 210,
+    company: "Nair Advisory",
+    bio: "CPA specializing in small-business tax planning and clean quarterly filing systems.",
+    about:
+      "CPA focused on small-business tax planning, deduction discovery, and building quarterly filing systems that keep founders organised year-round. Practical, responsive, and great at translating tax jargon into decisions you can act on.",
+    expertise: ["Tax Strategy", "Finance & Accounting", "Operations"],
+    yearsExperience: "6 - 10 years",
+    degree: "CPA",
+    linkedin: "https://linkedin.com/in/priya-nair",
+    hourlyRate: "$100 - $250",
+    availability: "Part-time (5-15 hrs/week)",
+    consultationTypes: ["1-on-1 Calls", "Async Q&A"],
+    location: "Toronto, CA",
     rating: 4.9,
     reviews: 143,
-    location: "Toronto, CA",
     contact: { email: "priya@nairadvisory.ca", phone: "+1 416 555 0188" },
   },
   {
     id: "v-005",
-    serviceSlug: "llc",
+    slug: "diego-alvarez",
     profile: "https://i.pravatar.cc/400?img=68",
     name: "Diego Alvarez",
     role: "Brand Strategist",
-    description:
-      "Built brands for 40+ startups. Sharpens positioning and identity into stories customers actually remember.",
-    startingPrice: 260,
+    company: "Alvarez Brand Studio",
+    bio: "Built brands for 40+ startups — sharpens positioning into stories customers remember.",
+    about:
+      "Brand strategist who has shaped identity and positioning for 40+ startups. Turns fuzzy value props into sharp, memorable stories, then hands teams a system to keep the brand consistent across every touchpoint.",
+    expertise: ["Brand Strategy", "Growth Marketing"],
+    yearsExperience: "11 - 15 years",
+    degree: "MA, Design",
+    linkedin: "https://linkedin.com/in/diego-alvarez",
+    hourlyRate: "$250 - $500",
+    availability: "Project-based",
+    consultationTypes: ["Long-term Projects", "Workshops & Training"],
+    location: "Barcelona, ES",
     rating: 4.8,
     reviews: 87,
-    location: "Barcelona, ES",
     contact: { email: "diego@alvarezbrand.studio", phone: "+34 600 123 456" },
   },
   {
     id: "v-006",
-    serviceSlug: "bookkeeping",
+    slug: "sarah-whitfield",
     profile: "https://i.pravatar.cc/400?img=51",
     name: "Sarah Whitfield",
     role: "Growth Lead",
-    description:
-      "Scaled three companies past 8 figures. Tears down funnels and builds paid-plus-organic plans tuned to your numbers.",
-    startingPrice: 290,
+    company: "Whitfield Growth",
+    bio: "Scaled three companies past 8 figures with paid-plus-organic plans tuned to your numbers.",
+    about:
+      "Growth leader who has scaled three companies past eight figures. Tears down funnels, finds the leaks, and builds paid-plus-organic acquisition plans tuned to your unit economics — not vanity metrics.",
+    expertise: ["Growth Marketing", "Sales", "Data & Analytics"],
+    yearsExperience: "15 - 20 years",
+    degree: "MBA",
+    linkedin: "https://linkedin.com/in/sarah-whitfield",
+    hourlyRate: "$250 - $500",
+    availability: "Full-time (40+ hrs/week)",
+    consultationTypes: ["1-on-1 Calls", "Long-term Projects"],
+    location: "New York, US",
     rating: 4.9,
     reviews: 174,
-    location: "New York, US",
     contact: { email: "sarah@whitfieldgrowth.com", phone: "+1 212 555 0117" },
   },
   {
     id: "v-007",
-    serviceSlug: "billing",
+    slug: "jonathan-pierce",
     profile: "https://i.pravatar.cc/400?img=60",
     name: "Jonathan Pierce",
     role: "Business Attorney",
-    description:
-      "Startup attorney covering contracts, IP, and compliance so founders stay protected through every stage.",
-    startingPrice: 350,
+    company: "Pierce Legal",
+    bio: "Startup attorney covering contracts, IP, and compliance through every stage.",
+    about:
+      "Startup attorney covering the legal surface area founders actually hit — contracts, IP assignment, fundraising docs, and ongoing compliance. Pragmatic counsel that keeps you protected without slowing the business down.",
+    expertise: ["Legal Counsel", "Corporation & Formation"],
+    yearsExperience: "20+ years",
+    degree: "JD",
+    linkedin: "https://linkedin.com/in/jonathan-pierce",
+    hourlyRate: "$500 - $1000",
+    availability: "Limited / by request",
+    consultationTypes: ["Document Review", "1-on-1 Calls"],
+    location: "San Francisco, US",
     rating: 5.0,
     reviews: 102,
-    location: "San Francisco, US",
     contact: { email: "jpierce@piercelegal.com", phone: "+1 415 555 0193" },
   },
   {
     id: "v-008",
-    serviceSlug: "consultation",
+    slug: "amara-okafor",
     profile: "https://i.pravatar.cc/400?img=47",
     name: "Amara Okafor",
     role: "Fundraising Advisor",
-    description:
-      "Ex-VC turned advisor. Refines your narrative, stress-tests your model, and opens the right investor doors.",
-    startingPrice: 400,
+    company: "Okafor Capital",
+    bio: "Ex-VC turned advisor — refines your narrative and opens the right investor doors.",
+    about:
+      "Ex-VC turned fundraising advisor. Refines your narrative, stress-tests your model, and makes warm introductions to the right investors. Has helped founders raise across pre-seed to Series B.",
+    expertise: ["Fundraising", "Finance & Accounting", "Technology & Product"],
+    yearsExperience: "11 - 15 years",
+    degree: "MBA",
+    linkedin: "https://linkedin.com/in/amara-okafor",
+    hourlyRate: "$500 - $1000",
+    availability: "Project-based",
+    consultationTypes: ["1-on-1 Calls", "Workshops & Training"],
+    location: "Singapore, SG",
     rating: 4.9,
     reviews: 119,
-    location: "Singapore, SG",
     contact: { email: "amara@okaforcapital.com", phone: "+65 6123 4567" },
   },
 ];
 
 /* ------------------------------ accessors ------------------------------ */
 
-export function getVendorsByService(serviceSlug: string): Vendor[] {
-  return vendors.filter((v) => v.serviceSlug === serviceSlug);
-}
-
 export function getAllVendors(): Vendor[] {
   return vendors;
+}
+
+export function getVendorBySlug(slug: string): Vendor | undefined {
+  return vendors.find((v) => v.slug === slug);
+}
+
+export function getVendorSlugs(): string[] {
+  return vendors.map((v) => v.slug);
 }

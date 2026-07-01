@@ -82,7 +82,7 @@ export function StepExpertise() {
                     ))}
                   </div>
                 ) : (
-                  <p className="rounded-xl border border-hairline bg-white/[0.02] px-4 py-3 text-sm text-faint">
+                  <p className="rounded-xl border border-hairline bg-white/2 px-4 py-3 text-sm text-faint">
                     No fields match “{query}”.
                   </p>
                 )}

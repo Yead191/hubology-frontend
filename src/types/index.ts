@@ -31,15 +31,33 @@ export interface ServiceDetail {
 
 export interface Vendor {
   id: string;
-  serviceSlug: string;
+  /** URL slug for the vendor detail page. */
+  slug: string;
+  /** Avatar image URL. */
   profile: string;
   name: string;
+  /** Job title, e.g. "Tax Strategist". */
   role: string;
-  description: string;
-  startingPrice: number;
+  company: string;
+  /** Short one-line summary shown on cards. */
+  bio: string;
+  /** Longer profile bio shown on the detail page. */
+  about: string;
+  /** Areas of expertise (from expertiseOptions). */
+  expertise: string[];
+  /** Experience band (from yearsExperienceOptions). */
+  yearsExperience: string;
+  degree?: string;
+  linkedin?: string;
+  /** Hourly rate range (from hourlyRateOptions), e.g. "$100 - $250". */
+  hourlyRate: string;
+  /** Availability (from availabilityOptions). */
+  availability: string;
+  /** Consultation formats offered (from consultationTypeOptions). */
+  consultationTypes: string[];
+  location: string;
   rating: number;
   reviews: number;
-  location: string;
   contact: {
     email: string;
     phone: string;

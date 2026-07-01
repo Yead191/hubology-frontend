@@ -52,7 +52,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       <section className="relative overflow-hidden pt-36">
         <Aurora
           animated
-          className="-top-16 right-0 h-[28rem] w-[36rem] opacity-40"
+          className="-top-16 right-0 h-112 w-xl opacity-40"
         />
         <div className="relative mx-auto max-w-6xl px-6">
           <Reveal>
@@ -120,7 +120,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             </div>
 
             <Reveal delay={120}>
-              <div className="border-gradient relative aspect-[5/4] overflow-hidden rounded-[1.75rem] glow-soft">
+              <div className="border-gradient relative aspect-5/4 overflow-hidden rounded-[1.75rem] glow-soft">
                 <Image
                   src={service.image}
                   alt={service.title}
@@ -129,7 +129,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                   className="object-cover"
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/50 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-ink/50 to-transparent" />
               </div>
             </Reveal>
           </div>
@@ -139,7 +139,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       {/* Booking CTA */}
       {pkg && (
         <section className="relative mx-auto max-w-6xl px-6 pt-28">
-          <Reveal className="border-gradient glow-soft overflow-hidden rounded-[2rem] bg-panel/60">
+          <Reveal className="border-gradient glow-soft overflow-hidden rounded-4xl bg-panel/60">
             <div className="flex flex-col items-center gap-8 p-8 text-center sm:p-12">
               <div className="flex flex-col items-center gap-3">
                 <h2 className="text-balance font-display text-3xl font-bold text-cloud sm:text-4xl">
