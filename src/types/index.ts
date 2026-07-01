@@ -96,6 +96,27 @@ export interface ForumPost {
   comments: ForumComment[];
 }
 
+/* ------------------------------------------------------------------ *
+ * Membership
+ * ------------------------------------------------------------------ */
+export type BillingCycle = "monthly" | "yearly";
+
+export interface MembershipPlan {
+  id: string;
+  name: string;
+  tagline: string;
+  /** Per-month price when billed monthly. */
+  priceMonthly: number;
+  /** Per-month price when billed yearly (i.e. the discounted rate). */
+  priceYearly: number;
+  currency: string;
+  features: string[];
+  /** Visually elevate this plan as the recommended tier. */
+  featured?: boolean;
+  /** Short ribbon label, e.g. "Most popular". */
+  highlight?: string;
+}
+
 export type RegisterRole = "member" | "expert";
 
 export interface RegistrationOption {

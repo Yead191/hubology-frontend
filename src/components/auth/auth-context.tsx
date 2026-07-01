@@ -6,6 +6,8 @@ export interface MockUser {
   name: string;
   email: string;
   avatar: string;
+  /** Customers are "member"; verified vendors are "expert". */
+  role: "member" | "expert";
 }
 
 interface AuthContextValue {
@@ -20,6 +22,7 @@ const DEMO_USER: MockUser = {
   name: "Helena Thorne",
   email: "helena@thornetax.com",
   avatar: "https://i.pravatar.cc/200?img=5",
+  role: "member",
 };
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);

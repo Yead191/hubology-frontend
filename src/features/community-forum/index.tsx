@@ -17,6 +17,8 @@ import {
 import { PostCard } from "@/features/community-forum/sections/post-card";
 import { NewPostModal } from "@/features/community-forum/sections/new-post-modal";
 import { EmptyState } from "@/features/community-forum/sections/empty-state";
+import { useMembership } from "@/features/membership/membership-context";
+import { ForumLockCard } from "@/features/membership/sections/forum-lock";
 
 const TAB_EMPTY: Record<
   ForumTab,
@@ -42,6 +44,7 @@ const TAB_EMPTY: Record<
 
 export default function CommunityForum() {
   const { posts, myPosts, likedPosts, commentedPosts } = useForum();
+  const { hasForumAccess } = useMembership();
 
   const [tab, setTab] = React.useState<ForumTab>("feed");
   const [query, setQuery] = React.useState("");
@@ -79,6 +82,53 @@ export default function CommunityForum() {
   const isSearching = query.trim() !== "" || category !== "All";
   const empty = TAB_EMPTY[tab];
 
+  const header = (
+    <header className="max-w-2xl">
+      <span className="eyebrow">Community</span>
+      <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
+        The Hubology <span className="text-gradient">Forum</span>
+      </h1>
+      <p className="mt-3 text-pretty text-mist">
+        Founders and verified experts, in one room. Ask questions, share wins,
+        and learn from people who&apos;ve done it before.
+      </p>
+    </header>
+  );
+
+  // Members-only gate: show a blurred preview behind the lock card.
+  if (!hasForumAccess) {
+    return (
+      <section className="relative min-h-screen overflow-hidden pt-28 pb-20">
+        <Aurora
+          animated
+          className="-top-10 left-1/2 h-120 w-176 -translate-x-1/2 opacity-40"
+        />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          {header}
+
+          <div className="relative mt-10">
+            {/* Decorative, non-interactive preview of the real feed */}
+            <div
+              aria-hidden
+              className="pointer-events-none select-none blur-[7px] mask-[linear-gradient(to_bottom,black,transparent_80%)]"
+            >
+              <div className="mx-auto flex max-w-2xl flex-col gap-5 opacity-70">
+                {posts.slice(0, 3).map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+              </div>
+            </div>
+
+            {/* Lock overlay */}
+            <div className="absolute inset-0 flex items-start justify-center pt-8 sm:pt-16">
+              <ForumLockCard />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative min-h-screen overflow-hidden pt-28 pb-20">
       <Aurora
@@ -87,17 +137,7 @@ export default function CommunityForum() {
       />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Header */}
-        <header className="max-w-2xl">
-          <span className="eyebrow">Community</span>
-          <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
-            The Hubology <span className="text-gradient">Forum</span>
-          </h1>
-          <p className="mt-3 text-pretty text-mist">
-            Founders and verified experts, in one room. Ask questions, share
-            wins, and learn from people who&apos;ve done it before.
-          </p>
-        </header>
+        {header}
 
         {/* Two-column workspace */}
         <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr] lg:gap-8">
