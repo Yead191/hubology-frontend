@@ -61,13 +61,13 @@ export function ForumSidebar({
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-white/[0.06] text-cloud ring-1 ring-hairline-strong"
-                  : "text-mist hover:bg-white/[0.04] hover:text-cloud",
+                  ? "bg-white/6 text-cloud ring-1 ring-hairline-strong"
+                  : "text-mist hover:bg-white/4 hover:text-cloud",
               )}
             >
               <Icon
                 className={cn(
-                  "h-[18px] w-[18px]",
+                  "h-4.5 w-4.5",
                   isActive ? "text-violet-bright" : "text-faint",
                 )}
               />
@@ -78,7 +78,7 @@ export function ForumSidebar({
                     "min-w-6 rounded-full px-2 py-0.5 text-center text-xs tabular-nums",
                     isActive
                       ? "bg-violet/20 text-violet-bright"
-                      : "bg-white/[0.05] text-faint",
+                      : "bg-white/5 text-faint",
                   )}
                 >
                   {count}

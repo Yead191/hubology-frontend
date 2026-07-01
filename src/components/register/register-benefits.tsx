@@ -23,7 +23,7 @@ export function RegisterBenefits({ title, items, trust }: RegisterBenefitsProps)
         <ul className="mt-6 flex flex-col gap-6">
           {items.map((item) => (
             <li key={item.title} className="flex items-start gap-4">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-hairline-strong bg-white/[0.04] text-violet-bright">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-hairline-strong bg-white/4 text-violet-bright">
                 <item.icon className="h-5 w-5" />
               </span>
               <div className="flex flex-col gap-1">
