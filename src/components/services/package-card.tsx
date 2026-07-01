@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Check, ArrowRight } from "lucide-react";
+import { Check } from "lucide-react";
 
 import type { ServicePackage } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BookNowButton } from "@/features/service-booking/sections/book-now-button";
 
 export function PackageCard({ pkg }: { pkg: ServicePackage }) {
   return (
@@ -50,20 +50,27 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
         ))}
       </ul>
 
-      <Button
-        asChild
-        variant={pkg.featured ? "default" : "outline"}
-        className="mt-8 w-full"
-        style={{
-          background: pkg.featured ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)" : "",
-          border: pkg.featured ? "1px solid #fff" : ""
-        }}
-      >
-        <Link href={`/services/${pkg.slug}`}>
-          View verified vendors
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      <div className="mt-8 flex flex-col gap-2.5">
+        <BookNowButton
+          service={pkg}
+          variant={pkg.featured ? "default" : "outline"}
+          className="w-full"
+          style={{
+            background: pkg.featured
+              ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
+              : "",
+            border: pkg.featured ? "1px solid #fff" : "",
+          }}
+        >
+          Book now
+        </BookNowButton>
+        <Link
+          href={`/services/${pkg.slug}`}
+          className="text-center text-sm font-medium text-mist transition-colors hover:text-cloud"
+        >
+          View details
         </Link>
-      </Button>
+      </div>
     </div>
   );
 }

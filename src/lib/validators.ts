@@ -75,6 +75,26 @@ export const expertRegisterSchema = z.object({
 
 export type ExpertRegisterValues = z.infer<typeof expertRegisterSchema>;
 
+/* ------------------- Service booking (intake) ------------------- */
+export const bookingSchema = z.object({
+  fullName: z.string().min(2, "Please enter your full name"),
+  email: z.string().min(1, "Email is required").email("Enter a valid email"),
+  date: z
+    .string()
+    .min(1, "Choose a preferred date")
+    .refine(
+      (v) => v >= new Date().toISOString().slice(0, 10),
+      "Choose a date in the future",
+    ),
+  time: z.string().min(1, "Choose a preferred time"),
+  notes: z
+    .string()
+    .min(10, "A sentence or two helps your expert prepare")
+    .max(500, "Please keep this under 500 characters"),
+});
+
+export type BookingValues = z.infer<typeof bookingSchema>;
+
 /**
  * Areas of interest / expertise. Combines the service-catalog areas
  * with broader consulting disciplines so the searchable multi-select

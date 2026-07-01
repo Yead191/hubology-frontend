@@ -2,16 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, ShieldCheck, Lock, Star } from "lucide-react";
 
-import { getServiceDetail, getServiceSlugs } from "@/data/services";
-import { getVendorsByService } from "@/data/vendors";
+import {
+  getServiceDetail,
+  getServiceSlugs,
+  getServicePackage,
+} from "@/data/services";
+import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/sections/section-heading";
-import { VendorCard } from "@/components/services/vendor-card";
+import { BookNowButton } from "@/features/service-booking/sections/book-now-button";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -30,12 +33,18 @@ export async function generateMetadata({
   return { title: service.title, description: service.overview };
 }
 
+const REASSURANCE = [
+  { icon: ShieldCheck, text: "Handled by manually-verified experts" },
+  { icon: Lock, text: "Secure payment powered by Stripe" },
+  { icon: Star, text: "Trusted by founders worldwide" },
+];
+
 export default async function ServiceDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const service = getServiceDetail(slug);
   if (!service) notFound();
 
-  const vendors = getVendorsByService(slug);
+  const pkg = getServicePackage(slug);
 
   return (
     <>
@@ -89,6 +98,25 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                   ))}
                 </ul>
               </Reveal>
+
+              {pkg && (
+                <Reveal delay={320}>
+                  <div className="mt-2 flex flex-wrap items-center gap-4 rounded-2xl border border-hairline-strong bg-panel/40 px-5 py-4">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-xs text-faint">From</span>
+                      <span className="font-display text-2xl font-bold text-cloud">
+                        {formatPrice(pkg.price.amount, pkg.price.currency)}
+                      </span>
+                      <span className="text-sm text-mist">
+                        / {pkg.price.frequency}
+                      </span>
+                    </div>
+                    <BookNowButton service={pkg} className="ml-auto">
+                      Book now
+                    </BookNowButton>
+                  </div>
+                </Reveal>
+              )}
             </div>
 
             <Reveal delay={120}>
@@ -108,35 +136,47 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* Meet experts */}
-      <section className="relative mx-auto max-w-6xl px-6 pt-32">
-        <SectionHeading
-          align="left"
-          eyebrow="Meet the experts"
-          title="Verified vendors for this service"
-          subtitle="Each expert has been manually reviewed. Reach out directly by phone or email to book a session — no payment needed here."
-        />
+      {/* Booking CTA */}
+      {pkg && (
+        <section className="relative mx-auto max-w-6xl px-6 pt-28">
+          <Reveal className="border-gradient glow-soft overflow-hidden rounded-[2rem] bg-panel/60">
+            <div className="flex flex-col items-center gap-8 p-8 text-center sm:p-12">
+              <div className="flex flex-col items-center gap-3">
+                <h2 className="text-balance font-display text-3xl font-bold text-cloud sm:text-4xl">
+                  Ready to get started?
+                </h2>
+                <p className="max-w-md text-pretty text-mist">
+                  Book {service.title} in under a minute. Tell us what you need,
+                  pay securely, and we&apos;ll take it from there.
+                </p>
+              </div>
 
-        {vendors.length > 0 ? (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {vendors.map((vendor, i) => (
-              <Reveal key={vendor.id} delay={(i % 3) * 80} className="h-full">
-                <VendorCard vendor={vendor} />
-              </Reveal>
-            ))}
-          </div>
-        ) : (
-          <Reveal className="mt-12 rounded-3xl border border-dashed border-hairline-strong bg-panel/30 p-12 text-center">
-            <p className="text-mist">
-              We are onboarding experts for this service. Check back soon, or{" "}
-              <Link href="/join" className="text-violet-bright hover:underline">
-                join as an expert
-              </Link>
-              .
-            </p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-display text-4xl font-bold text-cloud">
+                  {formatPrice(pkg.price.amount, pkg.price.currency)}
+                </span>
+                <span className="text-sm text-mist">/ {pkg.price.frequency}</span>
+              </div>
+
+              <BookNowButton service={pkg} size="lg" className="min-w-56">
+                Book now
+              </BookNowButton>
+
+              <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                {REASSURANCE.map(({ icon: Icon, text }) => (
+                  <li
+                    key={text}
+                    className="inline-flex items-center gap-2 text-sm text-mist"
+                  >
+                    <Icon className="h-4 w-4 text-violet-bright" />
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Reveal>
-        )}
-      </section>
+        </section>
+      )}
     </>
   );
 }

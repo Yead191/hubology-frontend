@@ -194,6 +194,10 @@ export function getServicePackages(): ServicePackage[] {
   return servicePackages;
 }
 
+export function getServicePackage(slug: string): ServicePackage | undefined {
+  return servicePackages.find((p) => p.slug === slug);
+}
+
 export function getServiceDetail(slug: string): ServiceDetail | undefined {
   return serviceDetails[slug];
 }
