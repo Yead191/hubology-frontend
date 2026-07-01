@@ -17,7 +17,7 @@ export default function JoinPage() {
     <section className="relative min-h-screen overflow-hidden pt-36 pb-20">
       <Aurora
         animated
-        className="-top-10 left-1/2 h-[32rem] w-[44rem] -translate-x-1/2 opacity-50"
+        className="-top-10 left-1/2 h-128 w-176 -translate-x-1/2 opacity-50"
       />
       <div className="relative mx-auto max-w-5xl px-6">
         <SectionHeading

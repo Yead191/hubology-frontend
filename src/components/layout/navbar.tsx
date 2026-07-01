@@ -65,7 +65,7 @@ export function Navbar() {
                     )}
                   >
                     {active && (
-                      <span className="absolute inset-0 rounded-full bg-white/[0.06] ring-1 ring-hairline-strong" />
+                      <span className="absolute inset-0 rounded-full bg-white/6 ring-1 ring-hairline-strong" />
                     )}
                     <span className="relative">{item.label}</span>
                   </Link>
@@ -97,7 +97,7 @@ export function Navbar() {
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((o) => !o)}
-              className="grid h-10 w-10 place-items-center rounded-full border border-hairline bg-white/[0.03] text-cloud transition-colors hover:bg-white/[0.07] lg:hidden"
+              className="grid h-10 w-10 place-items-center rounded-full border border-hairline bg-white/3 text-cloud transition-colors hover:bg-white/[0.07] lg:hidden"
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -123,8 +123,8 @@ export function Navbar() {
                     className={cn(
                       "block rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
                       active
-                        ? "bg-white/[0.06] text-cloud"
-                        : "text-mist hover:bg-white/[0.04] hover:text-cloud",
+                        ? "bg-white/6 text-cloud"
+                        : "text-mist hover:bg-white/4 hover:text-cloud",
                     )}
                   >
                     {item.label}

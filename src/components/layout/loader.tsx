@@ -130,7 +130,7 @@ export function Loader({
   size = "md",
   label,
   showWordmark = true,
-  fullscreen = false,
+  fullscreen = true,
   className,
 }: {
   size?: Size;
