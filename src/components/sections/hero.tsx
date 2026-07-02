@@ -45,6 +45,7 @@ export function Hero() {
             <video
               ref={videoRef}
               src="https://res.cloudinary.com/dknmebeee/video/upload/v1782970981/Video_Project_vddrk9.mp4"
+              // src="https://res.cloudinary.com/dknmebeee/video/upload/v1782974542/Generated_Video_July_02_2026_-_10_51AM_xl693o.mp4"
               className="h-full w-full object-cover"
               playsInline
               onEnded={handleEnded}
@@ -52,7 +53,7 @@ export function Hero() {
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
 
             <div
-              className={`absolute inset-0 flex cursor-pointer items-center justify-center bg-black/30 backdrop-blur-sm transition-opacity duration-500 ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+              className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-500 ${isPlaying ? "opacity-0 group-hover:opacity-100 bg-black/20" : "opacity-100 bg-black/30 backdrop-blur-sm"}`}
               onClick={togglePlay}
             >
               <button
