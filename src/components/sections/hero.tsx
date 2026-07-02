@@ -1,6 +1,8 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Play, Pause } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +10,25 @@ import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 
 export function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+  };
+
   return (
     <section className="relative overflow-hidden pt-32 md:pt-36">
       {/* Ambient signature glow */}
@@ -20,16 +41,31 @@ export function Hero() {
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Banner image — no text on top, per brief */}
         <Reveal>
-          <div className="border-gradient relative aspect-16/7 w-full overflow-hidden rounded-[1.75rem] glow-soft">
-            <Image
-              src="/assets/images/hero/hero-bg.jpg"
-              alt="Entrepreneurs collaborating in a modern workspace"
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 1152px"
-              className="object-cover"
+          <div className="group border-gradient relative aspect-16/7 w-full overflow-hidden rounded-[1.75rem] glow-soft">
+            <video
+              ref={videoRef}
+              src="https://res.cloudinary.com/dknmebeee/video/upload/v1782970981/Video_Project_vddrk9.mp4"
+              className="h-full w-full object-cover"
+              playsInline
+              onEnded={handleEnded}
             />
-            <div className="absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
+
+            <div
+              className={`absolute inset-0 flex cursor-pointer items-center justify-center bg-black/30 backdrop-blur-sm transition-opacity duration-500 ${isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}
+              onClick={togglePlay}
+            >
+              <button
+                className="group/btn flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/20"
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+              >
+                {isPlaying ? (
+                  <Pause className="h-8 w-8 transition-transform group-hover/btn:scale-110" fill="currentColor" />
+                ) : (
+                  <Play className="ml-1 h-8 w-8 transition-transform group-hover/btn:scale-110" fill="currentColor" />
+                )}
+              </button>
+            </div>
           </div>
         </Reveal>
 
