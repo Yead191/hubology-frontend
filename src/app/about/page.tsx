@@ -59,11 +59,11 @@ export default function AboutPage() {
               About <span className="text-gradient">The HUBology</span>
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-mist md:text-xl">
-              Welcome to The HUBology, the ultimate digital ecosystem designed to
-              accelerate the growth of modern businesses, entrepreneurs, and
+              Welcome to The HUBology, the ultimate digital ecosystem designed
+              to accelerate the growth of modern businesses, entrepreneurs, and
               freelancers. We bridge the gap between ambition and execution by
-              providing a unified platform where professionals connect, learn, and
-              scale their operations.
+              providing a unified platform where professionals connect, learn,
+              and scale their operations.
             </p>
           </div>
         </Reveal>
@@ -75,9 +75,9 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-mist leading-relaxed">
-              To democratize business growth by giving every entrepreneur—regardless
-              of size or location—the tools, network, and insights needed to
-              thrive in a competitive digital economy.
+              To democratize business growth by giving every
+              entrepreneur—regardless of size or location—the tools, network,
+              and insights needed to thrive in a competitive digital economy.
             </p>
           </div>
         </Reveal>
@@ -126,21 +126,22 @@ export default function AboutPage() {
               </h2>
               <div className="mt-6 space-y-6 text-lg leading-relaxed text-mist">
                 <p>
-                  We understand that running a business is complex. Most founders
-                  waste hours switching between disjointed software and searching
-                  for reliable advice.
+                  We understand that running a business is complex. Most
+                  founders waste hours switching between disjointed software and
+                  searching for reliable advice.
                 </p>
                 <p>
-                  <strong className="text-cloud">The HUBology</strong> eliminates
-                  that friction. We centralize your essential business needs into
-                  one powerful hub so you can focus entirely on what matters:{" "}
+                  <strong className="text-cloud">The HUBology</strong>{" "}
+                  eliminates that friction. We centralize your essential
+                  business needs into one powerful hub so you can focus entirely
+                  on what matters:{" "}
                   <span className="text-violet-bright font-medium">
                     scaling your revenue.
                   </span>
                 </p>
               </div>
             </div>
-            <div className="mt-12 lg:mt-0 flex-shrink-0">
+            <div className="mt-12 lg:mt-0 shrink-0">
               <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full border border-hairline-strong bg-panel/50 glow-violet flex items-center justify-center">
                 <Aurora className="inset-0 opacity-40" />
                 <div className="relative z-10 text-center">
