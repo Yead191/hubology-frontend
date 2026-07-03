@@ -13,9 +13,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const product = getTangibleProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = getTangibleProductBySlug(slug);
   if (!product) return {};
 
   return {
@@ -24,12 +25,13 @@ export async function generateMetadata({
   };
 }
 
-export default function TangibleProductPage({
+export default async function TangibleProductPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const product = getTangibleProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = getTangibleProductBySlug(slug);
 
   if (!product) {
     notFound();
