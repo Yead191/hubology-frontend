@@ -1,17 +1,22 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Play, Pause } from "lucide-react";
+import { ArrowRight, Play, Pause } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 
 export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (videoRef.current && !videoRef.current.paused) {
+      setIsPlaying(true);
+    }
+  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -45,19 +50,22 @@ export function Hero() {
             <video
               ref={videoRef}
               src="https://res.cloudinary.com/dknmebeee/video/upload/v1782970981/Video_Project_vddrk9.mp4"
-              // src="https://res.cloudinary.com/dknmebeee/video/upload/v1782974542/Generated_Video_July_02_2026_-_10_51AM_xl693o.mp4"
               className="h-full w-full object-cover"
               playsInline
+              autoPlay // Plays automatically on load
               onEnded={handleEnded}
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
 
             <div
-              className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-500 ${isPlaying ? "opacity-0 group-hover:opacity-100 bg-black/20" : "opacity-100 bg-black/30 backdrop-blur-sm"}`}
+              className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-500 ${isPlaying
+                ? "opacity-0 group-hover:opacity-100 bg-black/20"
+                : "opacity-100 bg-black/30"
+                }`}
               onClick={togglePlay}
             >
               <button
-                className="group/btn flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/20"
+                className="group/btn flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg  transition-all duration-300 hover:scale-110 hover:bg-white/20"
                 aria-label={isPlaying ? "Pause video" : "Play video"}
               >
                 {isPlaying ? (
@@ -72,12 +80,6 @@ export function Hero() {
 
         {/* Copy block below the image */}
         <div className="mx-auto mt-12 flex max-w-3xl flex-col items-center text-center">
-          <Reveal delay={80}>
-            <Badge>
-              <Sparkles className="h-3.5 w-3.5" />
-              Trusted by founders worldwide
-            </Badge>
-          </Reveal>
 
           <Reveal delay={140}>
             <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-cloud sm:text-5xl md:text-[3.5rem]">

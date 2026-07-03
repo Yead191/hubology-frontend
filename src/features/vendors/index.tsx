@@ -58,7 +58,6 @@ export default function Vendors() {
         {/* Header */}
         <Reveal>
           <header className="max-w-2xl">
-            <span className="eyebrow">Verified experts</span>
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
               Meet the <span className="text-gradient">Hubology vendors</span>
             </h1>

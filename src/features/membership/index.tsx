@@ -32,7 +32,6 @@ export default function Membership() {
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           {/* Header */}
           <Reveal className="mx-auto max-w-2xl text-center">
-            <span className="eyebrow">Membership</span>
             <h1 className="mt-3 text-balance font-display text-4xl font-bold leading-[1.1] text-cloud sm:text-5xl">
               One membership,{" "}
               <span className="text-gradient">the whole hub</span>

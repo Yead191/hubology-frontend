@@ -67,7 +67,6 @@ export default function StoreExperience() {
         {/* Header */}
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <header className="max-w-2xl">
-            <span className="eyebrow">The Store</span>
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
               Step into the <span className="text-gradient">bookstore</span>
             </h1>

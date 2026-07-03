@@ -84,7 +84,6 @@ export default function CommunityForum() {
 
   const header = (
     <header className="max-w-2xl">
-      <span className="eyebrow">Community</span>
       <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
         The Hubology <span className="text-gradient">Forum</span>
       </h1>

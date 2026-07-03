@@ -28,7 +28,7 @@ export function WhyHubology() {
   return (
     <section className="relative mx-auto max-w-6xl px-6 pt-32">
       <SectionHeading
-        eyebrow="Why Hubology"
+        // eyebrow="Why Hubology"
         title="Why make Hubology your go-to?"
         subtitle="One trusted platform that brings verified expertise, growth resources, and community together."
       />
