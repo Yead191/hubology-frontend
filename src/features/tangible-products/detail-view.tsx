@@ -71,7 +71,7 @@ export default function TangibleProductDetailView({
                 {product.title}
               </h1>
               <p className="text-xl text-mist">{product.subtitle}</p>
-              
+
               <div className="mt-2 flex items-center gap-4 text-sm text-mist">
                 <span className="inline-flex items-center gap-1.5">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
