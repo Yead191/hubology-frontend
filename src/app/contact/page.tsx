@@ -19,7 +19,7 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeField, setActiveField] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState<Partial<ContactFormData>>({
     name: "",
     email: "",
@@ -37,7 +37,9 @@ export default function ContactPage() {
     checkValidation();
   }, [formData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -57,14 +59,15 @@ export default function ContactPage() {
   const getCircleClasses = (fieldName: string) => {
     const isActive = activeField === fieldName;
     return `group relative flex aspect-square w-full max-w-[220px] flex-col items-center justify-center rounded-full border backdrop-blur-md transition-all duration-500 shrink-0
-      ${isActive 
-        ? "border-violet-bright/30 bg-brand-gradient glow-violet z-50 scale-105 shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]" 
-        : "border-hairline-strong bg-panel/30 hover:bg-panel/50 hover:scale-[1.02]"
+      ${
+        isActive
+          ? "border-violet-bright/30 bg-brand-gradient glow-violet z-50 scale-105 shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]"
+          : "border-hairline-strong bg-panel/30 hover:bg-panel/50 hover:scale-[1.02]"
       }`;
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center  pt-32 pb-24">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden pt-32 pb-24">
       {/* Background Ambience */}
       <Aurora
         animated
@@ -94,12 +97,18 @@ export default function ContactPage() {
                 Message Sent Successfully!
               </h2>
               <p className="text-lg text-mist">
-                Thank you for reaching out. Our team will review your request and get back to you within 24 hours.
+                Thank you for reaching out. Our team will review your request
+                and get back to you within 24 hours.
               </p>
               <button
                 onClick={() => {
                   setIsSubmitted(false);
-                  setFormData({ name: "", email: "", projectDetails: "", budget: undefined });
+                  setFormData({
+                    name: "",
+                    email: "",
+                    projectDetails: "",
+                    budget: undefined,
+                  });
                 }}
                 className="mt-10 rounded-full border border-hairline-strong bg-white/5 px-8 py-3 font-medium text-cloud transition-all hover:bg-white/10"
               >
@@ -182,8 +191,20 @@ export default function ContactPage() {
                 </select>
                 {/* Custom dropdown arrow to match the theme */}
                 <div className="pointer-events-none absolute right-12 lg:right-16 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity">
-                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    width="12"
+                    height="8"
+                    viewBox="0 0 12 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1 1.5L6 6.5L11 1.5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
@@ -193,19 +214,24 @@ export default function ContactPage() {
                 type="submit"
                 disabled={!isValid || isSubmitting}
                 className={`group relative z-5 flex aspect-square w-full max-w-[220px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-full backdrop-blur-md transition-all duration-500
-                  ${isValid 
-                    ? "border border-violet-bright/30 bg-brand-gradient glow-violet hover:z-50 hover:scale-105 hover:shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]" 
-                    : "cursor-not-allowed border border-hairline-strong bg-panel/30 hover:bg-panel/50 text-mist"
+                  ${
+                    isValid
+                      ? "border border-violet-bright/30 bg-brand-gradient glow-violet hover:z-50 hover:scale-105 hover:shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]"
+                      : "cursor-not-allowed border border-hairline-strong bg-panel/30 hover:bg-panel/50 text-mist"
                   }
                 `}
               >
-                <div className={`flex items-center gap-2 text-base lg:text-lg font-semibold transition-colors duration-500 ${isValid ? "text-white" : "text-faint"}`}>
+                <div
+                  className={`flex items-center gap-2 text-base lg:text-lg font-semibold transition-colors duration-500 ${isValid ? "text-white" : "text-faint"}`}
+                >
                   {isSubmitting ? (
                     <span className="animate-pulse">Sending...</span>
                   ) : (
                     <>
                       <span>Send</span>
-                      <ArrowRight className={`h-5 w-5 transition-transform duration-300 ${isValid ? "group-hover:translate-x-1" : ""}`} />
+                      <ArrowRight
+                        className={`h-5 w-5 transition-transform duration-300 ${isValid ? "group-hover:translate-x-1" : ""}`}
+                      />
                     </>
                   )}
                 </div>
