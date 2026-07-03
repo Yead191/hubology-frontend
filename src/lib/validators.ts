@@ -101,6 +101,7 @@ export type BookingValues = z.infer<typeof bookingSchema>;
  * covers most experts. Reused by the member "interest" select too.
  */
 export const expertiseOptions = [
+  "Business Consultant",
   "Corporation & Formation",
   "Tax Strategy",
   "Legal Counsel",
@@ -109,7 +110,6 @@ export const expertiseOptions = [
   "Fundraising",
   "Finance & Accounting",
   "Operations",
-  "Technology & Product",
   "Sales",
   "Human Resources",
   "Data & Analytics",

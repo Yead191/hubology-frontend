@@ -53,6 +53,7 @@ export function Hero() {
               className="h-full w-full object-cover"
               playsInline
               autoPlay // Plays automatically on load
+              muted
               onEnded={handleEnded}
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />

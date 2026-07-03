@@ -82,7 +82,7 @@ export default function Vendors() {
         {vendors.length > 0 ? (
           <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {vendors.map((vendor, i) => (
-              <Reveal key={vendor.id} delay={(i % 3) * 80} className="h-full">
+              <Reveal key={vendor.id} delay={(i % 3) * 80} className="h-full min-w-0">
                 <VendorCard vendor={vendor} />
               </Reveal>
             ))}

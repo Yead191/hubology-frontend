@@ -10,8 +10,8 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
   const extra = vendor.expertise.length - shownExpertise.length;
 
   return (
-    <article className="border-gradient group flex h-full flex-col rounded-3xl bg-panel/40 p-6 transition-all duration-500 ease-out-soft hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet">
-      <div className="flex items-start gap-4">
+    <article className="border-gradient group flex min-w-0 w-full h-full flex-col rounded-3xl bg-panel/40 p-6 transition-all duration-500 ease-out-soft hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet">
+      <div className="flex w-full min-w-0 items-start gap-4">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl ring-2 ring-violet/25">
           <Image
             src={vendor.profile}
@@ -21,8 +21,8 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             className="object-cover"
           />
         </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <h3 className="flex items-center gap-1.5 truncate text-lg font-semibold text-cloud">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 className="flex items-center gap-1.5 text-lg font-semibold text-cloud">
             <span className="truncate">{vendor.name}</span>
             <BadgeCheck
               className="h-4 w-4 shrink-0 text-violet-bright"
@@ -62,8 +62,8 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
       </div>
 
       {/* Rate + availability */}
-      <div className="mt-5 flex items-center justify-between border-t border-hairline pt-4 text-sm">
-        <span className="text-cloud">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-hairline pt-4 text-sm">
+        <span className="text-cloud shrink-0">
           <span className="font-semibold">{vendor.hourlyRate}</span>
           <span className="text-faint"> /hr</span>
         </span>
