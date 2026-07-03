@@ -155,11 +155,11 @@ export function MemberRegisterForm() {
           />
           <span>
             I agree to the{" "}
-            <Link href="/" className="text-violet-bright hover:underline">
+            <Link href="/terms" className="text-violet-bright hover:underline">
               Terms
             </Link>{" "}
             and{" "}
-            <Link href="/" className="text-violet-bright hover:underline">
+            <Link href="/privacy-policy" className="text-violet-bright hover:underline">
               Privacy Policy
             </Link>
             .

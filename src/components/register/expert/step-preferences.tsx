@@ -136,7 +136,7 @@ export function StepPreferences() {
         />
         <span>
           I confirm the information above is accurate and agree to the{" "}
-          <Link href="/" className="text-violet-bright hover:underline">
+          <Link href="/terms" className="text-violet-bright hover:underline">
             Expert Terms
           </Link>
           .
