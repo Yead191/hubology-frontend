@@ -187,3 +187,41 @@ export interface RegistrationOption {
     variant: "solid" | "outline";
   };
 }
+
+/* ------------------------------------------------------------------ *
+ * Store — tangible products
+ * ------------------------------------------------------------------ */
+export interface TangibleProduct {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  price: number;
+  currency: string;
+  shares: number;
+  description: string;
+  coverImage: string;
+  rating: {
+    average: number;
+    totalReviews: number;
+    reviews: BookReview[];
+  };
+  details: {
+    material?: string;
+    dimensions?: string;
+    weight?: string;
+    inStock: boolean;
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * Cart
+ * ------------------------------------------------------------------ */
+export interface CartItem {
+  id: string; // The product id
+  title: string;
+  price: number;
+  quantity: number;
+  image: string;
+  slug: string;
+}

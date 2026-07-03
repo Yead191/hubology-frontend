@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, ShoppingCart, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { navItems } from "@/data/navigation";
@@ -12,6 +12,13 @@ import { Logo } from "@/components/layout/logo";
 import { NotificationMenu } from "@/components/layout/notification-menu";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import { useAuth } from "@/components/auth/auth-context";
+import { useCart } from "@/components/cart/cart-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -20,7 +27,9 @@ function isActive(pathname: string, href: string) {
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isLoggedIn, user } = useAuth();
+  const { cartCount } = useCart();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -40,9 +49,6 @@ export function Navbar() {
         <nav
           className={cn(
             "flex w-full items-center justify-between gap-4 rounded-full border  px-3 py-2.5 transition-all duration-500 ease-out-soft glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl",
-            // scrolled
-            //   ? "glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
-            //   : "bg-white/2 backdrop-blur-2xl",
           )}
         >
           <div className="flex items-center gap-2 pl-2">
@@ -53,6 +59,41 @@ export function Navbar() {
           <ul className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => {
               const active = isActive(pathname, item.href);
+
+              if (item.subItems) {
+                return (
+                  <li key={item.href}>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={cn(
+                            "relative flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 outline-none cursor-pointer",
+                            active
+                              ? "text-cloud"
+                              : "text-mist hover:text-cloud",
+                          )}
+                        >
+                          {active && (
+                            <span className="absolute inset-0 rounded-full bg-white/6 ring-1 ring-hairline-strong" />
+                          )}
+                          <span className="relative">{item.label}</span>
+                          <ChevronDown className="relative h-3 w-3 opacity-50" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="center" className="w-48">
+                        {item.subItems.map((subItem) => (
+                          <DropdownMenuItem key={subItem.href} asChild>
+                            <Link href={subItem.href} className="w-full">
+                              {subItem.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </li>
+                );
+              }
+
               return (
                 <li key={item.href}>
                   <Link
@@ -76,6 +117,18 @@ export function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push("/checkout")}
+              className="relative grid h-10 w-10 place-items-center rounded-full border border-hairline bg-white/3 text-mist transition-colors hover:text-cloud hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/40"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-violet-bright text-[10px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+
             {isLoggedIn && user ? (
               <div className="hidden items-center gap-2 sm:flex">
                 <NotificationMenu />
@@ -116,6 +169,34 @@ export function Navbar() {
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => {
               const active = isActive(pathname, item.href);
+
+              if (item.subItems) {
+                return (
+                  <li key={item.href} className="flex flex-col gap-1">
+                    <div className="rounded-2xl px-4 py-2 text-sm font-semibold text-cloud/50 uppercase tracking-wider">
+                      {item.label}
+                    </div>
+                    {item.subItems.map((subItem) => {
+                      const subActive = isActive(pathname, subItem.href);
+                      return (
+                        <Link
+                          key={subItem.href}
+                          href={subItem.href}
+                          className={cn(
+                            "block rounded-2xl px-4 py-3 ml-2 text-sm font-medium transition-colors",
+                            subActive
+                              ? "bg-white/6 text-cloud"
+                              : "text-mist hover:bg-white/4 hover:text-cloud",
+                          )}
+                        >
+                          {subItem.label}
+                        </Link>
+                      );
+                    })}
+                  </li>
+                );
+              }
+
               return (
                 <li key={item.href}>
                   <Link

@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/auth/auth-context";
 import { MembershipProvider } from "@/features/membership/membership-context";
 import { PurchaseProvider } from "@/features/store/purchase-context";
+import { CartProvider } from "@/components/cart/cart-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DemoAuthToggle } from "@/components/layout/demo-auth-toggle";
@@ -41,10 +42,12 @@ export default function RootLayout({
         <AuthProvider>
           <MembershipProvider>
             <PurchaseProvider>
-              <Navbar />
-              <main className="relative">{children}</main>
-              <Footer />
-              <DemoAuthToggle />
+              <CartProvider>
+                <Navbar />
+                <main className="relative">{children}</main>
+                <Footer />
+                <DemoAuthToggle />
+              </CartProvider>
             </PurchaseProvider>
           </MembershipProvider>
         </AuthProvider>
