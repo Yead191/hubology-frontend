@@ -56,7 +56,7 @@ export default function ContactPage() {
 
   const getCircleClasses = (fieldName: string) => {
     const isActive = activeField === fieldName;
-    return `group relative flex aspect-square w-full max-w-[280px] flex-col items-center justify-center rounded-full border backdrop-blur-md transition-all duration-500 shrink-0
+    return `group relative flex aspect-square w-full max-w-[220px] flex-col items-center justify-center rounded-full border backdrop-blur-md transition-all duration-500 shrink-0
       ${isActive 
         ? "border-violet-bright/30 bg-brand-gradient glow-violet z-50 scale-105 shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]" 
         : "border-hairline-strong bg-panel/30 hover:bg-panel/50 hover:scale-[1.02]"
@@ -64,14 +64,14 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden pt-32 pb-24">
+    <main className="relative flex min-h-screen items-center justify-center  pt-32 pb-24">
       {/* Background Ambience */}
       <Aurora
         animated
         className="absolute top-1/2 left-1/2 h-[800px] w-[1200px] -translate-x-1/2 -translate-y-1/2 opacity-20"
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
         <Reveal>
           <div className="text-center mb-16 lg:mb-24">
             <h1 className="font-display text-4xl font-bold tracking-tight text-cloud sm:text-5xl md:text-6xl">
@@ -192,7 +192,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className={`group relative z-5 flex aspect-square w-full max-w-[280px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-full backdrop-blur-md transition-all duration-500
+                className={`group relative z-5 flex aspect-square w-full max-w-[220px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-full backdrop-blur-md transition-all duration-500
                   ${isValid 
                     ? "border border-violet-bright/30 bg-brand-gradient glow-violet hover:z-50 hover:scale-105 hover:shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]" 
                     : "cursor-not-allowed border border-hairline-strong bg-panel/30 hover:bg-panel/50 text-mist"
