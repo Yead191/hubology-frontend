@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FaTiktok } from "react-icons/fa";
 import { Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
@@ -43,9 +44,27 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-32 overflow-hidden border-t border-hairline bg-ink">
+    <footer className="relative mt-32 min-h-112.5 overflow-hidden border-t border-hairline bg-ink">
       {/* Premium ambient glow */}
       <Aurora className="-bottom-40 left-1/2 h-96 w-240 -translate-x-1/2 opacity-25" />
+
+      {/* Decorative Images */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* Left Image - Visible on all screens */}
+        <div className="absolute bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden rounded-tr-[100px] border-t border-r border-white/10">
+          <Image src="/assets/images/footer/footer-left.jpeg" alt="Professional Man" fill className="object-cover" />
+        </div>
+
+        {/* Middle Image - Hidden on small screens */}
+        {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-56 h-56 md:w-64 md:h-64 opacity-20 overflow-hidden rounded-t-[120px] border-t border-white/10 hidden md:block">
+          <Image src="/assets/images/footer/footer-middle.jpeg" alt="Professional Woman" fill className="object-cover object-top" />
+        </div> */}
+
+        {/* Right Image - Visible on all screens */}
+        <div className="absolute top-20 right-0 w-32 h-32 md:w-40 md:h-40 opacity-30 overflow-hidden rounded-l-[80px] border-t border-b border-l border-white/10">
+          <Image src="/assets/images/footer/footer-right.jpeg" alt="Student with Laptop" fill className="object-cover" />
+        </div>
+      </div>
 
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-20 pb-12 z-10">
 
