@@ -24,7 +24,7 @@ export default function CheckoutExperience() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
-    
+
     setIsSubmitting(true);
     // Simulate API call for checkout
     setTimeout(() => {
@@ -47,7 +47,7 @@ export default function CheckoutExperience() {
             Thank you for your purchase! We've received your order and will begin processing it right away. You will receive an email confirmation shortly.
           </p>
           <Button asChild className="w-full h-12 rounded-full font-medium">
-            <Link href="/tangible-products">Continue Shopping</Link>
+            <Link href="/office-supplies">Continue Shopping</Link>
           </Button>
         </Reveal>
       </div>
@@ -63,7 +63,7 @@ export default function CheckoutExperience() {
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <Link
-          href="/tangible-products"
+          href="/office-supplies"
           className="inline-flex items-center gap-2 text-sm text-mist transition-colors hover:text-cloud mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -77,7 +77,7 @@ export default function CheckoutExperience() {
               <h2 className="font-display text-2xl font-bold text-cloud mb-6">
                 Shipping Information
               </h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -131,9 +131,9 @@ export default function CheckoutExperience() {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || items.length === 0} 
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || items.length === 0}
                   className="w-full h-14 rounded-xl text-lg font-medium shadow-[0_0_20px_rgba(129,49,240,0.3)] hover:shadow-[0_0_30px_rgba(129,49,240,0.5)] mt-8"
                 >
                   {isSubmitting ? "Processing..." : `Place Order • ${formatPrice(finalTotal)}`}
@@ -176,21 +176,21 @@ export default function CheckoutExperience() {
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 border border-hairline rounded bg-ink/50">
-                              <button 
+                              <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 className="px-2 text-xs text-mist hover:text-cloud"
                               >
                                 -
                               </button>
                               <span className="text-xs text-cloud w-3 text-center">{item.quantity}</span>
-                              <button 
+                              <button
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 className="px-2 text-xs text-mist hover:text-cloud"
                               >
                                 +
                               </button>
                             </div>
-                            <button 
+                            <button
                               onClick={() => removeItem(item.id)}
                               className="text-xs text-rose-400 hover:text-rose-300 transition-colors"
                             >

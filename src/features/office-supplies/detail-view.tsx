@@ -45,7 +45,7 @@ export default function TangibleProductDetailView({
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Link
-          href="/tangible-products"
+          href="/office-supplies"
           className="inline-flex items-center gap-2 text-sm text-mist transition-colors hover:text-cloud"
         >
           <ArrowLeft className="h-4 w-4" />

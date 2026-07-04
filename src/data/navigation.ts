@@ -8,12 +8,12 @@ export const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Vendors", href: "/vendors" },
-  { 
-    label: "Store", 
+  {
+    label: "Store",
     href: "/store",
     subItems: [
       { label: "Digital Products", href: "/store" },
-      { label: "Tangible Products", href: "/tangible-products" },
+      { label: "Office Supplies", href: "/office-supplies" },
     ]
   },
   { label: "Community Forum", href: "/forum" },

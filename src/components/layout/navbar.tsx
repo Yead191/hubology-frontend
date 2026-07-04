@@ -19,6 +19,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -171,28 +176,38 @@ export function Navbar() {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
+                const isAnySubActive = item.subItems.some((sub) => isActive(pathname, sub.href));
                 return (
                   <li key={item.href} className="flex flex-col gap-1">
-                    <div className="rounded-2xl px-4 py-2 text-sm font-semibold text-cloud/50 uppercase tracking-wider">
-                      {item.label}
-                    </div>
-                    {item.subItems.map((subItem) => {
-                      const subActive = isActive(pathname, subItem.href);
-                      return (
-                        <Link
-                          key={subItem.href}
-                          href={subItem.href}
-                          className={cn(
-                            "block rounded-2xl px-4 py-3 ml-2 text-sm font-medium transition-colors",
-                            subActive
-                              ? "bg-white/6 text-cloud"
-                              : "text-mist hover:bg-white/4 hover:text-cloud",
-                          )}
-                        >
-                          {subItem.label}
-                        </Link>
-                      );
-                    })}
+                    <Collapsible defaultOpen={isAnySubActive}>
+                      <CollapsibleTrigger asChild>
+                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-cloud/50 uppercase tracking-wider transition-colors hover:bg-white/4">
+                          {item.label}
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="flex flex-col gap-1 pb-1 pt-1">
+                          {item.subItems.map((subItem) => {
+                            const subActive = isActive(pathname, subItem.href);
+                            return (
+                              <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                className={cn(
+                                  "block rounded-2xl px-4 py-3 ml-2 text-sm font-medium transition-colors",
+                                  subActive
+                                    ? "bg-white/6 text-cloud"
+                                    : "text-mist hover:bg-white/4 hover:text-cloud",
+                                )}
+                              >
+                                {subItem.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   </li>
                 );
               }

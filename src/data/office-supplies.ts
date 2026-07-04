@@ -1,6 +1,6 @@
 import type { TangibleProduct } from "@/types";
 
-export const tangibleProducts: TangibleProduct[] = [
+export const officeSupplies: TangibleProduct[] = [
   {
     id: "tangible-01",
     slug: "premium-leather-binder",
@@ -97,9 +97,9 @@ export const tangibleProducts: TangibleProduct[] = [
 ];
 
 export function getAllTangibleProducts(): TangibleProduct[] {
-  return tangibleProducts;
+  return officeSupplies;
 }
 
 export function getTangibleProductBySlug(slug: string): TangibleProduct | undefined {
-  return tangibleProducts.find((p) => p.slug === slug);
+  return officeSupplies.find((p) => p.slug === slug);
 }

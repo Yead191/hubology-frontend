@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
-import TangibleProductsExperience from "@/features/tangible-products";
+import OfficeSuppliesExperience from "@/features/office-supplies";
 
 export const metadata: Metadata = {
-  title: "Tangible Products",
+  title: "Office Supplies",
   description:
     "Premium physical goods designed to keep founders organized and focused on what matters most.",
 };
 
-export default function TangibleProductsPage() {
-  return <TangibleProductsExperience />;
+export default function OfficeSuppliesPage() {
+  return <OfficeSuppliesExperience />;
 }

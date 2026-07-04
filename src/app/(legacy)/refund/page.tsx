@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Return & Refund Policy | Hubology",
+  title: "Refund Policy | Hubology",
   description: "Guidelines and procedures for returns and refunds.",
 };
 
 export default function RefundPolicyPage() {
   return (
-    <LegalLayout title="Return & Refund Policy" effectiveDate="07/01/2026">
+    <LegalLayout title="Refund Policy" effectiveDate="07/01/2026">
       <h2>1. Overview</h2>
       <p>
         We want you to be completely satisfied with your purchase. If you are

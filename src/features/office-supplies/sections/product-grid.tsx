@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/reveal";
 export function ProductCard({ product }: { product: TangibleProduct }) {
   return (
     <Link
-      href={`/tangible-products/${product.slug}`}
+      href={`/office-supplies/${product.slug}`}
       className="border-gradient group flex h-full flex-col rounded-3xl bg-panel/40 p-4 transition-all duration-500 ease-out-soft hover:-translate-y-1 hover:bg-panel/70 hover:glow-violet"
     >
       <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl bg-ink/50">

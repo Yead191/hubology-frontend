@@ -28,7 +28,7 @@ const footerLinks = [
     links: [
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms and Condition", href: "/terms" },
-      { label: "Return & Refund policy", href: "/refund" },
+      { label: "Refund Policy", href: "/refund" },
     ],
   },
   {
@@ -46,12 +46,12 @@ export function Footer() {
     <footer className="relative mt-32 overflow-hidden border-t border-hairline bg-ink">
       {/* Premium ambient glow */}
       <Aurora className="-bottom-40 left-1/2 h-96 w-240 -translate-x-1/2 opacity-25" />
-      
+
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-20 pb-12 z-10">
-        
+
         {/* Main Footer Content */}
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8 pb-20">
-          
+
           {/* Logo & Tagline (Left) */}
           <div className="flex flex-col lg:col-span-4">
             <Logo />
@@ -89,35 +89,35 @@ export function Footer() {
           <p className="text-sm text-faint">
             © {new Date().getFullYear()} Hubology. All rights reserved.
           </p>
-          
+
           {/* Social Links */}
           <div className="flex gap-5">
-            <Link 
-              href="https://www.facebook.com/share/1EBwf2EKjB/?mibextid=wwXIfr" 
-              target="_blank" 
+            <Link
+              href="https://www.facebook.com/share/1EBwf2EKjB/?mibextid=wwXIfr"
+              target="_blank"
               rel="noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]" 
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]"
               aria-label="Facebook"
             >
               <Facebook className="h-4 w-4" />
             </Link>
-            <Link 
-              href="https://www.instagram.com/thehubology?Igsh=MTI2bmRkaXIkMIJseA%3D%3D&utm" 
-              target="_blank" 
+            <Link
+              href="https://www.instagram.com/thehubology?Igsh=MTI2bmRkaXIkMIJseA%3D%3D&utm"
+              target="_blank"
               rel="noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]" 
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]"
               aria-label="Instagram"
             >
               <Instagram className="h-4 w-4" />
             </Link>
-            <Link 
-              href="https://www.tiktok.com/@thehubology?_r=1&_t=ZT-97hyzNRc1k6" 
-              target="_blank" 
+            <Link
+              href="https://www.tiktok.com/@thehubology?_r=1&_t=ZT-97hyzNRc1k6"
+              target="_blank"
               rel="noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]" 
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-violet-bright hover:text-white hover:shadow-[0_0_15px_rgba(154,85,255,0.5)]"
               aria-label="Tiktok"
             >
-            <FaTiktok />
+              <FaTiktok />
             </Link>
           </div>
         </div>

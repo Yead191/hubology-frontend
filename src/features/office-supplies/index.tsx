@@ -3,14 +3,13 @@
 import * as React from "react";
 import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { getAllTangibleProducts } from "@/data/tangible-products";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { Input } from "@/components/ui/input";
-import { ProductGrid } from "@/features/tangible-products/sections/product-grid";
+import { ProductGrid } from "@/features/office-supplies/sections/product-grid";
+import { getAllTangibleProducts } from "@/data/office-supplies";
 
-export default function TangibleProductsExperience() {
+export default function OfficeSuppliesExperience() {
   const allProducts = React.useMemo(() => getAllTangibleProducts(), []);
   const [searchQuery, setSearchQuery] = React.useState("");
 

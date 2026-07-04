@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getTangibleProductBySlug, getAllTangibleProducts } from "@/data/tangible-products";
-import TangibleProductDetailView from "@/features/tangible-products/detail-view";
+import { getTangibleProductBySlug, getAllTangibleProducts } from "@/data/office-supplies";
+import TangibleProductDetailView from "@/features/office-supplies/detail-view";
 
 export async function generateStaticParams() {
   return getAllTangibleProducts().map((product) => ({
