@@ -136,7 +136,12 @@ export function StepPreferences() {
         />
         <span>
           I confirm the information above is accurate and agree to the{" "}
-          <Link href="/terms" className="text-violet-bright hover:underline">
+          <Link
+            href="/vendor-terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-violet-bright hover:underline"
+          >
             Expert Terms
           </Link>
           .

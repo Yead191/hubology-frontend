@@ -179,7 +179,7 @@ export function Navbar() {
                 const isAnySubActive = item.subItems.some((sub) => isActive(pathname, sub.href));
                 return (
                   <li key={item.href} className="flex flex-col gap-1">
-                    <Collapsible defaultOpen={isAnySubActive}>
+                    <Collapsible defaultOpen={false}>
                       <CollapsibleTrigger asChild>
                         <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-cloud/50 uppercase tracking-wider transition-colors hover:bg-white/4">
                           {item.label}
