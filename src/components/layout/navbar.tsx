@@ -181,7 +181,7 @@ export function Navbar() {
                   <li key={item.href} className="flex flex-col gap-1">
                     <Collapsible defaultOpen={false}>
                       <CollapsibleTrigger asChild>
-                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-cloud/50 uppercase tracking-wider transition-colors hover:bg-white/4">
+                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-cloud/50 tracking-wider transition-colors hover:bg-white/4">
                           {item.label}
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                         </button>

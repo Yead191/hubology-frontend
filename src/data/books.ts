@@ -9,70 +9,7 @@ const PDF = "/assets/books/book-1.pdf";
 
 export const books: Book[] = [
 
-  {
-    id: "book-02",
-    slug: "the-quiet-runway",
-    title: "The Quiet Runway",
-    subtitle: "Fundraising without losing yourself.",
-    price: 180,
-    currency: "USD",
-    shares: 3184,
-    description:
-      "The Quiet Runway reframes fundraising as a craft rather than a performance. It walks founders through building a narrative investors believe, running a tight process, and negotiating terms that protect the company's future — all without burning out or compromising the vision. Practical templates, real term-sheet breakdowns, and calm, contrarian advice make this the fundraising companion founders actually keep on their desk.",
-    accent: ["#136FF4", "#03C1FB"],
-    fileUrl: PDF,
-    details: {
-      publisher: "Hubology Press",
-      firstPublish: "March 14, 2026",
-      edition: "2026",
-      pages: 248,
-    },
-    rating: {
-      average: 4.7,
-      totalReviews: 88,
-      reviews: [
-        {
-          reviewerName: "Daniel Osei",
-          reviewerTitle: "Startup Counsel",
-          rating: 5,
-          date: "04/02/2026",
-          text: "The clearest explanation of SAFEs and priced rounds I've read. I've handed copies to three founders already.",
-        },
-      ],
-    },
-  },
-  {
-    id: "book-03",
-    slug: "margin-of-trust",
-    title: "Margin of Trust",
-    subtitle: "Leadership that compounds.",
-    price: 160,
-    currency: "USD",
-    shares: 2751,
-    description:
-      "Margin of Trust argues that the highest-leverage asset a leader owns is trust — and that it compounds or erodes with every decision. Through frameworks for delegation, hard conversations, and building teams that move without you, this book gives operators a practical system for leading at scale while staying human. It's a field guide for the messy middle between founder-led chaos and real organizational maturity.",
-    accent: ["#9a55ff", "#6e22e6"],
-    fileUrl: PDF,
-    details: {
-      publisher: "Hubology Press",
-      firstPublish: "June 9, 2026",
-      edition: "2026",
-      pages: 216,
-    },
-    rating: {
-      average: 4.6,
-      totalReviews: 64,
-      reviews: [
-        {
-          reviewerName: "Priya Nair",
-          reviewerTitle: "Advisor",
-          rating: 5,
-          date: "07/18/2026",
-          text: "Delegation finally clicked for me after chapter four. Warm, direct, and immediately useful.",
-        },
-      ],
-    },
-  },
+
   {
     id: "book-01",
     slug: "the-business-plan",
@@ -116,15 +53,16 @@ export const books: Book[] = [
   {
     id: "book-04",
     slug: "signal-and-noise",
-    title: "Signal & Noise",
-    subtitle: "Growth for people who hate hype.",
-    price: 140,
+    title: "Startup Checklist",
+    subtitle: "The no-nonsense guide to launching your startup.",
+    price: 200,
     currency: "USD",
     shares: 4207,
     description:
-      "Signal & Noise cuts through growth-hacking folklore to focus on what actually moves the needle: understanding your customer, building durable channels, and measuring the few metrics that matter. It's a pragmatic playbook for founders and operators who want compounding growth without the vanity dashboards, tuned to real unit economics rather than applause.",
+      "A practical checklist for launching your startup. Covers product, legal, hiring, and growth essentials to ensure you avoid common mistakes and set your business up for success.",
     accent: ["#03C1FB", "#136FF4"],
-    fileUrl: PDF,
+    coverImage: "/assets/images/book/book-cover-2.png",
+    fileUrl: "/assets/books/book-2.pdf",
     details: {
       publisher: "Hubology Press",
       firstPublish: "February 2, 2026",
@@ -141,70 +79,6 @@ export const books: Book[] = [
           rating: 4,
           date: "03/21/2026",
           text: "Refreshingly honest about what doesn't work. The channel-durability chapter alone changed our roadmap.",
-        },
-      ],
-    },
-  },
-  {
-    id: "book-05",
-    slug: "the-founders-ledger",
-    title: "The Founder's Ledger",
-    subtitle: "Finance you can feel in your gut.",
-    price: 175,
-    currency: "USD",
-    shares: 1988,
-    description:
-      "The Founder's Ledger demystifies startup finance for people who never trained in it. From reading your own P&L to modeling runway, pricing with confidence, and knowing which numbers to watch weekly, it turns finance from a source of anxiety into a decision-making superpower. Clear, jargon-free, and built around the questions founders actually ask at 2am.",
-    accent: ["#5b2bd6", "#2a1668"],
-    fileUrl: PDF,
-    details: {
-      publisher: "Hubology Press",
-      firstPublish: "September 5, 2026",
-      edition: "2026",
-      pages: 224,
-    },
-    rating: {
-      average: 4.8,
-      totalReviews: 73,
-      reviews: [
-        {
-          reviewerName: "Helena Thorne",
-          reviewerTitle: "Tax Strategist",
-          rating: 5,
-          date: "10/11/2026",
-          text: "I recommend this to every founder client. It builds real financial intuition, not just spreadsheet literacy.",
-        },
-      ],
-    },
-  },
-  {
-    id: "book-06",
-    slug: "cold-start-clarity",
-    title: "Cold Start Clarity",
-    subtitle: "From blank page to first traction.",
-    price: 150,
-    currency: "USD",
-    shares: 3620,
-    description:
-      "Cold Start Clarity is for the earliest, foggiest stage — when there's nothing but an idea and a hunch. It offers a calm, structured path from problem discovery to a validated first version, helping founders avoid the classic traps of building too much, too soon. Full of prompts, decision frameworks, and stories of messy beginnings that worked out.",
-    accent: ["#7c3aed", "#3b1785"],
-    fileUrl: PDF,
-    details: {
-      publisher: "Hubology Press",
-      firstPublish: "January 20, 2026",
-      edition: "2026",
-      pages: 208,
-    },
-    rating: {
-      average: 4.5,
-      totalReviews: 96,
-      reviews: [
-        {
-          reviewerName: "Mia Fontaine",
-          reviewerTitle: "Founder",
-          rating: 5,
-          date: "02/14/2026",
-          text: "Exactly what I needed at day zero. It gave me permission to start small and a map for what to do next.",
         },
       ],
     },
