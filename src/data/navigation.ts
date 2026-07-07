@@ -18,4 +18,5 @@ export const navItems: NavItem[] = [
   },
   { label: "Community Forum", href: "/forum" },
   { label: "Membership", href: "/membership" },
+  { label: "IFundAyiti", href: "/ifundayiti" },
 ];

@@ -1,0 +1,528 @@
+Page Name:
+IFundAyiti
+
+Page Goal:
+Build a dedicated IFundAyiti page within the website to help individuals living in Haiti apply for micro grants. This is NOT a crowdfunding platform where donors donate directly to applicants. Instead, all donations go into a single IFundAyiti Program Fund. Applicants submit grant applications, the IFundAyiti team reviews and vets them, selects the Top 5 finalists, and finally chooses one winner for each application period. The organization manually transfers the grant to the selected winner outside the platform.
+
+Unlike the main website, IFundAyiti does not require applicants to create user accounts. Instead, after submitting an application, the system generates a unique Application Tracking ID that applicants can use to check the status of their application at any time.
+
+====================================================
+PUBLIC PAGE FLOW
+====================================================
+
+1. IFundAyiti Landing Page
+
+Purpose:
+Introduce the IFundAyiti Micro Grant Program and encourage visitors to either donate to the program or apply for funding.
+
+Sections:
+
+- Hero Section
+  - Program introduction
+  - "Donate Now" button
+  - "Apply for a Grant" button
+
+- About the Program
+  - What is IFundAyiti?
+  - Who can apply?
+  - Maximum grant amount ($1000)
+  - How the selection process works
+
+- How It Works
+  1. Application opens
+  2. Applicants submit applications
+  3. Team reviews and vets applications
+  4. Approved applicants become public
+  5. Top 5 finalists are selected
+  6. One winner is selected
+  7. Grant is manually transferred by the organization
+
+- Program Statistics
+  - Total Applications
+  - Approved Applicants
+  - Total Donations
+  - Current Program Fund
+  - Total Winners
+
+- Current Application Period
+  - Open / Closed
+  - Application Deadline
+  - Current Status
+
+- Approved Applicants
+  Display all vetted and approved applicants.
+
+  Each card contains:
+  - Profile Photo
+  - Name
+  - Location
+  - Requested Amount
+  - Short Project Description
+  - View Profile Button
+
+  NOTE:
+  There is NO Donate button on applicant profiles.
+
+- Top 5 Finalists
+  Display only when selected by the organization.
+
+- Latest Winner
+  Highlight the most recent winner.
+
+- Donation CTA
+  Explain that every donation supports the overall IFundAyiti Program Fund.
+
+- Apply CTA
+
+====================================================
+DONATION FLOW
+====================================================
+
+Visitor
+
+↓
+
+Clicks Donate
+
+↓
+
+Payment Gateway
+
+↓
+
+Donation Successful
+
+↓
+
+Money is added to the IFundAyiti Program Fund
+
+NOTE:
+Donations NEVER go directly to applicants.
+
+====================================================
+APPLICATION FLOW
+====================================================
+
+Applicant
+
+↓
+
+Open Application Form
+
+↓
+
+Fill Required Information
+
+↓
+
+Upload Documents
+
+↓
+
+Accept Agreement
+
+↓
+
+Submit Application
+
+↓
+
+Application Saved
+
+↓
+
+System Generates Unique Tracking ID
+
+↓
+
+Applicant Downloads or Saves Tracking ID
+
+↓
+
+Application Status = Submitted
+
+====================================================
+APPLICATION FORM
+====================================================
+
+1. Personal Details
+
+- Full Name (Must match National ID)
+- Date of Birth
+- Nationality (Default: Haitian)
+- Location (Department / City / Full Address)
+- Profile Photo
+
+----------------------------------------------------
+
+2. Contact Information
+
+- Email Address
+- Phone Number
+
+----------------------------------------------------
+
+3. Identification
+
+- National Identification Number (Required)
+- Passport Number (Optional)
+
+----------------------------------------------------
+
+4. Grant Information
+
+- Business / Project Name
+- Project Description
+- Requested Amount (Maximum $1000)
+- How the money will be used
+- Expected Impact
+
+----------------------------------------------------
+
+5. Supporting Documents
+
+Upload all files into a single documents array.
+
+Examples:
+
+- Government-issued ID (Required)
+- Proof of Address (Required)
+- Business Plan (Optional)
+- Supporting Images (Optional)
+- Supporting Documents (PDF) (Optional)
+
+Warning Message:
+
+Missing required documents may result in your application being rejected during the screening process.
+
+----------------------------------------------------
+
+6. Financial Background
+
+- Current Occupation
+- Brief Financial Background
+
+----------------------------------------------------
+
+7. Agreement
+
+Checkboxes:
+
+- I certify that all information provided is accurate.
+- I understand that submitting an application does not guarantee funding.
+- I understand incomplete or false information may result in disqualification.
+
+====================================================
+APPLICATION SUCCESS PAGE
+====================================================
+
+Show:
+
+Application Submitted Successfully
+
+Tracking ID
+
+Example:
+
+IFA-2026-000123
+
+Buttons
+
+- Download Receipt
+- Print Receipt
+- Find My Application
+
+====================================================
+FIND MY APPLICATION
+====================================================
+
+Purpose:
+Allow applicants to check their application without creating an account.
+
+Search using:
+
+- Tracking ID
+- Date of Birth (recommended for privacy)
+
+Result displays:
+
+- Applicant Name
+- Tracking ID
+- Project Name
+- Requested Amount
+- Submission Date
+- Current Status
+
+Statuses:
+
+Submitted
+
+Under Review
+
+Approved
+
+Rejected
+
+Top 5 Finalist
+
+Winner
+
+Archived
+
+====================================================
+PUBLIC APPLICANT PROFILE
+====================================================
+
+Visible only after admin approval.
+
+Contains:
+
+- Profile Photo
+- Name
+- Location
+- Project Name
+- Story
+- Requested Amount
+- Status
+
+No donation button.
+
+====================================================
+TOP 5 FINALISTS PAGE
+====================================================
+
+Displays the five finalists selected by the IFundAyiti team during the current application period.
+
+Each card contains:
+
+- Profile Photo
+- Name
+- Project
+- Requested Amount
+- Short Story
+
+====================================================
+WINNERS PAGE
+====================================================
+
+Display all previous winners.
+
+Each winner contains:
+
+- Profile Photo
+- Name
+- Application Period
+- Awarded Amount
+- Project
+- Success Story
+- Photos
+
+====================================================
+PAST APPLICANTS PAGE
+====================================================
+
+Archive every completed application period.
+
+Filter by application period.
+
+Each applicant contains:
+
+- Photo
+- Name
+- Project
+- Requested Amount
+- Final Status
+
+====================================================
+ADMIN DASHBOARD
+====================================================
+
+Dashboard Sections
+
+- Overview
+- Application Periods
+- Applications
+- Approved Applicants
+- Top 5 Finalists
+- Winners
+- Donations
+- Program Fund
+- Settings
+
+====================================================
+OVERVIEW
+====================================================
+
+Cards
+
+- Total Applications
+- Pending Reviews
+- Approved Applicants
+- Current Program Fund
+- Total Donations
+- Current Winner
+
+====================================================
+APPLICATION PERIODS
+====================================================
+
+Admin creates application periods.
+
+Fields:
+
+- Title
+- Start Date
+- End Date
+- Maximum Grant Amount
+- Status
+
+Statuses:
+
+Upcoming
+
+Open
+
+Review
+
+Winner Selection
+
+Completed
+
+====================================================
+APPLICATION MANAGEMENT
+====================================================
+
+Admin reviews all submitted applications.
+
+Actions:
+
+- View Details
+- Approve
+- Reject
+- Archive
+
+Approved applications become publicly visible.
+
+====================================================
+TOP 5 SELECTION
+====================================================
+
+After the application period closes:
+
+1. Admin reviews all approved applications.
+2. Admin manually selects five finalists.
+3. Those five applicants automatically appear in the Top 5 section of the website.
+
+No automatic scoring or voting.
+
+====================================================
+WINNER SELECTION
+====================================================
+
+The IFundAyiti team manually chooses one winner from the Top 5 finalists.
+
+Admin clicks:
+
+Select Winner
+
+System:
+
+- Updates applicant status to Winner
+- Moves winner to Winners page
+- Records awarded amount
+- Deducts awarded amount from Program Fund
+- Archives remaining finalists after the application period
+
+====================================================
+DONATION MANAGEMENT
+====================================================
+
+Admin can view:
+
+- Donor Name
+- Amount
+- Payment Date
+- Payment Status
+
+====================================================
+PROGRAM FUND
+====================================================
+
+Track:
+
+Opening Balance
+
++
+
+All Donations
+
+-
+
+Awarded Grants
+
+=
+
+Current Program Fund
+
+====================================================
+APPLICATION STATUS FLOW
+====================================================
+
+Submitted
+
+↓
+
+Under Review
+
+↓
+
+Approved
+
+↓
+
+Top 5 Finalist
+
+↓
+
+Winner
+
+↓
+
+Archived
+
+OR
+
+Submitted
+
+↓
+
+Under Review
+
+↓
+
+Rejected
+
+↓
+
+Archived
+
+====================================================
+IMPORTANT BUSINESS RULES
+====================================================
+
+- Donations always go to the IFundAyiti Program Fund.
+- Donations are never made directly to applicants.
+- Applicants do not create user accounts.
+- Every application receives a unique Tracking ID after submission.
+- Applicants use the Tracking ID (and Date of Birth for verification) to check their application status.
+- Maximum grant request is $1000.
+- Only admins can edit applications after submission.
+- Only admins can approve or reject applications.
+- Only approved applicants become publicly visible.
+- Top 5 finalists are selected manually by the IFundAyiti team.
+- One winner is selected for each application period.
+- Grant payments are transferred manually outside the platform.
+- Missing required documents may result in application rejection.
+- All uploaded files are stored in a single documents array with metadata indicating document type.
+- All form validation should be implemented using Zod on the frontend and validated again on the backend.
+```
