@@ -1,6 +1,6 @@
 "use client";
 
-import { X, MapPin, DollarSign, Calendar, Building, Briefcase, FileCheck, HelpCircle } from "lucide-react";
+import { X, MapPin, DollarSign, Building, Briefcase } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useIFundAyiti } from "../context/ifundayiti-context";
 
@@ -126,23 +126,6 @@ export function IFundAyitiProfileModal() {
               <p>{app.financialBackground}</p>
             </div>
 
-            {/* Uploaded Verification Documents */}
-            {app.documents && app.documents.length > 0 && (
-              <div className="pt-4 border-t border-hairline">
-                <h4 className="text-cloud font-semibold uppercase tracking-wider text-xs mb-3 flex items-center gap-1">
-                  <FileCheck className="h-4 w-4 text-violet-bright" />
-                  Vetted Compliance Documents
-                </h4>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {app.documents.map((doc, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-hairline bg-ink/15 text-xs text-cloud">
-                      <span className="font-semibold">{doc.type}</span>
-                      <span className="text-faint">{doc.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
           </div>
 

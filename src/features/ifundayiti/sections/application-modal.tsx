@@ -1,66 +1,38 @@
 "use client";
 
 import React, { useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { 
-  X, Check, AlertCircle, FileUp, Clipboard, Loader2, 
-  Printer, ArrowLeft, ArrowRight, Download, Search
+  X, Check, AlertCircle, Clipboard, Loader2, 
+  Printer, ArrowLeft, ArrowRight, Search 
 } from "lucide-react";
 import { useIFundAyiti } from "../context/ifundayiti-context";
 import { formatPrice } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
-// Form schemas for validation using Zod
-const personalSchema = z.object({
-  name: z.string().min(2, "Full Name must match your National ID"),
-  dob: z.string().min(1, "Date of Birth is required"),
-  nationality: z.string().min(1, "Nationality is required").default("Haitian"),
-  location: z.string().min(5, "Full Address is required"),
-});
+// Import extracted schemas and types
+import {
+  personalSchema,
+  contactSchema,
+  idSchema,
+  grantSchema,
+  backgroundSchema,
+  agreementSchema
+} from "@/lib/ifundayiti-schemas";
 
-const contactSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-  phone: z.string().min(8, "Enter a valid phone number"),
-});
-
-const idSchema = z.object({
-  nationalId: z.string().min(10, "National ID Number is required"),
-  passport: z.string().optional(),
-});
-
-const grantSchema = z.object({
-  projectName: z.string().min(3, "Project Name is required"),
-  projectDescription: z.string().min(15, "Please provide a detailed description (min 15 chars)"),
-  requestedAmount: z.number().min(50, "Minimum request is $50").max(1000, "Maximum grant request is $1,000"),
-  fundUsage: z.string().min(15, "Explain how the fund will be utilized"),
-  expectedImpact: z.string().min(15, "Explain the expected community impact"),
-});
-
-const backgroundSchema = z.object({
-  occupation: z.string().min(2, "Current occupation is required"),
-  financialBackground: z.string().min(15, "Brief financial background is required"),
-});
-
-const agreementSchema = z.object({
-  certifyAccurate: z.literal(true, {
-    errorMap: () => ({ message: "You must certify accuracy of details" }),
-  }),
-  noGuarantee: z.literal(true, {
-    errorMap: () => ({ message: "You must acknowledge funding is not guaranteed" }),
-  }),
-  disqualification: z.literal(true, {
-    errorMap: () => ({ message: "You must acknowledge falsification terms" }),
-  }),
-});
+// Import modular step components
+import { StepPersonal } from "./form-steps/step-personal";
+import { StepContact } from "./form-steps/step-contact";
+import { StepId } from "./form-steps/step-id";
+import { StepGrant } from "./form-steps/step-grant";
+import { StepDocuments } from "./form-steps/step-documents";
+import { StepBackground } from "./form-steps/step-background";
+import { StepAgreement } from "./form-steps/step-agreement";
 
 interface FileMock {
-  type: string;
   name: string;
+  size?: string;
 }
 
 export function IFundAyitiApplicationModal() {
@@ -72,13 +44,13 @@ export function IFundAyitiApplicationModal() {
   const [trackingId, setTrackingId] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Files state
+  // Files state (step 5)
   const [govIdFile, setGovIdFile] = useState<FileMock | null>(null);
   const [proofAddrFile, setProofAddrFile] = useState<FileMock | null>(null);
   const [businessPlanFile, setBusinessPlanFile] = useState<FileMock | null>(null);
   const [fileError, setFileError] = useState("");
 
-  // Setup form states for each step
+  // Setup form states for each step using extracted schemas
   const personalForm = useForm({
     resolver: zodResolver(personalSchema),
     defaultValues: { name: "", dob: "", nationality: "Haitian", location: "" }
@@ -111,7 +83,7 @@ export function IFundAyitiApplicationModal() {
 
   if (!showAppModal) return null;
 
-  // Next triggers per step with validation checks
+  // Validate current step before proceeding
   const handleNext = async () => {
     let valid = false;
     
@@ -120,7 +92,6 @@ export function IFundAyitiApplicationModal() {
     else if (step === 3) valid = await idForm.trigger();
     else if (step === 4) valid = await grantForm.trigger();
     else if (step === 5) {
-      // Validate files upload
       if (!govIdFile) {
         setFileError("Government-issued ID is required");
         return;
@@ -158,7 +129,7 @@ export function IFundAyitiApplicationModal() {
       email: contactForm.getValues("email"),
       phone: contactForm.getValues("phone"),
       nationalId: idForm.getValues("nationalId"),
-      passport: idForm.getValues("passport"),
+      passport: idForm.getValues("passport") || "",
       projectName: grantForm.getValues("projectName"),
       projectDescription: grantForm.getValues("projectDescription"),
       requestedAmount: Number(grantForm.getValues("requestedAmount")),
@@ -173,7 +144,6 @@ export function IFundAyitiApplicationModal() {
       ]
     };
 
-    // Simulate network delay
     setTimeout(() => {
       const tid = submitApplication(fullDetails);
       setTrackingId(tid);
@@ -200,13 +170,6 @@ export function IFundAyitiApplicationModal() {
     setBusinessPlanFile(null);
     setStep(1);
     setShowAppModal(false);
-  };
-
-  const handleFileChange = (type: "id" | "addr" | "business", filename: string) => {
-    const mock = { type, name: filename };
-    if (type === "id") setGovIdFile(mock);
-    else if (type === "addr") setProofAddrFile(mock);
-    else if (type === "business") setBusinessPlanFile(mock);
   };
 
   const stepLabels = [
@@ -258,432 +221,57 @@ export function IFundAyitiApplicationModal() {
 
           {/* STEP 1: Personal Details */}
           {step === 1 && (
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Full Name (Must match National ID)
-                </Label>
-                <Input
-                  id="name"
-                  {...personalForm.register("name")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. Jean-Baptiste Pierre"
-                />
-                {personalForm.formState.errors.name && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {personalForm.formState.errors.name.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="dob" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                    Date of Birth
-                  </Label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    {...personalForm.register("dob")}
-                    className="bg-ink/40 border-hairline text-cloud block"
-                  />
-                  {personalForm.formState.errors.dob && (
-                    <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      {personalForm.formState.errors.dob.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="nationality" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                    Nationality
-                  </Label>
-                  <Input
-                    id="nationality"
-                    {...personalForm.register("nationality")}
-                    disabled
-                    className="bg-ink/20 border-hairline/50 text-mist"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="location" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Location (Department / City / Full Address)
-                </Label>
-                <Textarea
-                  id="location"
-                  {...personalForm.register("location")}
-                  className="bg-ink/40 border-hairline text-cloud min-h-[90px] placeholder:text-faint"
-                  placeholder="e.g. Cap-Haïtien, Rue 24 A, House #14"
-                />
-                {personalForm.formState.errors.location && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {personalForm.formState.errors.location.message}
-                  </p>
-                )}
-              </div>
-            </form>
+            <FormProvider {...personalForm}>
+              <StepPersonal />
+            </FormProvider>
           )}
 
           {/* STEP 2: Contact Information */}
           {step === 2 && (
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...contactForm.register("email")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. name@domain.com"
-                />
-                {contactForm.formState.errors.email && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {contactForm.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="phone" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  {...contactForm.register("phone")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. +509 3712-3456"
-                />
-                {contactForm.formState.errors.phone && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {contactForm.formState.errors.phone.message}
-                  </p>
-                )}
-              </div>
-            </form>
+            <FormProvider {...contactForm}>
+              <StepContact />
+            </FormProvider>
           )}
 
           {/* STEP 3: Identification Details */}
           {step === 3 && (
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="nationalId" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  National Identification ID (CIN / NIF)
-                </Label>
-                <Input
-                  id="nationalId"
-                  {...idForm.register("nationalId")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. 01-01-99-1994-04-00101"
-                />
-                {idForm.formState.errors.nationalId && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {idForm.formState.errors.nationalId.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="passport" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Passport Number (Optional)
-                </Label>
-                <Input
-                  id="passport"
-                  {...idForm.register("passport")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. HH123456"
-                />
-              </div>
-            </form>
+            <FormProvider {...idForm}>
+              <StepId />
+            </FormProvider>
           )}
 
           {/* STEP 4: Grant / Business Details */}
           {step === 4 && (
-            <form className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-4 items-end">
-                <div className="sm:col-span-3">
-                  <Label htmlFor="projectName" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                    Business / Project Name
-                  </Label>
-                  <Input
-                    id="projectName"
-                    {...grantForm.register("projectName")}
-                    className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                    placeholder="e.g. Cap-Haitien Solar Kiosk"
-                  />
-                  {grantForm.formState.errors.projectName && (
-                    <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      {grantForm.formState.errors.projectName.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-1">
-                  <Label htmlFor="requestedAmount" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                    Requested ($)
-                  </Label>
-                  <Input
-                    id="requestedAmount"
-                    type="number"
-                    {...grantForm.register("requestedAmount", { valueAsNumber: true })}
-                    className="bg-ink/40 border-hairline text-cloud"
-                  />
-                </div>
-                {grantForm.formState.errors.requestedAmount && (
-                  <p className="col-span-full text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {grantForm.formState.errors.requestedAmount.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="projectDescription" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Project Description & Story
-                </Label>
-                <Textarea
-                  id="projectDescription"
-                  {...grantForm.register("projectDescription")}
-                  className="bg-ink/40 border-hairline text-cloud min-h-[90px] placeholder:text-faint"
-                  placeholder="Explain what your business is and the story behind it..."
-                />
-                {grantForm.formState.errors.projectDescription && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {grantForm.formState.errors.projectDescription.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="fundUsage" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  How the money will be used
-                </Label>
-                <Textarea
-                  id="fundUsage"
-                  {...grantForm.register("fundUsage")}
-                  className="bg-ink/40 border-hairline text-cloud min-h-[70px] placeholder:text-faint"
-                  placeholder="Detailed breakdown: e.g. solar panels, battery, cables..."
-                />
-                {grantForm.formState.errors.fundUsage && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {grantForm.formState.errors.fundUsage.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="expectedImpact" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Expected Community Impact
-                </Label>
-                <Textarea
-                  id="expectedImpact"
-                  {...grantForm.register("expectedImpact")}
-                  className="bg-ink/40 border-hairline text-cloud min-h-[70px] placeholder:text-faint"
-                  placeholder="How will this support your neighbors or city?..."
-                />
-                {grantForm.formState.errors.expectedImpact && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {grantForm.formState.errors.expectedImpact.message}
-                  </p>
-                )}
-              </div>
-            </form>
+            <FormProvider {...grantForm}>
+              <StepGrant />
+            </FormProvider>
           )}
 
           {/* STEP 5: Supporting Documents */}
           {step === 5 && (
-            <div className="space-y-5">
-              <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-200/90 leading-relaxed">
-                  <strong>Warning:</strong> Missing required documents may result in your application being rejected during the screening process.
-                </p>
-              </div>
-
-              {/* Upload Item 1 */}
-              <div className="border border-hairline rounded-2xl p-4 bg-ink/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <span className="block text-sm font-semibold text-cloud">Government-issued ID *</span>
-                  <span className="text-xs text-faint">National ID Card or Passport Scan (Required)</span>
-                  {govIdFile && (
-                    <span className="mt-1.5 block text-xs font-medium text-emerald-300 flex items-center gap-1">
-                      <Check className="h-3 w-3" /> {govIdFile.name}
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleFileChange("id", "Government_ID_CIN.jpg")}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-cloud px-4 py-2 border border-hairline bg-white/3 hover:bg-white/8 rounded-xl outline-none transition-colors cursor-pointer"
-                >
-                  <FileUp className="h-3.5 w-3.5" />
-                  <span>{govIdFile ? "Change File" : "Select ID File"}</span>
-                </button>
-              </div>
-
-              {/* Upload Item 2 */}
-              <div className="border border-hairline rounded-2xl p-4 bg-ink/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <span className="block text-sm font-semibold text-cloud">Proof of Address *</span>
-                  <span className="text-xs text-faint">Utility Bill, Tax Record, or Rent Slip (Required)</span>
-                  {proofAddrFile && (
-                    <span className="mt-1.5 block text-xs font-medium text-emerald-300 flex items-center gap-1">
-                      <Check className="h-3 w-3" /> {proofAddrFile.name}
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleFileChange("addr", "Utility_Address_Bill.pdf")}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-cloud px-4 py-2 border border-hairline bg-white/3 hover:bg-white/8 rounded-xl outline-none transition-colors cursor-pointer"
-                >
-                  <FileUp className="h-3.5 w-3.5" />
-                  <span>{proofAddrFile ? "Change File" : "Select Proof File"}</span>
-                </button>
-              </div>
-
-              {/* Upload Item 3 */}
-              <div className="border border-hairline rounded-2xl p-4 bg-ink/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <span className="block text-sm font-semibold text-cloud">Business Plan / Images</span>
-                  <span className="text-xs text-faint">Mock plan, supporting product images (Optional)</span>
-                  {businessPlanFile && (
-                    <span className="mt-1.5 block text-xs font-medium text-emerald-300 flex items-center gap-1">
-                      <Check className="h-3 w-3" /> {businessPlanFile.name}
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleFileChange("business", "Business_Plan_Budget.pdf")}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-cloud px-4 py-2 border border-hairline bg-white/3 hover:bg-white/8 rounded-xl outline-none transition-colors cursor-pointer"
-                >
-                  <FileUp className="h-3.5 w-3.5" />
-                  <span>{businessPlanFile ? "Change File" : "Select Plan File"}</span>
-                </button>
-              </div>
-
-              {fileError && (
-                <div className="flex items-center gap-2 text-xs text-rose-400">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{fileError}</span>
-                </div>
-              )}
-            </div>
+            <StepDocuments
+              govIdFile={govIdFile}
+              setGovIdFile={setGovIdFile}
+              proofAddrFile={proofAddrFile}
+              setProofAddrFile={setProofAddrFile}
+              businessPlanFile={businessPlanFile}
+              setBusinessPlanFile={setBusinessPlanFile}
+              fileError={fileError}
+            />
           )}
 
           {/* STEP 6: Financial background */}
           {step === 6 && (
-            <form className="space-y-4">
-              <div>
-                <Label htmlFor="occupation" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Current Occupation
-                </Label>
-                <Input
-                  id="occupation"
-                  {...backgroundForm.register("occupation")}
-                  className="bg-ink/40 border-hairline text-cloud placeholder:text-faint"
-                  placeholder="e.g. Unemployed / Market Vendor / Carpenter"
-                />
-                {backgroundForm.formState.errors.occupation && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {backgroundForm.formState.errors.occupation.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="financialBackground" className="text-cloud text-xs font-semibold uppercase tracking-wider mb-2 block">
-                  Brief Financial Background / Challenge
-                </Label>
-                <Textarea
-                  id="financialBackground"
-                  {...backgroundForm.register("financialBackground")}
-                  className="bg-ink/40 border-hairline text-cloud min-h-[90px] placeholder:text-faint"
-                  placeholder="Explain your income situation and why this grant is critical to your survival/growth..."
-                />
-                {backgroundForm.formState.errors.financialBackground && (
-                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {backgroundForm.formState.errors.financialBackground.message}
-                  </p>
-                )}
-              </div>
-            </form>
+            <FormProvider {...backgroundForm}>
+              <StepBackground />
+            </FormProvider>
           )}
 
           {/* STEP 7: Checkbox agreements */}
           {step === 7 && (
-            <form className="space-y-6">
-              <div className="border border-hairline p-5 rounded-2xl bg-ink/20 text-xs text-mist leading-relaxed">
-                <span className="block font-bold text-cloud mb-2 uppercase tracking-wide">Legal Undertaking & Disclaimers</span>
-                By checking the boxes below, you understand that IFundAyiti acts as a central vetting body. Funding selections are purely manual, determined by local reviewers and donor levels, and finalized in partnership outside of this application server.
-              </div>
-
-              <div className="space-y-4">
-                {/* Checkbox 1 */}
-                <div className="flex items-start gap-3">
-                  <input
-                    id="certifyAccurate"
-                    type="checkbox"
-                    {...agreementForm.register("certifyAccurate")}
-                    className="h-4 w-4 rounded border-hairline bg-ink text-violet-bright mt-0.5"
-                  />
-                  <Label htmlFor="certifyAccurate" className="text-xs text-cloud select-none cursor-pointer">
-                    I certify that all information provided in this application is accurate and matches my legal documentation.
-                  </Label>
-                </div>
-                {agreementForm.formState.errors.certifyAccurate && (
-                  <p className="text-xs text-rose-400 pl-7">{agreementForm.formState.errors.certifyAccurate.message}</p>
-                )}
-
-                {/* Checkbox 2 */}
-                <div className="flex items-start gap-3">
-                  <input
-                    id="noGuarantee"
-                    type="checkbox"
-                    {...agreementForm.register("noGuarantee")}
-                    className="h-4 w-4 rounded border-hairline bg-ink text-violet-bright mt-0.5"
-                  />
-                  <Label htmlFor="noGuarantee" className="text-xs text-cloud select-none cursor-pointer">
-                    I understand that submitting this application does not guarantee funding from the program fund.
-                  </Label>
-                </div>
-                {agreementForm.formState.errors.noGuarantee && (
-                  <p className="text-xs text-rose-400 pl-7">{agreementForm.formState.errors.noGuarantee.message}</p>
-                )}
-
-                {/* Checkbox 3 */}
-                <div className="flex items-start gap-3">
-                  <input
-                    id="disqualification"
-                    type="checkbox"
-                    {...agreementForm.register("disqualification")}
-                    className="h-4 w-4 rounded border-hairline bg-ink text-violet-bright mt-0.5"
-                  />
-                  <Label htmlFor="disqualification" className="text-xs text-cloud select-none cursor-pointer">
-                    I understand that incomplete, mock, or false details will result in immediate disqualification.
-                  </Label>
-                </div>
-                {agreementForm.formState.errors.disqualification && (
-                  <p className="text-xs text-rose-400 pl-7">{agreementForm.formState.errors.disqualification.message}</p>
-                )}
-              </div>
-            </form>
+            <FormProvider {...agreementForm}>
+              <StepAgreement />
+            </FormProvider>
           )}
 
           {/* STEP 8: Success View */}
@@ -745,7 +333,7 @@ export function IFundAyitiApplicationModal() {
                 <button
                   onClick={() => {
                     resetForm();
-                    // Scroll to finder section
+                    // Scroll to tracking search widget
                     const el = document.getElementById("find-application");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
