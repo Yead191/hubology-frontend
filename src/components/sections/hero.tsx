@@ -98,13 +98,13 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={260}>
-            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-              <Button asChild size="lg">
+            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row w-full md:w-auto">
+              <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link href="/join">
                   Join Now <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                 <Link href="/services">Explore services</Link>
               </Button>
             </div>

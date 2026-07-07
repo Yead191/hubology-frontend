@@ -26,7 +26,7 @@ const reasons = [
 
 export function WhyHubology() {
   return (
-    <section className="relative mx-auto max-w-6xl px-6 pt-32">
+    <section className="relative mx-auto max-w-6xl px-6 pt-32 pb-12 ">
       <SectionHeading
         // eyebrow="Why Hubology"
         title="Why make Hubology your go-to?"
