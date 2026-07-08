@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * Pure CSS (see globals.css); animations are disabled under
  * prefers-reduced-motion. Sized via height; width auto-scales.
  */
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, logoClass = "" }: { className?: string, logoClass?: string }) {
   return (
     <Link
       href="/"
@@ -36,9 +36,9 @@ export function Logo({ className }: { className?: string }) {
       <img
         src="/logo-hubology.svg"
         alt="Hubology"
-        width={150}
-        height={25}
-        className="relative h-6 w-auto select-none transition-transform duration-500 ease-out-soft group-hover:scale-[1.03] md:h-7"
+        width={300}
+        height={40}
+        className={`relative h-6 w-auto select-none transition-transform duration-500 ease-out-soft group-hover:scale-[1.03] md:h-7 ${logoClass}`}
         draggable={false}
       />
     </Link>

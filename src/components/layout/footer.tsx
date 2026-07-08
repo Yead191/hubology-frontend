@@ -45,10 +45,15 @@ const footerLinks = [
 export function Footer() {
   return (
     <footer className="relative mt-32 min-h-112.5 overflow-hidden border-t border-hairline bg-ink">
+
+      <div className="flex sm:hidden flex-col lg:col-span-4 items-center justify-center">
+        <Logo logoClass="w-full! h-12 mt-6" className="w-full!" />
+      </div>
+
       {/* Premium ambient glow */}
       <Aurora className="-bottom-40 left-1/2 h-96 w-240 -translate-x-1/2 opacity-25" />
 
-      <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-20 pb-12 z-10">
+      <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-16 pb-12 z-10">
         {/* Decorative Images */}
 
         <div className="absolute inset-0 pointer-events-none z-0">
@@ -63,7 +68,7 @@ export function Footer() {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8 pb-20">
 
           {/* Logo & Tagline (Left) */}
-          <div className="flex flex-col lg:col-span-4">
+          <div className="hidden sm:flex flex-col lg:col-span-4">
             <Logo />
             {/* <p className="mt-6 max-w-sm text-base leading-relaxed text-mist">
               The all-in-one digital workspace to launch, grow, and scale your business. Access tools, resources, and experts in one place.
