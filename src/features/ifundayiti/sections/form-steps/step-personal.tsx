@@ -68,7 +68,7 @@ export function StepPersonal() {
         <Textarea
           id="location"
           {...register("location")}
-          className="bg-ink/40 border-hairline text-cloud min-h-[90px] placeholder:text-faint focus:ring-violet/40 focus:border-violet"
+          className="bg-ink/40 border-hairline text-cloud min-h-22.5 placeholder:text-faint focus:ring-violet/40 focus:border-violet"
           placeholder="e.g. Cap-Haïtien, Rue 24 A, House #14"
         />
         {errors.location && (

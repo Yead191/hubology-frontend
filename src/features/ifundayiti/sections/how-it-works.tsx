@@ -54,7 +54,7 @@ export function IFundAyitiHowItWorks() {
           {/* Connector Line for Desktop */}
           <div className="absolute top-1/2 left-8 right-8 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-violet/20 via-violet/50 to-violet/20 lg:block" />
           
-          <div className="grid gap-8 lg:grid-cols-5 relative z-10">
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 relative z-10">
             {steps.map((step, i) => {
               const Icon = step.icon;
               return (

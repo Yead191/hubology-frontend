@@ -98,7 +98,7 @@ export function IFundAyitiTrackDetails() {
   };
 
   return (
-    <section className="relative min-h-screen pt-32 pb-24 bg-ink overflow-hidden">
+    <section className="relative min-h-screen pt-32 pb-24 bg-ink overflow-hidden!">
       <Aurora animated className="-top-20 left-1/2 h-130 w-170 -translate-x-1/2 opacity-30" />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
@@ -192,7 +192,7 @@ export function IFundAyitiTrackDetails() {
                 </p>
               </div>
 
-              <div className="border border-hairline p-4 rounded-2xl bg-ink/30 min-w-[200px]">
+              <div className="border border-hairline p-4 rounded-2xl bg-ink/30 min-w-50">
                 <span className="block text-[10px] uppercase tracking-wider text-faint">Requested Grant</span>
                 <span className="font-display font-extrabold text-2xl text-gradient block mt-1">
                   {formatPrice(app.requestedAmount)}
@@ -249,7 +249,7 @@ export function IFundAyitiTrackDetails() {
                               }`}
                           >
                             {isDone ? (
-                              <CheckCircle2 className="h-4 w-4 stroke-[3]" />
+                              <CheckCircle2 className="h-4 w-4 stroke-3" />
                             ) : (
                               <span className="text-xs">{s.step}</span>
                             )}
@@ -269,7 +269,7 @@ export function IFundAyitiTrackDetails() {
             {/* Full Submitted Details - READ ONLY */}
             <Reveal className="border-gradient rounded-3xl bg-panel/30 p-8 backdrop-blur-sm space-y-8">
               <div>
-                <span className="block text-cloud text-xs font-semibold uppercase tracking-wider mb-6 pb-2 border-b border-hairline flex items-center gap-1.5">
+                <span className=" text-cloud text-xs font-semibold uppercase tracking-wider mb-6 pb-2 border-b border-hairline flex items-center gap-1.5">
                   <Bookmark className="h-4 w-4 text-violet-bright" />
                   Full Application Intake Details
                 </span>

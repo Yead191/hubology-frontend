@@ -72,10 +72,10 @@ export function Navbar() {
                       <DropdownMenuTrigger asChild>
                         <button
                           className={cn(
-                            "relative flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 outline-none cursor-pointer",
+                            "relative flex items-center gap-1 rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 outline-none cursor-pointer ",
                             active
-                              ? "text-cloud"
-                              : "text-mist hover:text-cloud",
+                              ? "text-cloud!"
+                              : "text-mist! hover:text-cloud!",
                           )}
                         >
                           {active && (
@@ -104,7 +104,7 @@ export function Navbar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300",
+                      "relative rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 flex items-center",
                       active
                         ? "text-cloud"
                         : "text-mist hover:text-cloud",
@@ -181,7 +181,7 @@ export function Navbar() {
                   <li key={item.href} className="flex flex-col gap-1">
                     <Collapsible defaultOpen={false}>
                       <CollapsibleTrigger asChild>
-                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-cloud/50 tracking-wider transition-colors hover:bg-white/4">
+                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-mist tracking-wider transition-colors hover:bg-white/4">
                           {item.label}
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                         </button>

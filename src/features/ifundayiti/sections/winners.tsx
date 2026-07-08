@@ -19,7 +19,7 @@ export function IFundAyitiWinners() {
       <div className="absolute right-0 bottom-0 h-96 w-96 bg-violet/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        
+
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <Reveal>
@@ -40,8 +40,8 @@ export function IFundAyitiWinners() {
         {latestWinner && (
           <Reveal className="border-gradient rounded-3xl bg-panel/40 p-8 md:p-12 mb-16 shadow-[0_20px_50px_-20px_rgba(129,49,240,0.15)] relative overflow-hidden">
             {/* Spotlight overlay */}
-            <div className="absolute top-0 right-0 h-48 w-48 bg-gradient-to-bl from-violet/20 to-transparent pointer-events-none rounded-tr-3xl" />
-            
+            <div className="absolute top-0 right-0 h-48 w-48 bg-linear-to-bl from-violet/20 to-transparent pointer-events-none rounded-tr-3xl" />
+
             <div className="grid gap-8 md:grid-cols-12 items-center relative z-10">
               {/* Photo spotlight */}
               <div className="md:col-span-4 flex flex-col items-center">
@@ -110,7 +110,7 @@ export function IFundAyitiWinners() {
             <h4 className="text-lg font-semibold font-display text-cloud mb-8">Previous Cohort Winners</h4>
             <div className="grid gap-6 md:grid-cols-2">
               {previousWinners.map((winner, i) => (
-                <Reveal 
+                <Reveal
                   key={winner.id}
                   delay={i * 80}
                   className="border-gradient rounded-3xl bg-panel/20 p-6 flex flex-col justify-between hover:bg-panel/30 transition-colors"
