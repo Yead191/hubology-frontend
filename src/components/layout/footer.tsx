@@ -46,22 +46,26 @@ export function Footer() {
   return (
     <footer className="relative mt-32 min-h-112.5 overflow-hidden border-t border-hairline bg-ink">
 
-      <div className="flex sm:hidden flex-col lg:col-span-4 items-center justify-center">
-        <Logo logoClass="w-full! h-12 mt-6" className="w-full!" />
+      <div className="flex sm:hidden flex-col lg:col-span-4 items-start justify-start px-6 mt-6">
+        <Logo />
       </div>
 
       {/* Premium ambient glow */}
       <Aurora className="-bottom-40 left-1/2 h-96 w-240 -translate-x-1/2 opacity-25" />
 
-      <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-16 pb-12 z-10">
+      <div className="relative mx-auto max-w-6xl px-6 lg:px-8 pt-8 sm:pt-16 pb-12 z-10">
         {/* Decorative Images */}
 
         <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden rounded-tr-[100px] border-t border-r border-white/10">
+          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden ">
             <Image src="/assets/images/footer/left-footer.png" alt="Professional Man" fill className="object-cover object-top" />
           </div>
-        </div>  <div className="absolute bottom-40 sm:bottom-28 right-0 w-32 h-32 md:w-40 md:h-40 opacity-30 overflow-hidden rounded-l-[80px] border-t border-b border-l border-white/10">
-          <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover" />
+          <div className="absolute  bottom-41 sm:bottom-30 left-[32%] lg:left-[54%] w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden ">
+            <Image src="/assets/images/footer/middle-footer.png" alt="Professional woman" fill className="object-cover object-top" />
+          </div>
+          <div className="absolute bottom-40 sm:bottom-28 right-0 w-32 h-32 md:w-40 md:h-40 opacity-30 overflow-hidden">
+            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover" />
+          </div>
         </div>
 
         {/* Main Footer Content */}
@@ -70,9 +74,6 @@ export function Footer() {
           {/* Logo & Tagline (Left) */}
           <div className="hidden sm:flex flex-col lg:col-span-4">
             <Logo />
-            {/* <p className="mt-6 max-w-sm text-base leading-relaxed text-mist">
-              The all-in-one digital workspace to launch, grow, and scale your business. Access tools, resources, and experts in one place.
-            </p> */}
           </div>
 
           {/* Links Grid (Right) */}
