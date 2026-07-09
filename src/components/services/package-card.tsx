@@ -53,14 +53,8 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
       <div className="mt-8 flex flex-col gap-2.5">
         <BookNowButton
           service={pkg}
-          variant={pkg.featured ? "default" : "outline"}
+          variant="premium"
           className="w-full"
-          style={{
-            background: pkg.featured
-              ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
-              : "",
-            border: pkg.featured ? "1px solid #fff" : "",
-          }}
         >
           Book now
         </BookNowButton>
