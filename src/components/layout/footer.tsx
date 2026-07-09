@@ -57,14 +57,17 @@ export function Footer() {
         {/* Decorative Images */}
 
         <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden ">
-            <Image src="/assets/images/footer/left-footer.png" alt="Professional Man" fill className="object-cover object-top" />
+          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-100 overflow-hidden z-30">
+            <Image src="/assets/images/footer/left-footer.png" alt="Professional Man" fill className="object-cover object-top brightness-70" />
           </div>
-          <div className="absolute  bottom-41 sm:bottom-30 left-[32%] lg:left-[54%] w-40 h-40 md:w-48 md:h-48 opacity-30 overflow-hidden ">
-            <Image src="/assets/images/footer/middle-footer.png" alt="Professional woman" fill className="object-cover object-top" />
+          <div className="absolute  bottom-41 sm:bottom-30 left-22 lg:left-28 w-40 h-40 md:w-48 md:h-48 opacity-100 overflow-hidden z-10">
+            <Image src="/assets/images/footer/middle-footer.png" alt="Professional woman" fill className="object-cover object-top brightness-70" />
           </div>
-          <div className="absolute bottom-40 sm:bottom-28 right-0 w-32 h-32 md:w-40 md:h-40 opacity-30 overflow-hidden">
-            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover" />
+          <div className="absolute hidden sm:flex sm:bottom-28 right-0 w-32 h-32 md:w-60 md:h-40 opacity-100 overflow-hidden">
+            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover brightness-70" />
+          </div>
+          <div className="absolute sm:hidden -top-10 right-0 w-34 h-32 md:w-40 md:h-40 opacity-100 overflow-hidden">
+            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover brightness-70" />
           </div>
         </div>
 
@@ -77,7 +80,7 @@ export function Footer() {
           </div>
 
           {/* Links Grid (Right) */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8 pt-16 sm:pt-0">
             {footerLinks.map((col) => (
               <div key={col.heading} className="flex flex-col gap-5">
                 <h3 className="text-sm font-semibold text-cloud">
@@ -101,7 +104,7 @@ export function Footer() {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="flex flex-col-reverse items-center justify-between gap-6 border-t border-hairline mt-36 sm:mt-0 pt-8 md:flex-row">
+        <div className="flex flex-col-reverse items-center justify-between gap-6 border-t border-hairline mt-26 sm:mt-0 pt-8 md:flex-row">
           <p className="text-sm text-faint">
             © {new Date().getFullYear()} Hubology. All rights reserved.
           </p>
