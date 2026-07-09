@@ -36,7 +36,7 @@ export default function OfficeSuppliesExperience() {
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <header className="max-w-2xl">
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
-              Tangible <span className="text-gradient">Products</span>
+              Office <span className="text-gradient">Supplies</span>
             </h1>
             <p className="mt-3 text-pretty text-mist">
               Premium physical goods designed to keep founders organized and focused on what matters most. From notebooks to vision boards, equip your office with the best tools.
