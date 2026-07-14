@@ -17,6 +17,7 @@ import type { Vendor } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
+import { getAvailabilityLabel } from "@/lib/validators";
 
 function MetaTile({
   icon: Icon,
@@ -103,7 +104,7 @@ export function VendorDetail({ vendor }: { vendor: Vendor }) {
               <MetaTile
                 icon={Clock}
                 label="Availability"
-                value={vendor.availability}
+                value={getAvailabilityLabel(vendor.availability)}
               />
               <MetaTile
                 icon={GraduationCap}

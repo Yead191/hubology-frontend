@@ -80,8 +80,8 @@ export function StepPreferences() {
                 </SelectTrigger>
                 <SelectContent>
                   {availabilityOptions.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
+                    <SelectItem key={opt.key} value={opt.key}>
+                      {opt.value}
                     </SelectItem>
                   ))}
                 </SelectContent>

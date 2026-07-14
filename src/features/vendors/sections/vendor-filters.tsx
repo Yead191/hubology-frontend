@@ -132,7 +132,7 @@ function FacetSelect({
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
-  options: readonly string[];
+  options: readonly string[] | readonly { key: string; value: string }[];
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -143,11 +143,15 @@ function FacetSelect({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">{placeholder}</SelectItem>
-          {options.map((opt) => (
-            <SelectItem key={opt} value={opt}>
-              {opt}
-            </SelectItem>
-          ))}
+          {options.map((opt) => {
+            const k = typeof opt === "string" ? opt : opt.key;
+            const v = typeof opt === "string" ? opt : opt.value;
+            return (
+              <SelectItem key={k} value={k}>
+                {v}
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
     </div>

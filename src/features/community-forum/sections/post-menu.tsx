@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Flag } from "lucide-react";
 
 import type { ForumPost } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useForum } from "@/features/community-forum/forum-context";
 import { NewPostModal } from "./new-post-modal";
+import { ReportModal } from "./report-modal";
 
 /**
  * Owner-only "⋯" menu for a post: edit (re-opens the composer in edit
@@ -31,8 +32,9 @@ export function PostMenu({
   const { isOwnPost, deletePost } = useForum();
   const [editOpen, setEditOpen] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [reportOpen, setReportOpen] = React.useState(false);
 
-  if (!isOwnPost(post)) return null;
+  const own = isOwnPost(post);
 
   const handleDelete = () => {
     deletePost(post.id);
@@ -47,23 +49,35 @@ export function PostMenu({
           <button
             type="button"
             aria-label="Post options"
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-faint transition-colors hover:bg-white/[0.06] hover:text-cloud focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/25"
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-faint transition-colors hover:bg-white/6 hover:text-cloud focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/25"
           >
             <MoreHorizontal className="h-5 w-5" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
-            <Pencil className="h-4 w-4" />
-            Edit post
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setConfirmOpen(true)}
-            className="text-destructive focus:bg-destructive/15 focus:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete post
-          </DropdownMenuItem>
+          {own ? (
+            <>
+              <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+                <Pencil className="h-4 w-4" />
+                Edit post
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setConfirmOpen(true)}
+                className="text-destructive focus:bg-destructive/15 focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete post
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <DropdownMenuItem
+              onSelect={() => setReportOpen(true)}
+              className="text-destructive focus:bg-destructive/15 focus:text-destructive"
+            >
+              <Flag className="h-4 w-4" />
+              Report post
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -91,6 +105,9 @@ export function PostMenu({
           </Button>
         </div>
       </Modal>
+
+      {/* Report modal */}
+      <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} post={post} />
     </>
   );
 }

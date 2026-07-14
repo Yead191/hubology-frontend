@@ -3,6 +3,7 @@ import Image from "next/image";
 import { MapPin, BadgeCheck, ArrowRight } from "lucide-react";
 
 import type { Vendor } from "@/types";
+import { getAvailabilityLabel } from "@/lib/validators";
 
 /** Directory card for a single vendor, linking to their full profile. */
 export function VendorCard({ vendor }: { vendor: Vendor }) {
@@ -67,7 +68,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
           <span className="font-semibold">{vendor.hourlyRate}</span>
           <span className="text-faint"> /hr</span>
         </span>
-        <span className="text-xs text-mist">{vendor.availability}</span>
+        <span className="text-xs text-mist">{getAvailabilityLabel(vendor.availability)}</span>
       </div>
 
       <Link

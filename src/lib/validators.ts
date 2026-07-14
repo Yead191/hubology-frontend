@@ -134,13 +134,12 @@ export const hourlyRateOptions = [
   "$1000+",
 ] as const;
 
-/** Weekly availability commitments. */
 export const availabilityOptions = [
-  "Part-time (5-15 hrs/week)",
-  "Full-time (40+ hrs/week)",
-  "Project-based",
-  "Weekends only",
-  "Limited / by request",
+  { key: "Part Time", value: "Part-time (5-15 hrs/week)" },
+  { key: "Full Time", value: "Full-time (40+ hrs/week)" },
+  { key: "Project Based", value: "Project-based" },
+  { key: "Weekends Only", value: "Weekends only" },
+  { key: "Limited", value: "Limited / by request" },
 ] as const;
 
 /** Ways an expert is willing to consult. */
@@ -151,3 +150,9 @@ export const consultationTypeOptions = [
   "Async Q&A",
   "Workshops & Training",
 ] as const;
+
+/** Translates availability key code (e.g. 'Part Time') to visible label text. */
+export function getAvailabilityLabel(key: string): string {
+  const opt = availabilityOptions.find((o) => o.key === key);
+  return opt ? opt.value : key;
+}
