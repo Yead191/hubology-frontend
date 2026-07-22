@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  X, Check, AlertCircle, Clipboard, Loader2, 
-  Printer, ArrowLeft, ArrowRight, Search 
+import {
+  X, Check, AlertCircle, Clipboard, Loader2,
+  Printer, ArrowLeft, ArrowRight, Search
 } from "lucide-react";
 import { useIFundAyiti } from "../context/ifundayiti-context";
 import { formatPrice } from "@/lib/utils";
@@ -37,7 +37,7 @@ interface FileMock {
 
 export function IFundAyitiApplicationModal() {
   const { showAppModal, setShowAppModal, submitApplication } = useIFundAyiti();
-  
+
   // Step state: 1 to 7, Step 8 = Success Page
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -86,7 +86,7 @@ export function IFundAyitiApplicationModal() {
   // Validate current step before proceeding
   const handleNext = async () => {
     let valid = false;
-    
+
     if (step === 1) valid = await personalForm.trigger();
     else if (step === 2) valid = await contactForm.trigger();
     else if (step === 3) valid = await idForm.trigger();
@@ -144,6 +144,8 @@ export function IFundAyitiApplicationModal() {
       ]
     };
 
+    // console.log("Full Details:", fullDetails);
+
     setTimeout(() => {
       const tid = submitApplication(fullDetails);
       setTrackingId(tid);
@@ -185,7 +187,7 @@ export function IFundAyitiApplicationModal() {
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-ink/90 backdrop-blur-md overflow-y-auto">
       <div className="relative w-full max-w-2xl bg-panel-soft border border-hairline-strong rounded-3xl overflow-hidden shadow-2xl flex flex-col my-8">
-        
+
         {/* Header toolbar */}
         <div className="flex items-center justify-between border-b border-hairline px-6 py-4 bg-panel">
           <div>
@@ -209,8 +211,8 @@ export function IFundAyitiApplicationModal() {
         {/* Progress header bar */}
         {step < 8 && (
           <div className="h-1 bg-white/5 w-full">
-            <div 
-              className="h-full bg-gradient-to-r from-violet-bright to-violet transition-all duration-300"
+            <div
+              className="h-full bg-linear-to-r from-violet-bright to-violet transition-all duration-300"
               style={{ width: `${(step / 7) * 100}%` }}
             />
           </div>
@@ -288,11 +290,11 @@ export function IFundAyitiApplicationModal() {
 
               {/* Receipt Area */}
               <div className="border border-hairline bg-ink/40 p-6 rounded-2xl my-8 max-w-md mx-auto text-left relative overflow-hidden">
-                <div className="absolute top-0 right-0 h-2 bg-gradient-to-r from-violet-bright to-violet w-full" />
+                <div className="absolute top-0 right-0 h-2 bg-linear-to-r from-violet-bright to-violet w-full" />
                 <span className="block text-[10px] uppercase tracking-wider text-faint">Your Unique Tracking ID</span>
                 <div className="flex items-center justify-between mt-1">
                   <span className="font-mono text-2xl font-bold text-cloud tracking-wide">{trackingId}</span>
-                  <button 
+                  <button
                     onClick={copyToClipboard}
                     className="p-1.5 rounded-lg border border-hairline bg-white/3 text-mist hover:text-cloud hover:bg-white/8 transition-colors text-xs flex items-center gap-1 outline-none cursor-pointer"
                   >

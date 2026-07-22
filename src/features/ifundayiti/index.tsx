@@ -14,6 +14,7 @@ import { IFundAyitiApplicationModal } from "./sections/application-modal";
 import { IFundAyitiDonationModal } from "./sections/donation-modal";
 import { IFundAyitiProfileModal } from "./sections/profile-modal";
 import { CtaBand } from "@/components/sections/cta-band";
+import { IFundAyitiBoardSimulator } from "./sections/board-simulator";
 
 function IFundAyitiContent() {
   return (
@@ -43,7 +44,7 @@ function IFundAyitiContent() {
       <IFundAyitiProfileModal />
 
       {/* Board Simulator Control Panel */}
-      {/* <IFundAyitiBoardSimulator /> */}
+      <IFundAyitiBoardSimulator />
 
     </div>
   );

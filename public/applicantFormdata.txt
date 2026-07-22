@@ -1,0 +1,37 @@
+formData.append(
+    "personal",
+    JSON.stringify(values.personal)
+);
+
+formData.append(
+    "contact",
+    JSON.stringify(values.contact)
+);
+
+formData.append(
+    "identification",
+    JSON.stringify(values.identification)
+);
+
+formData.append(
+    "grant",
+    JSON.stringify(values.grant)
+);
+
+formData.append(
+    "background",
+    JSON.stringify(values.background)
+);
+
+formData.append(
+    "documentTypes",
+    JSON.stringify([
+        "Government ID",
+        "Proof of Address",
+        "Business Plan"
+    ])
+);
+
+files.forEach(file=>{
+    formData.append("documents", file);
+});

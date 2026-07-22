@@ -86,6 +86,17 @@ export function ReportModal({
     e.preventDefault();
     if (!selectedReason) return;
 
+    const payload = {
+      postId: post.id,
+      postCategory: post.category,
+      postAuthor: post.author.name,
+      reason: selectedReason,
+      details: isOther ? details : undefined,
+      submittedAt: new Date().toISOString(),
+    };
+
+    console.log("[ReportModal] Submitted Data:", payload);
+
     setStatus("loading");
 
     // Simulate backend submission API call with a premium loading delay
