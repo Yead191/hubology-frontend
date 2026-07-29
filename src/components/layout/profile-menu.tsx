@@ -16,6 +16,7 @@ import { useAuth, type MockUser } from "@/components/auth/auth-context";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 function initials(name: string) {
   return name
@@ -26,7 +27,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function ProfileMenu({ user }: { user: MockUser }) {
+export function ProfileMenu({ user }: { user: any }) {
   const router = useRouter();
   const logout = () => {
     Cookies.remove("accessToken");
@@ -43,16 +44,23 @@ export function ProfileMenu({ user }: { user: MockUser }) {
           className="rounded-full ring-offset-ink transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50 focus-visible:ring-offset-2"
         >
           <Avatar className="h-10 w-10 border border-hairline-strong">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={getImageUrl(user.image || "")} alt={user.name} />
             <AvatarFallback>{initials(user.name)}</AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>
-          <span className="flex flex-col">
-            <span className="text-sm font-semibold text-cloud">
-              {user.name}
+          <span className="flex flex-col gap-1.5">
+            <span className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-cloud">
+                {user.name}
+              </span>
+              {user.role ? (
+                <span className="rounded-full border border-violet/30 bg-violet/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-bright">
+                  {user.role}
+                </span>
+              ) : null}
             </span>
             <span className="text-xs text-mist">{user.email}</span>
           </span>

@@ -6,10 +6,9 @@ import { AuthProvider } from "@/components/auth/auth-context";
 import { MembershipProvider } from "@/features/membership/membership-context";
 import { PurchaseProvider } from "@/features/store/purchase-context";
 import { CartProvider } from "@/components/cart/cart-context";
-import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { DemoAuthToggle } from "@/components/layout/demo-auth-toggle";
 import { Toaster } from "sonner";
+import NavServer from "@/components/layout/NavServer";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -41,19 +40,38 @@ export default function RootLayout({
     <html lang="en" className={`${sora.variable} ${manrope.variable}`}>
       <body className="min-h-screen bg-ink text-cloud antialiased scroll-smooth">
         <Toaster
+          theme="dark"
           position="bottom-right"
-          richColors
           duration={2000}
-          closeButton={true}
+          closeButton
+          gap={10}
+          toastOptions={{
+            classNames: {
+              toast:
+                "group !font-sans !rounded-xl !border !border-hairline-strong !bg-panel-soft/95 !text-cloud !backdrop-blur-xl !shadow-[0_24px_60px_-28px_rgba(129,49,240,0.55)]",
+              title: "!text-cloud !font-semibold !text-sm",
+              description: "!text-mist !text-[13px]",
+              actionButton:
+                "!bg-brand-gradient !text-white !rounded-full !text-xs !font-semibold",
+              cancelButton:
+                "!bg-white/10 !text-cloud !rounded-full !text-xs hover:!bg-white/15",
+              closeButton:
+                "!bg-panel-soft !border-hairline-strong !text-mist hover:!text-cloud hover:!bg-panel",
+              success: "[&_[data-icon]]:!text-emerald-400",
+              error: "[&_[data-icon]]:!text-destructive",
+              warning: "[&_[data-icon]]:!text-amber-400",
+              info: "[&_[data-icon]]:!text-violet-bright",
+              loader: "!text-violet-bright",
+            },
+          }}
         />
         <AuthProvider>
           <MembershipProvider>
             <PurchaseProvider>
               <CartProvider>
-                <Navbar />
+                <NavServer />
                 <main className="relative">{children}</main>
                 <Footer />
-                <DemoAuthToggle />
               </CartProvider>
             </PurchaseProvider>
           </MembershipProvider>

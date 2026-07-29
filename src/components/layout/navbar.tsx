@@ -23,27 +23,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import Cookies from "js-cookie";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname.startsWith(href);
 }
 
-export function Navbar() {
+export function Navbar({ user }: { user: any }) {
   const pathname = usePathname();
   const router = useRouter();
   const { cartCount } = useCart();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const isLoggedIn = Cookies.get("accessToken");
-  const user: any = {
-    name: "Helena Thorne",
-    email: "helena@thornetax.com",
-    avatar: "https://i.pravatar.cc/200?img=5",
-    role: "member",
-  };
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -139,7 +130,7 @@ export function Navbar() {
               )}
             </button>
 
-            {isLoggedIn && user ? (
+            {user && user._id ? (
               <div className="hidden items-center gap-2 sm:flex">
                 <NotificationMenu />
                 <ProfileMenu user={user} />
@@ -242,7 +233,7 @@ export function Navbar() {
           </ul>
 
           <div className="mt-3 flex flex-col gap-2 border-t border-hairline pt-3">
-            {isLoggedIn && user ? (
+            {user && user._id ? (
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-3">
                   <ProfileMenu user={user} />

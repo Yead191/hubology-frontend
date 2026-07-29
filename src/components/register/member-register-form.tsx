@@ -26,10 +26,12 @@ import {
 } from "@/components/ui/select";
 import { GoogleButton, AuthDivider } from "@/components/auth/google-button";
 import { FieldError } from "@/components/auth/field-error";
+import { useResendOtp } from "@/hooks/useResendOtp";
 
 export function MemberRegisterForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const router = useRouter();
+  const { resend } = useResendOtp();
 
   const {
     register,
@@ -53,7 +55,7 @@ export function MemberRegisterForm() {
       const response = await nextFetch("/auth/register", {
         method: "POST",
         body: {
-          fullName: values.fullName,
+          name: values.fullName,
           email: values.email,
           company: values.company,
           interest: values.interest,
@@ -61,9 +63,22 @@ export function MemberRegisterForm() {
         },
       });
 
+      if (
+        !response?.success &&
+        response.message ===
+          "Account is not verified. Please check your email for verification code."
+      ) {
+        await resend(values?.email);
+        router.push(
+          `/verify-otp?email=${encodeURIComponent(values?.email)}&flow=verify`,
+        );
+        return;
+      }
+
       if (response?.success) {
         toast.success(
-          response?.message || "Account created — verify your email to continue.",
+          response?.message ||
+            "Account created — verify your email to continue.",
         );
         router.push(
           `/verify-otp?email=${encodeURIComponent(values.email)}&flow=verify`,
@@ -116,7 +131,10 @@ export function MemberRegisterForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="company">Company / Organization <span className="text-faint">(optional)</span></Label>
+          <Label htmlFor="company">
+            Company / Organization{" "}
+            <span className="text-faint">(optional)</span>
+          </Label>
           <Input
             id="company"
             placeholder="e.g. Northwind Studio"
@@ -186,7 +204,10 @@ export function MemberRegisterForm() {
               Terms
             </Link>{" "}
             and{" "}
-            <Link href="/privacy-policy" className="text-violet-bright hover:underline">
+            <Link
+              href="/privacy-policy"
+              className="text-violet-bright hover:underline"
+            >
               Privacy Policy
             </Link>
             .
@@ -194,7 +215,12 @@ export function MemberRegisterForm() {
         </label>
         <FieldError message={errors.agree?.message} />
 
-        <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="w-full"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" /> Creating account…
@@ -207,7 +233,10 @@ export function MemberRegisterForm() {
 
       <p className="text-center text-sm text-mist">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-violet-bright hover:underline">
+        <Link
+          href="/login"
+          className="font-medium text-violet-bright hover:underline"
+        >
           Sign in
         </Link>
       </p>
