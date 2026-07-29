@@ -3,7 +3,6 @@
 import { Search, X } from "lucide-react";
 
 import {
-  expertiseOptions,
   hourlyRateOptions,
   availabilityOptions,
 } from "@/lib/validators";
@@ -17,20 +16,18 @@ import {
 } from "@/components/ui/select";
 
 export interface VendorFilterState {
-  query: string;
-  expertise: string;
-  rate: string;
+  search: string;
+  hourlyRateRange: string;
   availability: string;
 }
 
 export const DEFAULT_FILTERS: VendorFilterState = {
-  query: "",
-  expertise: "all",
-  rate: "all",
-  availability: "all",
+  search: "",
+  hourlyRateRange: "",
+  availability: "",
 };
 
-/** Search + faceted filters for the vendors directory. */
+/** Search + faceted filters for the vendors directory (URL-driven). */
 export function VendorFilters({
   filters,
   onChange,
@@ -46,10 +43,9 @@ export function VendorFilters({
   resultCount: number;
 }) {
   const isFiltered =
-    filters.query !== "" ||
-    filters.expertise !== "all" ||
-    filters.rate !== "all" ||
-    filters.availability !== "all";
+    Boolean(filters.search?.trim()) ||
+    Boolean(filters.hourlyRateRange) ||
+    Boolean(filters.availability);
 
   return (
     <div className="border-gradient rounded-3xl bg-panel/40 p-4 sm:p-5">
@@ -57,37 +53,30 @@ export function VendorFilters({
       <div className="relative">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
         <Input
-          value={filters.query}
-          onChange={(e) => onChange("query", e.target.value)}
-          placeholder="Search by name, role, company, or expertise…"
+          value={filters.search ?? ""}
+          onChange={(e) => onChange("search", e.target.value)}
+          placeholder="Search by name, company, or expertise…"
           aria-label="Search vendors"
           className="pl-11 pr-10"
         />
-        {filters.query && (
+        {filters.search ? (
           <button
             type="button"
-            onClick={() => onChange("query", "")}
+            onClick={() => onChange("search", "")}
             aria-label="Clear search"
             className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-faint transition-colors hover:bg-white/6 hover:text-cloud"
           >
             <X className="h-4 w-4" />
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Facets */}
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <FacetSelect
-          label="Expertise"
-          value={filters.expertise}
-          onValueChange={(v) => onChange("expertise", v)}
-          placeholder="All expertise"
-          options={expertiseOptions}
-        />
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <FacetSelect
           label="Rate"
-          value={filters.rate}
-          onValueChange={(v) => onChange("rate", v)}
+          value={filters.hourlyRateRange}
+          onValueChange={(v) => onChange("hourlyRateRange", v)}
           placeholder="Any rate"
           options={hourlyRateOptions}
         />
@@ -121,6 +110,9 @@ export function VendorFilters({
   );
 }
 
+/** Radix Select disallows empty-string item values, so "any" uses a sentinel. */
+const ANY_VALUE = "__any__";
+
 function FacetSelect({
   label,
   value,
@@ -137,12 +129,15 @@ function FacetSelect({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="pl-1 text-xs font-medium text-faint">{label}</span>
-      <Select value={value} onValueChange={onValueChange}>
+      <Select
+        value={value || undefined}
+        onValueChange={(v) => onValueChange(v === ANY_VALUE ? "" : v)}
+      >
         <SelectTrigger aria-label={label}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">{placeholder}</SelectItem>
+          <SelectItem value={ANY_VALUE}>{placeholder}</SelectItem>
           {options.map((opt) => {
             const k = typeof opt === "string" ? opt : opt.key;
             const v = typeof opt === "string" ? opt : opt.value;

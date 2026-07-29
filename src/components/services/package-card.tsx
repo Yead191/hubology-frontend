@@ -58,12 +58,14 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
           Book now
         </BookNowButton>
 
-        <Link
-          href={`/services/${pkg?._id}`}
-          className="text-center text-sm font-medium text-mist transition-colors hover:text-cloud"
-        >
-          View details
-        </Link>
+        {pkg._id ? (
+          <Link
+            href={`/services/${pkg._id}`}
+            className="text-center text-sm font-medium text-mist transition-colors hover:text-cloud"
+          >
+            View details
+          </Link>
+        ) : null}
       </div>
     </div>
   );

@@ -1,51 +1,108 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { SearchX } from "lucide-react";
 
-import { getAllVendors } from "@/data/vendors";
+import type { Pagination, Vendor } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { VendorCard } from "@/features/vendors/sections/vendor-card";
+import { VendorPagination } from "@/features/vendors/sections/vendor-pagination";
 import {
   VendorFilters,
   DEFAULT_FILTERS,
   type VendorFilterState,
 } from "@/features/vendors/sections/vendor-filters";
 
-export default function Vendors() {
-  const allVendors = React.useMemo(() => getAllVendors(), []);
-  const [filters, setFilters] = React.useState<VendorFilterState>(DEFAULT_FILTERS);
+interface VendorsProps {
+  vendors: Vendor[];
+  pagination?: Pagination;
+  filters: VendorFilterState & { page: number; limit: number };
+}
+
+/** Build a /vendors query string from the current filter + page state. */
+function buildVendorsHref(
+  filters: VendorFilterState,
+  page: number,
+  limit: number,
+) {
+  const params = new URLSearchParams();
+  const search = (filters.search ?? "").trim();
+  if (search) params.set("searchTerm", search);
+  if (filters.availability) params.set("availability", filters.availability);
+  if (filters.hourlyRateRange) {
+    params.set("hourlyRateRange", filters.hourlyRateRange);
+  }
+  if (page > 1) params.set("page", String(page));
+  if (limit !== 10) params.set("limit", String(limit));
+  const qs = params.toString();
+  return qs ? `/vendors?${qs}` : "/vendors";
+}
+
+export default function Vendors({ vendors, pagination, filters }: VendorsProps) {
+  const router = useRouter();
+  // Local search text for responsive typing; URL updates are debounced.
+  const [searchInput, setSearchInput] = React.useState(filters.search ?? "");
+
+  React.useEffect(() => {
+    setSearchInput(filters.search ?? "");
+  }, [filters.search]);
+
+  const push = React.useCallback(
+    (next: VendorFilterState, page = 1) => {
+      router.push(buildVendorsHref(next, page, filters.limit));
+    },
+    [router, filters.limit],
+  );
+
+  // Debounce search → URL so we don't refetch on every keystroke.
+  React.useEffect(() => {
+    if (searchInput === filters.search) return;
+    const timer = setTimeout(() => {
+      push(
+        {
+          search: searchInput,
+          availability: filters.availability,
+          hourlyRateRange: filters.hourlyRateRange,
+        },
+        1,
+      );
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, filters, push]);
 
   const update = React.useCallback(
-    <K extends keyof VendorFilterState>(key: K, value: VendorFilterState[K]) =>
-      setFilters((f) => ({ ...f, [key]: value })),
-    [],
-  );
-  const reset = React.useCallback(() => setFilters(DEFAULT_FILTERS), []);
-
-  const vendors = React.useMemo(() => {
-    const q = filters.query.trim().toLowerCase();
-
-    return allVendors.filter((v) => {
-      if (filters.expertise !== "all" && !v.expertise.includes(filters.expertise))
-        return false;
-      if (filters.rate !== "all" && v.hourlyRate !== filters.rate) return false;
-      if (
-        filters.availability !== "all" &&
-        v.availability !== filters.availability
-      )
-        return false;
-      if (!q) return true;
-      return (
-        v.name.toLowerCase().includes(q) ||
-        v.role.toLowerCase().includes(q) ||
-        v.company.toLowerCase().includes(q) ||
-        v.bio.toLowerCase().includes(q) ||
-        v.expertise.some((e) => e.toLowerCase().includes(q))
+    <K extends keyof VendorFilterState>(key: K, value: VendorFilterState[K]) => {
+      if (key === "search") {
+        setSearchInput(value as string);
+        return;
+      }
+      push(
+        {
+          search: searchInput,
+          availability: filters.availability,
+          hourlyRateRange: filters.hourlyRateRange,
+          [key]: value,
+        },
+        1,
       );
-    });
-  }, [allVendors, filters]);
+    },
+    [push, searchInput, filters.availability, filters.hourlyRateRange],
+  );
+
+  const reset = React.useCallback(() => {
+    setSearchInput("");
+    router.push("/vendors");
+  }, [router]);
+
+  const uiFilters: VendorFilterState = {
+    search: searchInput,
+    availability: filters.availability,
+    hourlyRateRange: filters.hourlyRateRange,
+  };
+
+  const total = pagination?.total ?? vendors.length;
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
@@ -55,7 +112,6 @@ export default function Vendors() {
       />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Header */}
         <Reveal>
           <header className="max-w-2xl">
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
@@ -68,25 +124,36 @@ export default function Vendors() {
           </header>
         </Reveal>
 
-        {/* Filters */}
         <Reveal delay={80} className="mt-10">
           <VendorFilters
-            filters={filters}
+            filters={uiFilters}
             onChange={update}
             onReset={reset}
-            resultCount={vendors.length}
+            resultCount={total}
           />
         </Reveal>
 
-        {/* Results */}
-        {vendors.length > 0 ? (
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {vendors.map((vendor, i) => (
-              <Reveal key={vendor.id} delay={(i % 3) * 80} className="h-full min-w-0">
-                <VendorCard vendor={vendor} />
-              </Reveal>
-            ))}
-          </div>
+        {vendors?.length > 0 ? (
+          <>
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {vendors?.map((vendor, i) => (
+                <Reveal
+                  key={vendor._id}
+                  delay={(i % 3) * 80}
+                  className="h-full min-w-0"
+                >
+                  <VendorCard vendor={vendor} />
+                </Reveal>
+              ))}
+            </div>
+
+            {pagination ? (
+              <VendorPagination
+                pagination={pagination}
+                onPageChange={(page) => push(uiFilters, page)}
+              />
+            ) : null}
+          </>
         ) : (
           <Reveal className="border-gradient mt-8 flex flex-col items-center rounded-3xl bg-panel/30 px-6 py-16 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-white/4 text-violet-bright">
@@ -104,3 +171,5 @@ export default function Vendors() {
     </section>
   );
 }
+
+export { DEFAULT_FILTERS };

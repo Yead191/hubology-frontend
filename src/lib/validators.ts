@@ -149,13 +149,13 @@ export const yearsExperienceOptions = [
   "20+ years",
 ] as const;
 
-/** Hourly rate ranges (USD). */
+/** Hourly rate ranges (USD) — `key` is the API `hourlyRateRange` query value (e.g. 50-120). */
 export const hourlyRateOptions = [
-  "$50 - $100",
-  "$100 - $250",
-  "$250 - $500",
-  "$500 - $1000",
-  "$1000+",
+  { key: "50-120", value: "$50 - $120" },
+  { key: "120-250", value: "$120 - $250" },
+  { key: "250-500", value: "$250 - $500" },
+  { key: "500-1000", value: "$500 - $1000" },
+  { key: "1000+", value: "$1000+" },
 ] as const;
 
 export const availabilityOptions = [

@@ -36,37 +36,43 @@ export interface ServiceDetail {
   highlights: string[];
 }
 
-export interface Vendor {
-  id: string;
-  /** URL slug for the vendor detail page. */
-  slug: string;
-  /** Avatar image URL. */
-  profile: string;
-  name: string;
-  /** Job title, e.g. "Tax Strategist". */
-  role: string;
-  company: string;
-  /** Short one-line summary shown on cards. */
+export interface VendorProfile {
+  jobTitle: string;
+  contactNo: string;
   bio: string;
-  /** Longer profile bio shown on the detail page. */
-  about: string;
-  /** Areas of expertise (from expertiseOptions). */
   expertise: string[];
-  /** Experience band (from yearsExperienceOptions). */
   yearsExperience: string;
   degree?: string;
   linkedin?: string;
-  /** Hourly rate range (from hourlyRateOptions), e.g. "$100 - $250". */
-  hourlyRate: string;
-  /** Availability (from availabilityOptions). */
+  /** Numeric hourly rate (starting from), e.g. 100. */
+  hourlyRate: number;
   availability: string;
-  /** Consultation formats offered (from consultationTypeOptions). */
   consultationTypes: string[];
-  location: string;
-  contact: {
-    email: string;
-    phone: string;
-  };
+  applicationStatus?: string;
+}
+
+/** Vendor / expert record as returned by GET /vendor. */
+export interface Vendor {
+  _id: string;
+  name: string;
+  /** Account role from the API, e.g. "VENDOR". */
+  role: string;
+  email: string;
+  image?: string | null;
+  status?: string;
+  rejectionReason?: string | null;
+  verified?: boolean;
+  company?: string;
+  vendorProfile: VendorProfile;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Pagination {
+  total: number;
+  limit: number;
+  page: number;
+  totalPage: number;
 }
 
 export interface Testimonial {
