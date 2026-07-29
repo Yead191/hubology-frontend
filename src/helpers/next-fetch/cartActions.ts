@@ -17,3 +17,17 @@ export async function addToCart(body: { product: string; quantity: number }) {
 
   return result;
 }
+
+/** PATCH /cart/:cartId — change quantity by +1 or -1. */
+export async function updateCartQuantity(cartId: string, amount: 1 | -1) {
+  const result = await nextFetch<CartData>(`/cart/${cartId}`, {
+    method: "PATCH",
+    body: { amount },
+  });
+
+  if (result.success) {
+    await revalidateTags(["cart"]);
+  }
+
+  return result;
+}

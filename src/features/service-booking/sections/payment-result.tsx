@@ -1,22 +1,32 @@
 import Link from "next/link";
-import { CheckCircle2, XCircle, ArrowRight, Home, BookOpen } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  Home,
+  BookOpen,
+  ShoppingBag,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Aurora } from "@/components/ui/aurora";
 
-type PaymentKind = "service" | "digital";
+type PaymentKind = "service" | "digital" | "checkout";
 
 interface PaymentResultProps {
   status: "success" | "failed";
   /** Stripe session id, when present on the return URL. */
   sessionId?: string;
-  /** Distinguishes service booking vs digital product purchases. */
+  /** Distinguishes service booking vs digital product vs office checkout. */
   type?: string;
 }
 
 function resolveKind(type?: string): PaymentKind {
   const t = (type ?? "").toLowerCase();
+  if (t.includes("checkout") || t.includes("order") || t.includes("office")) {
+    return "checkout";
+  }
   if (
     t.includes("digital") ||
     t.includes("product") ||
@@ -57,6 +67,20 @@ const COPY = {
         "Your payment was cancelled or didn't go through, so we haven't charged you. You can return to the store and try again.",
     },
   },
+  checkout: {
+    success: {
+      eyebrow: "Payment confirmed",
+      title: "Order placed",
+      message:
+        "Thanks for your order. Your payment went through and we're preparing your supplies for shipment. A receipt is on its way to your inbox.",
+    },
+    failed: {
+      eyebrow: "Payment not completed",
+      title: "Checkout incomplete",
+      message:
+        "Your payment was cancelled or didn't go through, so we haven't charged you. Your cart is still available if you'd like to try again.",
+    },
+  },
 } as const;
 
 export function PaymentResult({
@@ -86,7 +110,7 @@ export function PaymentResult({
         )}
       />
 
-      <div className="border-gradient relative w-full max-w-md rounded-[2rem] bg-panel/50 p-8 text-center glow-soft sm:p-10">
+      <div className="border-gradient relative w-full max-w-md rounded-4xl bg-panel/50 p-8 text-center glow-soft sm:p-10">
         <span
           className={cn(
             "mx-auto grid h-20 w-20 place-items-center rounded-3xl",
@@ -101,9 +125,13 @@ export function PaymentResult({
         <h1 className="mt-2 text-3xl font-bold text-cloud">{c.title}</h1>
         <p className="mt-3 text-sm leading-relaxed text-mist">{c.message}</p>
 
-        {kind === "digital" && type ? (
+        {type ? (
           <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-hairline bg-white/3 px-3 py-1 text-xs text-mist">
-            <BookOpen className="h-3.5 w-3.5 text-violet-bright" />
+            {kind === "checkout" ? (
+              <ShoppingBag className="h-3.5 w-3.5 text-violet-bright" />
+            ) : (
+              <BookOpen className="h-3.5 w-3.5 text-violet-bright" />
+            )}
             {type}
           </p>
         ) : null}
@@ -121,6 +149,19 @@ export function PaymentResult({
                 <Button asChild size="lg" className="w-full">
                   <Link href="/store">
                     Back to store <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/">
+                    <Home className="h-4 w-4" /> Back to home
+                  </Link>
+                </Button>
+              </>
+            ) : kind === "checkout" ? (
+              <>
+                <Button asChild size="lg" className="w-full">
+                  <Link href="/office-supplies">
+                    Continue shopping <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
@@ -152,6 +193,17 @@ export function PaymentResult({
                 <Link href="/">
                   <Home className="h-4 w-4" /> Back to home
                 </Link>
+              </Button>
+            </>
+          ) : kind === "checkout" ? (
+            <>
+              <Button asChild size="lg" className="w-full">
+                <Link href="/checkout">
+                  Return to checkout <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/office-supplies">Back to supplies</Link>
               </Button>
             </>
           ) : (
