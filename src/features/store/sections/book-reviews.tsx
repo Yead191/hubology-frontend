@@ -13,7 +13,10 @@ export function Stars({
 }) {
   const filled = Math.round(value);
   return (
-    <span className={cn("inline-flex items-center gap-0.5", className)} aria-label={`${value} out of 5`}>
+    <span
+      className={cn("inline-flex items-center gap-0.5", className)}
+      aria-label={`${value} out of 5`}
+    >
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
@@ -29,7 +32,9 @@ export function Stars({
 
 /** Ratings summary + individual reviews. */
 export function BookReviews({ book }: { book: Book }) {
-  const { rating } = book;
+  const rating = book.rating;
+  if (!rating) return null;
+
   return (
     <div>
       <h2 className="text-lg font-semibold text-cloud">Ratings &amp; reviews</h2>
@@ -40,31 +45,30 @@ export function BookReviews({ book }: { book: Book }) {
         </span>
         <div>
           <Stars value={rating.average} />
-          <p className="mt-1 text-xs text-mist">
-            {rating.totalReviews.toLocaleString()} reviews
+          <p className="mt-1 text-sm text-mist">
+            {rating.totalReviews}{" "}
+            {rating.totalReviews === 1 ? "review" : "reviews"}
           </p>
         </div>
       </div>
 
-      <ul className="mt-5 flex flex-col gap-4">
-        {rating.reviews.map((r, i) => (
+      <ul className="mt-6 flex flex-col gap-4">
+        {rating.reviews.map((review, i) => (
           <li
-            key={i}
-            className="rounded-2xl border border-hairline bg-panel/40 p-5"
+            key={`${review.reviewerName}-${i}`}
+            className="rounded-2xl border border-hairline bg-white/[0.02] px-5 py-4"
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-cloud">
-                  {r.reviewerName}
-                </p>
-                <p className="text-xs text-faint">{r.reviewerTitle}</p>
+                <p className="font-medium text-cloud">{review.reviewerName}</p>
+                <p className="text-xs text-faint">{review.reviewerTitle}</p>
               </div>
               <div className="text-right">
-                <Stars value={r.rating} />
-                <p className="mt-1 text-xs text-faint">{r.date}</p>
+                <Stars value={review.rating} />
+                <p className="mt-1 text-xs text-faint">{review.date}</p>
               </div>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-mist">{r.text}</p>
+            <p className="mt-3 text-sm leading-relaxed text-mist">{review.text}</p>
           </li>
         ))}
       </ul>

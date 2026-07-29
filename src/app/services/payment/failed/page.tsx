@@ -8,10 +8,15 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{
+    session_id?: string;
+    type?: string;
+  }>;
 }
 
 export default async function PaymentFailedPage({ searchParams }: PageProps) {
-  const { session_id } = await searchParams;
-  return <PaymentResult status="failed" sessionId={session_id} />;
+  const { session_id, type } = await searchParams;
+  return (
+    <PaymentResult status="failed" sessionId={session_id} type={type} />
+  );
 }

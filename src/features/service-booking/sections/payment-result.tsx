@@ -1,40 +1,80 @@
 import Link from "next/link";
-import { CheckCircle2, XCircle, ArrowRight, Home } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, Home, BookOpen } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Aurora } from "@/components/ui/aurora";
 
+type PaymentKind = "service" | "digital";
+
 interface PaymentResultProps {
   status: "success" | "failed";
   /** Stripe session id, when present on the return URL. */
   sessionId?: string;
+  /** Distinguishes service booking vs digital product purchases. */
+  type?: string;
+}
+
+function resolveKind(type?: string): PaymentKind {
+  const t = (type ?? "").toLowerCase();
+  if (
+    t.includes("digital") ||
+    t.includes("product") ||
+    t.includes("book") ||
+    t.includes("store")
+  ) {
+    return "digital";
+  }
+  return "service";
 }
 
 const COPY = {
-  success: {
-    eyebrow: "Payment confirmed",
-    title: "You're all booked",
-    message:
-      "Your payment went through and your session is confirmed. A receipt and the booking details are on their way to your inbox.",
-    icon: CheckCircle2,
-    iconWrap: "bg-brand-gradient text-white",
-    glow: "shadow-[0_20px_60px_-15px_rgba(129,49,240,0.9)]",
+  service: {
+    success: {
+      eyebrow: "Payment confirmed",
+      title: "You're all booked",
+      message:
+        "Your payment went through and your session is confirmed. A receipt and the booking details are on their way to your inbox.",
+    },
+    failed: {
+      eyebrow: "Payment not completed",
+      title: "Something went wrong",
+      message:
+        "Your payment was cancelled or didn't go through, so we haven't charged you. You can try booking again whenever you're ready.",
+    },
   },
-  failed: {
-    eyebrow: "Payment not completed",
-    title: "Something went wrong",
-    message:
-      "Your payment was cancelled or didn't go through, so we haven't charged you. You can try booking again whenever you're ready.",
-    icon: XCircle,
-    iconWrap: "bg-destructive/15 text-destructive",
-    glow: "shadow-[0_20px_60px_-15px_rgba(240,67,106,0.6)]",
+  digital: {
+    success: {
+      eyebrow: "Payment confirmed",
+      title: "Your book is unlocked",
+      message:
+        "Thanks for your purchase. The digital product is now in your library — you can download the PDF anytime from the product page.",
+    },
+    failed: {
+      eyebrow: "Payment not completed",
+      title: "Purchase incomplete",
+      message:
+        "Your payment was cancelled or didn't go through, so we haven't charged you. You can return to the store and try again.",
+    },
   },
 } as const;
 
-export function PaymentResult({ status, sessionId }: PaymentResultProps) {
-  const c = COPY[status];
-  const Icon = c.icon;
+export function PaymentResult({
+  status,
+  sessionId,
+  type,
+}: PaymentResultProps) {
+  const kind = resolveKind(type);
+  const c = COPY[kind][status];
+  const Icon = status === "success" ? CheckCircle2 : XCircle;
+  const iconWrap =
+    status === "success"
+      ? "bg-brand-gradient text-white"
+      : "bg-destructive/15 text-destructive";
+  const glow =
+    status === "success"
+      ? "shadow-[0_20px_60px_-15px_rgba(129,49,240,0.9)]"
+      : "shadow-[0_20px_60px_-15px_rgba(240,67,106,0.6)]";
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-28">
@@ -50,8 +90,8 @@ export function PaymentResult({ status, sessionId }: PaymentResultProps) {
         <span
           className={cn(
             "mx-auto grid h-20 w-20 place-items-center rounded-3xl",
-            c.iconWrap,
-            c.glow,
+            iconWrap,
+            glow,
           )}
         >
           <Icon className="h-10 w-10" />
@@ -61,6 +101,13 @@ export function PaymentResult({ status, sessionId }: PaymentResultProps) {
         <h1 className="mt-2 text-3xl font-bold text-cloud">{c.title}</h1>
         <p className="mt-3 text-sm leading-relaxed text-mist">{c.message}</p>
 
+        {kind === "digital" && type ? (
+          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-hairline bg-white/3 px-3 py-1 text-xs text-mist">
+            <BookOpen className="h-3.5 w-3.5 text-violet-bright" />
+            {type}
+          </p>
+        ) : null}
+
         {sessionId ? (
           <p className="mt-5 truncate rounded-xl border border-hairline bg-white/3 px-4 py-2.5 text-xs text-faint">
             Reference: <span className="text-mist">{sessionId}</span>
@@ -69,14 +116,42 @@ export function PaymentResult({ status, sessionId }: PaymentResultProps) {
 
         <div className="mt-8 flex flex-col gap-2.5">
           {status === "success" ? (
+            kind === "digital" ? (
+              <>
+                <Button asChild size="lg" className="w-full">
+                  <Link href="/store">
+                    Back to store <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/">
+                    <Home className="h-4 w-4" /> Back to home
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild size="lg" className="w-full">
+                  <Link href="/membership">
+                    Go to dashboard <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/services">Browse more services</Link>
+                </Button>
+              </>
+            )
+          ) : kind === "digital" ? (
             <>
               <Button asChild size="lg" className="w-full">
-                <Link href="/membership">
-                  Go to dashboard <ArrowRight className="h-4 w-4" />
+                <Link href="/store">
+                  Try again in store <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/services">Browse more services</Link>
+                <Link href="/">
+                  <Home className="h-4 w-4" /> Back to home
+                </Link>
               </Button>
             </>
           ) : (

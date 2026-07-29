@@ -157,29 +157,31 @@ export interface BookReview {
   text: string;
 }
 
+/** Book / digital product as returned by GET /books. */
 export interface Book {
-  id: string;
-  slug: string;
+  _id: string;
+  type?: string;
   title: string;
   subtitle: string;
-  price: number;
-  currency: string;
-  /** Social proof — number of shares. */
-  shares: number;
   description: string;
-  /** Real cover image, when available. */
-  coverImage?: string;
-  /** Two-stop gradient [from, to] for the procedural cover / 3D spine. */
-  accent: [string, string];
-  /** Downloadable file, unlocked after purchase. */
-  fileUrl: string;
+  price: number;
+  currency?: string;
+  image?: string | null;
+  /** Two-stop gradient for procedural / 3D covers. */
+  accent: [string, string] | string[];
+  /** Downloadable file path (PDF), unlocked after purchase. */
+  file?: string | null;
   details: {
-    publisher: string;
-    firstPublish: string;
-    edition: string;
-    pages: number;
+    publisher?: string;
+    firstPublish?: string;
+    edition?: string;
+    status?: string;
+    inStock?: boolean;
+    pages?: number;
   };
-  rating: {
+  /** Optional — not always present on API records. */
+  shares?: number;
+  rating?: {
     average: number;
     totalReviews: number;
     reviews: BookReview[];

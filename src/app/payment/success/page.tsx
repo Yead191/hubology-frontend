@@ -4,14 +4,19 @@ import { PaymentResult } from "@/features/service-booking/sections/payment-resul
 
 export const metadata: Metadata = {
   title: "Payment successful",
-  description: "Your Hubology booking is confirmed.",
+  description: "Your Hubology payment is confirmed.",
 };
 
 interface PageProps {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{
+    session_id?: string;
+    type?: string;
+  }>;
 }
 
 export default async function PaymentSuccessPage({ searchParams }: PageProps) {
-  const { session_id } = await searchParams;
-  return <PaymentResult status="success" sessionId={session_id} />;
+  const { session_id, type } = await searchParams;
+  return (
+    <PaymentResult status="success" sessionId={session_id} type={type} />
+  );
 }

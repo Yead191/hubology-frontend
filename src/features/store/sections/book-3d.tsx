@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { RoundedBox, useTexture } from "@react-three/drei";
+import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { Book } from "@/types";
+import { bookAccent, bookCoverUrl } from "@/lib/book";
 
 const W = 1.3;
 const H = 2;
@@ -35,6 +36,7 @@ function wrapText(
 
 /** Builds a procedural cover texture (gradient + title) for a book. */
 function useCoverTexture(book: Book) {
+  const [from, to] = bookAccent(book);
   return React.useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 512;
@@ -43,19 +45,17 @@ function useCoverTexture(book: Book) {
     if (!ctx) return new THREE.Texture();
 
     const grad = ctx.createLinearGradient(0, 0, 512, 768);
-    grad.addColorStop(0, book.accent[0]);
-    grad.addColorStop(1, book.accent[1]);
+    grad.addColorStop(0, from);
+    grad.addColorStop(1, to);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 512, 768);
 
-    // Soft radial highlight
     const glow = ctx.createRadialGradient(150, 160, 20, 150, 160, 500);
     glow.addColorStop(0, "rgba(255,255,255,0.28)");
     glow.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, 512, 768);
 
-    // Brand mark
     ctx.fillStyle = "rgba(255,255,255,0.75)";
     ctx.font = "600 22px Sora, system-ui, sans-serif";
     ctx.textBaseline = "top";
@@ -63,7 +63,6 @@ function useCoverTexture(book: Book) {
     ctx.fillText("HUBOLOGY", 48, 56);
     ctx.letterSpacing = "0px";
 
-    // Title
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 66px Sora, system-ui, sans-serif";
     const lines = wrapText(ctx, book.title, 416);
@@ -73,7 +72,6 @@ function useCoverTexture(book: Book) {
       y += 74;
     }
 
-    // Subtitle
     ctx.fillStyle = "rgba(255,255,255,0.8)";
     ctx.font = "400 26px Manrope, system-ui, sans-serif";
     const subLines = wrapText(ctx, book.subtitle, 416);
@@ -83,7 +81,6 @@ function useCoverTexture(book: Book) {
       y += 34;
     }
 
-    // Accent rule
     ctx.fillStyle = "rgba(255,255,255,0.6)";
     ctx.fillRect(48, 690, 90, 5);
 
@@ -92,7 +89,60 @@ function useCoverTexture(book: Book) {
     texture.anisotropy = 8;
     texture.needsUpdate = true;
     return texture;
-  }, [book]);
+  }, [book, from, to]);
+}
+
+/**
+ * Loads a remote cover texture without crashing the 3D scene.
+ * Sets failed=true on 404 / CORS / network errors so we can fall back.
+ */
+function useSafeCoverTexture(url: string | undefined) {
+  const [texture, setTexture] = React.useState<THREE.Texture | null>(null);
+  const [failed, setFailed] = React.useState(!url);
+
+  React.useEffect(() => {
+    if (!url) {
+      setTexture(null);
+      setFailed(true);
+      return;
+    }
+
+    let cancelled = false;
+    setTexture(null);
+    setFailed(false);
+
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin("anonymous");
+    loader.load(
+      url,
+      (tex) => {
+        if (cancelled) {
+          tex.dispose();
+          return;
+        }
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 8;
+        tex.needsUpdate = true;
+        setTexture(tex);
+      },
+      undefined,
+      () => {
+        if (!cancelled) setFailed(true);
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  React.useEffect(() => {
+    return () => {
+      texture?.dispose();
+    };
+  }, [texture]);
+
+  return { texture, failed };
 }
 
 export function Book3D({
@@ -112,7 +162,11 @@ export function Book3D({
 }) {
   const group = React.useRef<THREE.Group>(null);
   const [hovered, setHovered] = React.useState(false);
-  const phase = React.useMemo(() => Math.abs(position[0]) + position[2], [position]);
+  const phase = React.useMemo(
+    () => Math.abs(position[0]) + position[2],
+    [position],
+  );
+  const [, accentTo] = bookAccent(book);
 
   useFrame((state, delta) => {
     const g = group.current;
@@ -160,10 +214,9 @@ export function Book3D({
         onSelect(book);
       }}
     >
-      {/* Book body */}
       <RoundedBox args={[W, H, D]} radius={0.04} smoothness={4} castShadow>
         <meshStandardMaterial
-          color={book.accent[1]}
+          color={accentTo}
           roughness={0.55}
           metalness={0.1}
           transparent
@@ -171,7 +224,6 @@ export function Book3D({
         />
       </RoundedBox>
 
-      {/* Fore-edge pages */}
       <mesh position={[W / 2 - 0.02, 0, 0]}>
         <boxGeometry args={[0.03, H - 0.08, D - 0.05]} />
         <meshStandardMaterial
@@ -182,22 +234,20 @@ export function Book3D({
         />
       </mesh>
 
-      {/* Front cover art — real image when available, else procedural */}
-      {book.coverImage ? (
-        <React.Suspense fallback={<ProceduralCoverMesh book={book} dim={dim} />}>
-          <ImageCoverMesh url={book.coverImage} dim={dim} />
-        </React.Suspense>
-      ) : (
-        <ProceduralCoverMesh book={book} dim={dim} />
-      )}
+      <CoverFront book={book} dim={dim} />
     </group>
   );
 }
 
-/** Front-cover mesh textured with a real cover image. */
-function ImageCoverMesh({ url, dim }: { url: string; dim: boolean }) {
-  const texture = useTexture(url);
-  texture.colorSpace = THREE.SRGBColorSpace;
+/** Real cover when it loads; procedural fallback while loading / on failure. */
+function CoverFront({ book, dim }: { book: Book; dim: boolean }) {
+  const url = bookCoverUrl(book);
+  const { texture, failed } = useSafeCoverTexture(url);
+
+  if (!url || failed || !texture) {
+    return <ProceduralCoverMesh book={book} dim={dim} />;
+  }
+
   return (
     <mesh position={[0, 0, D / 2 + 0.001]}>
       <planeGeometry args={[W - 0.02, H - 0.02]} />
@@ -212,7 +262,6 @@ function ImageCoverMesh({ url, dim }: { url: string; dim: boolean }) {
   );
 }
 
-/** Front-cover mesh textured with the procedural brand cover. */
 function ProceduralCoverMesh({ book, dim }: { book: Book; dim: boolean }) {
   const cover = useCoverTexture(book);
   return (

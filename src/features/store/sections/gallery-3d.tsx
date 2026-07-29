@@ -20,11 +20,11 @@ function layout(index: number, total: number) {
 /** The shelf group — gentle idle sway plus the row of book meshes. */
 function Shelf({
   books,
-  selectedSlug,
+  selectedId,
   onSelect,
 }: {
   books: Book[];
-  selectedSlug: string | null;
+  selectedId: string | null;
   onSelect: (book: Book) => void;
 }) {
   const group = React.useRef<THREE.Group>(null);
@@ -41,12 +41,12 @@ function Shelf({
         const { position, rotationY } = layout(i, books.length);
         return (
           <Book3D
-            key={book.id}
+            key={book._id}
             book={book}
             position={position}
             rotationY={rotationY}
-            isSelected={selectedSlug === book.slug}
-            isDimmed={selectedSlug !== null}
+            isSelected={selectedId === book._id}
+            isDimmed={selectedId !== null}
             onSelect={onSelect}
           />
         );
@@ -58,12 +58,12 @@ function Shelf({
 /** Full R3F canvas for the store gallery. Default export for lazy import. */
 export default function Gallery3D({
   books,
-  selectedSlug,
+  selectedId,
   onSelect,
   onDeselect,
 }: {
   books: Book[];
-  selectedSlug: string | null;
+  selectedId: string | null;
   onSelect: (book: Book) => void;
   onDeselect: () => void;
 }) {
@@ -96,7 +96,7 @@ export default function Gallery3D({
       />
 
       <React.Suspense fallback={null}>
-        <Shelf books={books} selectedSlug={selectedSlug} onSelect={onSelect} />
+        <Shelf books={books} selectedId={selectedId} onSelect={onSelect} />
         <ContactShadows
           position={[0, -1.25, 0]}
           opacity={0.55}

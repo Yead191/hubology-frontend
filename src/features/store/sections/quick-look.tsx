@@ -5,6 +5,7 @@ import { Star, Share2, X, ArrowRight } from "lucide-react";
 
 import type { Book } from "@/types";
 import { formatPrice } from "@/lib/utils";
+import { bookHref } from "@/lib/book";
 import { Button } from "@/components/ui/button";
 import { BookCover2D } from "./book-cover";
 
@@ -27,14 +28,18 @@ export function QuickLook({
           </h3>
           <p className="truncate text-xs text-mist">{book.subtitle}</p>
           <div className="mt-1.5 flex items-center gap-3 text-xs text-mist">
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              {book.rating.average}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Share2 className="h-3.5 w-3.5" />
-              {book.shares.toLocaleString()}
-            </span>
+            {book.rating ? (
+              <span className="inline-flex items-center gap-1">
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                {book.rating.average}
+              </span>
+            ) : null}
+            {book.shares != null ? (
+              <span className="inline-flex items-center gap-1">
+                <Share2 className="h-3.5 w-3.5" />
+                {book.shares.toLocaleString()}
+              </span>
+            ) : null}
             <span className="font-semibold text-cloud">
               {formatPrice(book.price)}
             </span>
@@ -46,12 +51,12 @@ export function QuickLook({
             type="button"
             onClick={onClose}
             aria-label="Close preview"
-            className="grid h-7 w-7 place-items-center rounded-full text-faint transition-colors hover:bg-white/[0.06] hover:text-cloud"
+            className="grid h-7 w-7 place-items-center rounded-full text-faint transition-colors hover:bg-white/6 hover:text-cloud"
           >
             <X className="h-4 w-4" />
           </button>
           <Button asChild size="sm">
-            <Link href={`/store/${book.slug}`}>
+            <Link href={bookHref(book)}>
               Details
               <ArrowRight className="h-4 w-4" />
             </Link>

@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import type { Book } from "@/types";
+import { bookAccent, bookCoverUrl } from "@/lib/book";
 
 /**
  * 2D representation of a book cover. Uses the real image when present,
@@ -19,6 +20,8 @@ export function BookCover2D({
   sizes?: string;
   priority?: boolean;
 }) {
+  const cover = bookCoverUrl(book);
+
   return (
     <div
       className={cn(
@@ -26,9 +29,9 @@ export function BookCover2D({
         className,
       )}
     >
-      {book.coverImage ? (
+      {cover ? (
         <Image
-          src={book.coverImage}
+          src={cover}
           alt={`${book.title} cover`}
           fill
           sizes={sizes}
@@ -41,18 +44,18 @@ export function BookCover2D({
       {/* Spine sheen */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/40 to-transparent"
+        className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-black/40 to-transparent"
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10"
+        className="pointer-events-none absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-white/10"
       />
     </div>
   );
 }
 
 function ProceduralCover({ book }: { book: Book }) {
-  const [from, to] = book.accent;
+  const [from, to] = bookAccent(book);
   return (
     <div
       className="flex h-full w-full flex-col justify-between p-4"
@@ -69,10 +72,7 @@ function ProceduralCover({ book }: { book: Book }) {
           {book.subtitle}
         </p>
       </div>
-      <span
-        aria-hidden
-        className="h-0.5 w-10 rounded-full bg-white/60"
-      />
+      <span aria-hidden className="h-0.5 w-10 rounded-full bg-white/60" />
     </div>
   );
 }

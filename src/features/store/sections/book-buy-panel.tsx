@@ -1,19 +1,128 @@
 "use client";
 
 import * as React from "react";
-import { ShoppingCart, Download, ShieldCheck, Check } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  ShoppingCart,
+  Download,
+  ShieldCheck,
+  Check,
+  Loader2,
+  Lock,
+} from "lucide-react";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 import type { Book } from "@/types";
 import { formatPrice } from "@/lib/utils";
+import { bookId, bookFileUrl } from "@/lib/book";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Button } from "@/components/ui/button";
-import { useStorePurchases } from "@/features/store/purchase-context";
-import { BookCheckoutModal } from "./book-checkout-modal";
+import { Modal } from "@/components/ui/modal";
+
+/** Pulls the Stripe Checkout URL from common API response shapes. */
+function resolveStripeUrl(data: unknown): string | undefined {
+  if (typeof data === "string") return data;
+  if (data && typeof data === "object") {
+    const d = data as Record<string, unknown>;
+    const candidate =
+      d.url ?? d.checkoutUrl ?? d.paymentUrl ?? d.stripeUrl ?? d.sessionUrl;
+    if (typeof candidate === "string") return candidate;
+  }
+  return undefined;
+}
+
+function looksUnauthorized(response: {
+  message?: string;
+  error?: unknown;
+}) {
+  const msg = `${response.message ?? ""} ${typeof response.error === "string" ? response.error : ""}`.toLowerCase();
+  return (
+    msg.includes("unauthorized") ||
+    msg.includes("unauthenticated") ||
+    msg.includes("not authenticated") ||
+    msg.includes("please login") ||
+    msg.includes("please log in") ||
+    msg.includes("jwt") ||
+    msg.includes("token")
+  );
+}
+
+function hasAccessToken() {
+  return Boolean(Cookies.get("accessToken"));
+}
 
 /** Purchase / download card. Shows "Buy" until owned, then "Download". */
-export function BookBuyPanel({ book }: { book: Book }) {
-  const { hasPurchased } = useStorePurchases();
-  const [open, setOpen] = React.useState(false);
-  const owned = hasPurchased(book.slug);
+export function BookBuyPanel({
+  book,
+  purchased = false,
+}: {
+  book: Book;
+  purchased?: boolean;
+}) {
+  const pathname = usePathname();
+  const id = bookId(book);
+  const fileUrl = bookFileUrl(book);
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname)}`;
+
+  const [loginOpen, setLoginOpen] = React.useState(false);
+  const [paying, setPaying] = React.useState(false);
+  // Same pattern as booking modal: auth = accessToken cookie, checked on the client.
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsLoggedIn(hasAccessToken());
+  }, []);
+
+  function requireLogin() {
+    setLoginOpen(true);
+  }
+
+  async function handleBuy() {
+    // Always re-read the cookie at click time — never trust a stale prop/state alone.
+    if (!hasAccessToken()) {
+      setIsLoggedIn(false);
+      requireLogin();
+      return;
+    }
+    setIsLoggedIn(true);
+
+    setPaying(true);
+    try {
+      const response = await nextFetch(`/books/purchase/${id}`, {
+        method: "POST",
+      });
+
+      if (!response?.success) {
+        if (looksUnauthorized(response)) {
+          requireLogin();
+          setPaying(false);
+          return;
+        }
+        toast.error(response?.message || "Could not start checkout.", {
+          id: "book-purchase",
+        });
+        setPaying(false);
+        return;
+      }
+
+      const stripeUrl = resolveStripeUrl(response.data);
+      if (!stripeUrl) {
+        toast.error("Payment link unavailable. Please try again.", {
+          id: "book-purchase",
+        });
+        setPaying(false);
+        return;
+      }
+
+      window.location.href = stripeUrl;
+    } catch (err) {
+      console.error("Book purchase error:", err);
+      toast.error("Network error. Please try again.", { id: "book-purchase" });
+      setPaying(false);
+    }
+  }
 
   return (
     <div className="border-gradient glow-soft rounded-4xl bg-panel/60 p-6 sm:p-7">
@@ -28,27 +137,53 @@ export function BookBuyPanel({ book }: { book: Book }) {
       </p>
 
       <div className="mt-6 flex flex-col gap-2.5">
-        {owned ? (
+        {purchased ? (
           <>
             <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-xs font-medium text-emerald-300">
               <Check className="h-3.5 w-3.5" /> In your library
             </span>
-            <Button asChild size="lg" className="w-full">
-              <a href={book.fileUrl} download>
-                <Download className="h-4 w-4" />
-                Download PDF
-              </a>
-            </Button>
+            {fileUrl ? (
+              <Button asChild size="lg" className="w-full">
+                <a
+                  href={fileUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </a>
+              </Button>
+            ) : (
+              <p className="text-center text-sm text-mist">
+                Purchase found, but the file isn&apos;t available yet.
+              </p>
+            )}
           </>
         ) : (
           <Button
             type="button"
             size="lg"
-            onClick={() => setOpen(true)}
+            onClick={handleBuy}
+            disabled={paying}
             className="w-full"
           >
-            <ShoppingCart className="h-4 w-4" />
-            Buy now
+            {paying ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Redirecting to
+                secure checkout…
+              </>
+            ) : isLoggedIn ? (
+              <>
+                <ShoppingCart className="h-4 w-4" />
+                Buy now
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4" />
+                Sign in to buy
+              </>
+            )}
           </Button>
         )}
       </div>
@@ -58,7 +193,30 @@ export function BookBuyPanel({ book }: { book: Book }) {
         Secure checkout · instant download
       </p>
 
-      <BookCheckoutModal book={book} open={open} onClose={() => setOpen(false)} />
+      <Modal
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        title="Sign in to buy"
+        description="Purchases are tied to your Hubology account so your library and downloads stay in one place."
+      >
+        <div className="flex flex-col items-center gap-5 py-2 text-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-gradient text-white shadow-[0_12px_40px_-10px_rgba(129,49,240,0.9)]">
+            <Lock className="h-6 w-6" />
+          </span>
+          <p className="max-w-xs text-sm text-mist">
+            Sign in to buy <span className="text-cloud">{book.title}</span> and
+            download it instantly.
+          </p>
+          <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center">
+            <Button asChild>
+              <Link href={loginHref}>Sign in</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/join">Create an account</Link>
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

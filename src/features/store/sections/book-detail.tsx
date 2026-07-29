@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft, Share2, Building2, CalendarDays, BookOpen, Layers } from "lucide-react";
+import {
+  ArrowLeft,
+  Share2,
+  Building2,
+  CalendarDays,
+  BookOpen,
+  Layers,
+} from "lucide-react";
 
 import type { Book } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
@@ -32,7 +39,15 @@ function DetailRow({
 }
 
 /** Full book detail page: overview, details, reviews, buy/download. */
-export function BookDetail({ book }: { book: Book }) {
+export function BookDetail({
+  book,
+  purchased = false,
+}: {
+  book: Book;
+  purchased?: boolean;
+}) {
+  const details = book.details ?? {};
+
   return (
     <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
       <Aurora animated className="-top-16 right-0 h-112 w-xl opacity-35" />
@@ -47,9 +62,7 @@ export function BookDetail({ book }: { book: Book }) {
         </Reveal>
 
         <div className="grid gap-10 lg:grid-cols-[1fr_340px] lg:items-start">
-          {/* Main */}
           <div className="flex flex-col gap-10">
-            {/* Hero */}
             <Reveal className="flex flex-col gap-6 sm:flex-row sm:gap-8">
               <BookCover2D
                 book={book}
@@ -62,61 +75,82 @@ export function BookDetail({ book }: { book: Book }) {
                   {book.title}
                 </h1>
                 <p className="text-lg text-mist">{book.subtitle}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-mist">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Stars value={book.rating.average} />
-                    <span className="text-cloud">{book.rating.average.toFixed(1)}</span>
-                    <span className="text-faint">
-                      ({book.rating.totalReviews})
-                    </span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Share2 className="h-4 w-4" />
-                    {book.shares.toLocaleString()} shares
-                  </span>
-                </div>
+                {(book.rating || book.shares != null) && (
+                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-mist">
+                    {book.rating ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Stars value={book.rating.average} />
+                        <span className="text-cloud">
+                          {book.rating.average.toFixed(1)}
+                        </span>
+                        <span className="text-faint">
+                          ({book.rating.totalReviews})
+                        </span>
+                      </span>
+                    ) : null}
+                    {book.shares != null ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Share2 className="h-4 w-4" />
+                        {book.shares.toLocaleString()} shares
+                      </span>
+                    ) : null}
+                  </div>
+                )}
                 <p className="mt-3 text-sm leading-relaxed text-mist/90">
                   {book.description}
                 </p>
               </div>
             </Reveal>
 
-            {/* Details */}
             <Reveal delay={80}>
               <h2 className="text-lg font-semibold text-cloud">Details</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <DetailRow
-                  icon={Building2}
-                  label="Publisher"
-                  value={book.details.publisher}
-                />
-                <DetailRow
-                  icon={CalendarDays}
-                  label="First published"
-                  value={book.details.firstPublish}
-                />
-                <DetailRow
-                  icon={Layers}
-                  label="Edition"
-                  value={book.details.edition}
-                />
-                <DetailRow
-                  icon={BookOpen}
-                  label="Pages"
-                  value={`${book.details.pages} pages`}
-                />
+                {details.publisher ? (
+                  <DetailRow
+                    icon={Building2}
+                    label="Publisher"
+                    value={details.publisher}
+                  />
+                ) : null}
+                {details.firstPublish ? (
+                  <DetailRow
+                    icon={CalendarDays}
+                    label="First published"
+                    value={details.firstPublish}
+                  />
+                ) : null}
+                {details.edition ? (
+                  <DetailRow
+                    icon={Layers}
+                    label="Edition"
+                    value={details.edition}
+                  />
+                ) : null}
+                {details.pages != null ? (
+                  <DetailRow
+                    icon={BookOpen}
+                    label="Pages"
+                    value={`${details.pages} pages`}
+                  />
+                ) : details.status ? (
+                  <DetailRow
+                    icon={BookOpen}
+                    label="Status"
+                    value={details.status}
+                  />
+                ) : null}
               </div>
             </Reveal>
 
-            {/* Reviews */}
-            <Reveal delay={120}>
-              <BookReviews book={book} />
-            </Reveal>
+            {book.rating?.reviews?.length ? (
+              <Reveal delay={120}>
+                <BookReviews book={book} />
+              </Reveal>
+            ) : null}
           </div>
 
-          {/* Buy rail */}
           <Reveal delay={100} className="lg:sticky lg:top-28">
-            <BookBuyPanel book={book} />
+            <BookBuyPanel book={book} purchased={purchased} />
           </Reveal>
         </div>
       </div>
