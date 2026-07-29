@@ -39,7 +39,7 @@ export function StepIdentity({ photo }: { photo: PhotoControls }) {
       {/* Profile photo */}
       <div className="flex flex-col gap-3">
         <Label>Profile photo</Label>
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-5">
           <div className="relative grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl border border-hairline-strong bg-white/3">
             {photo.preview ? (
               // eslint-disable-next-line @next/next/no-img-element

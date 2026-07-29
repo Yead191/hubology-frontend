@@ -79,7 +79,10 @@ export const expertRegisterSchema = z.object({
     .or(z.literal("")),
 
   // Step 3 — consulting preferences
-  hourlyRate: z.string().min(1, "Select an hourly rate range"),
+  hourlyRate: z
+    .string()
+    .min(1, "Enter your hourly rate")
+    .refine((v) => Number(v) > 0, "Enter a valid hourly rate"),
   availability: z.string().min(1, "Select your availability"),
   consultationTypes: z
     .array(z.string())

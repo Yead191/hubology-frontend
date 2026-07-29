@@ -6,11 +6,11 @@ import { SlidersHorizontal } from "lucide-react";
 
 import {
   type ExpertRegisterValues,
-  hourlyRateOptions,
   availabilityOptions,
   consultationTypeOptions,
 } from "@/lib/validators";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { CheckboxCard } from "@/components/ui/checkbox-card";
 import {
   Select,
@@ -40,28 +40,23 @@ export function StepPreferences() {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="hourlyRate">Hourly rate range (USD)</Label>
-          <Controller
-            control={control}
-            name="hourlyRate"
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  id="hourlyRate"
-                  aria-invalid={!!errors.hourlyRate}
-                >
-                  <SelectValue placeholder="Select a rate range" />
-                </SelectTrigger>
-                <SelectContent>
-                  {hourlyRateOptions.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <Label htmlFor="hourlyRate">Hourly rate — starting from (USD)</Label>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-mist">
+              $
+            </span>
+            <Input
+              id="hourlyRate"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              step={1}
+              placeholder="e.g. 100"
+              className="pl-8"
+              aria-invalid={!!errors.hourlyRate}
+              {...register("hourlyRate")}
+            />
+          </div>
           <FieldError message={errors.hourlyRate?.message} />
         </div>
 

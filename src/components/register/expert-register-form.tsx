@@ -2,16 +2,18 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   expertRegisterSchema,
   type ExpertRegisterValues,
 } from "@/lib/validators";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Button } from "@/components/ui/button";
-import { RegisterSuccess } from "@/components/register/member-register-form";
 import { ExpertStepper, type StepMeta } from "./expert/expert-stepper";
 import { StepIdentity } from "./expert/step-identity";
 import { StepExpertise } from "./expert/step-expertise";
@@ -46,7 +48,7 @@ const STEPS: (StepMeta & { fields: (keyof ExpertRegisterValues)[] })[] = [
 ];
 
 export function ExpertRegisterForm() {
-  const [done, setDone] = React.useState(false);
+  const router = useRouter();
   const [step, setStep] = React.useState(0);
   const [photo, setPhoto] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
@@ -112,25 +114,63 @@ export function ExpertRegisterForm() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
-  // Submit via FormData (includes photo + array fields) — ready for a real endpoint.
+  // Submit as multipart FormData to the vendor endpoint. Vendor-specific
+  // fields are nested under a JSON `vendorProfile`, with the photo as `image`.
   async function onValid(values: ExpertRegisterValues) {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => formData.append(key, String(item)));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
-    if (photo) formData.append("profilePhoto", photo);
+    try {
+      const vendorProfile = {
+        jobTitle: values.jobTitle,
+        contactNo: values.contactNo,
+        bio: values.bio,
+        expertise: values.expertise,
+        yearsExperience: values.yearsExperience,
+        degree: values.degree,
+        linkedin: values.linkedin,
+        hourlyRate: Number(values.hourlyRate),
+        availability: values.availability,
+        consultationTypes: values.consultationTypes,
+        applicationStatus: "pending",
+      };
 
-    await new Promise((r) => setTimeout(r, 1000));
-    // eslint-disable-next-line no-console
-    console.log("expert application:", {
-      ...values,
-      profilePhoto: photo?.name ?? null,
-    });
-    setDone(true);
+      const formData = new FormData();
+      formData.append("name", values.fullName);
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+      formData.append("company", values.company);
+      formData.append("vendorProfile", JSON.stringify(vendorProfile));
+      if (photo) formData.append("image", photo);
+
+      const response = await nextFetch("/auth/register/vendor", {
+        method: "POST",
+        body: formData,
+      });
+      console.log(response);
+      if (response?.success) {
+        toast.success(
+          response?.message ||
+            "Application submitted — verify your email to continue.",
+        );
+        router.push(
+          `/verify-otp?email=${encodeURIComponent(values.email)}&flow=verify`,
+        );
+        return;
+      }
+
+      if (response?.error && Array.isArray(response.error)) {
+        response.error.forEach((err: { message: string }) => {
+          toast.error(err.message, { id: "vendor-register" });
+        });
+      } else {
+        toast.error(response?.message || "Registration failed. Try again.", {
+          id: "vendor-register",
+        });
+      }
+    } catch (err) {
+      console.error("Vendor registration error:", err);
+      toast.error("Network error. Please try again.", {
+        id: "vendor-register",
+      });
+    }
   }
 
   // Enter / submit only finalises on the last step; otherwise advance.
@@ -143,12 +183,15 @@ export function ExpertRegisterForm() {
     void methods.handleSubmit(onValid)(e);
   }
 
-  if (done) return <RegisterSuccess role="expert" />;
-
   return (
     <FormProvider {...methods}>
       <div className="mb-8">
         <ExpertStepper steps={STEPS} current={step} />
+        {/* Mobile-only context, since the stepper hides labels on small screens. */}
+        <p className="mt-4 text-sm font-medium text-cloud sm:hidden">
+          Step {step + 1} of {STEPS.length}
+          <span className="text-mist"> · {STEPS[step].label}</span>
+        </p>
       </div>
 
       <form onSubmit={onFormSubmit} className="flex flex-col gap-6">
@@ -165,34 +208,46 @@ export function ExpertRegisterForm() {
         {step === 1 && <StepExpertise />}
         {step === 2 && <StepPreferences />}
 
-        {/* Navigation */}
-        <div className="flex items-center gap-3 border-t border-hairline pt-6">
+        {/* Navigation — stacks full-width on mobile, primary action on top. */}
+        <div className="flex flex-col-reverse gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center">
           {step > 0 && (
-            <Button type="button" variant="outline" onClick={goBack}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={goBack}
+              className="w-full sm:w-auto"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
           )}
 
-          <div className="ml-auto">
-            {!isLast ? (
-              <Button type="button" onClick={goNext}>
-                Continue
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            ) : (
-              <Button type="submit" size="lg" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Submitting
-                    application…
-                  </>
-                ) : (
-                  "Submit expert application"
-                )}
-              </Button>
-            )}
-          </div>
+          {!isLast ? (
+            <Button
+              type="button"
+              onClick={goNext}
+              className="w-full sm:ml-auto sm:w-auto"
+            >
+              Continue
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isSubmitting}
+              className="w-full sm:ml-auto sm:w-auto"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Submitting
+                  application…
+                </>
+              ) : (
+                "Submit expert application"
+              )}
+            </Button>
+          )}
         </div>
 
         <p className="text-center text-sm text-mist">
