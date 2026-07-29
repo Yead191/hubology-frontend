@@ -2,10 +2,6 @@ import type { Metadata } from "next";
 import { Sora, Manrope } from "next/font/google";
 import "./globals.css";
 
-import { AuthProvider } from "@/components/auth/auth-context";
-import { MembershipProvider } from "@/features/membership/membership-context";
-import { PurchaseProvider } from "@/features/store/purchase-context";
-import { CartProvider } from "@/components/cart/cart-context";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "sonner";
 import NavServer from "@/components/layout/NavServer";
@@ -65,17 +61,10 @@ export default function RootLayout({
             },
           }}
         />
-        <AuthProvider>
-          <MembershipProvider>
-            <PurchaseProvider>
-              <CartProvider>
-                <NavServer />
-                <main className="relative">{children}</main>
-                <Footer />
-              </CartProvider>
-            </PurchaseProvider>
-          </MembershipProvider>
-        </AuthProvider>
+
+        <NavServer />
+        <main className="relative">{children}</main>
+        <Footer />
       </body>
     </html>
   );

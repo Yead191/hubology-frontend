@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth, type MockUser } from "@/components/auth/auth-context";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

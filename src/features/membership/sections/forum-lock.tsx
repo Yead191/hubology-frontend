@@ -4,8 +4,6 @@ import Link from "next/link";
 import { Lock, Crown, ArrowRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/auth/auth-context";
-import { useMembership } from "@/features/membership/membership-context";
 
 const PERKS = [
   "Ask founders & verified experts",
@@ -15,13 +13,9 @@ const PERKS = [
 
 /**
  * Premium "members-only" gate shown over the forum when the viewer
- * lacks access. Handles both the logged-out and no-membership states,
- * and offers a one-click demo unlock so the flow is never a dead end.
+ * lacks an active subscription (from getProfile).
  */
-export function ForumLockCard() {
-  const { isLoggedIn } = useAuth();
-  const { subscribe } = useMembership();
-
+export function ForumLockCard({ isLoggedIn }: { isLoggedIn: boolean }) {
   if (!isLoggedIn) {
     return (
       <LockShell
@@ -31,7 +25,7 @@ export function ForumLockCard() {
       >
         <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
           <Button asChild>
-            <Link href="/login">
+            <Link href={`/login?redirect=${encodeURIComponent("/forum")}`}>
               Sign in
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -52,7 +46,10 @@ export function ForumLockCard() {
     >
       <ul className="mx-auto mb-6 flex max-w-xs flex-col gap-2.5 text-left">
         {PERKS.map((perk) => (
-          <li key={perk} className="flex items-center gap-2.5 text-sm text-cloud/85">
+          <li
+            key={perk}
+            className="flex items-center gap-2.5 text-sm text-cloud/85"
+          >
             <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-violet/15 text-violet-bright">
               <Check className="h-3 w-3" />
             </span>
@@ -67,9 +64,6 @@ export function ForumLockCard() {
             View membership plans
             <ArrowRight className="h-4 w-4" />
           </Link>
-        </Button>
-        <Button variant="ghost" onClick={() => subscribe("pro")}>
-          Preview as member (demo)
         </Button>
       </div>
     </LockShell>

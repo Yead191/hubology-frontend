@@ -6,24 +6,26 @@ import {
   Home,
   BookOpen,
   ShoppingBag,
+  Crown,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Aurora } from "@/components/ui/aurora";
 
-type PaymentKind = "service" | "digital" | "checkout";
+type PaymentKind = "service" | "digital" | "checkout" | "membership";
 
 interface PaymentResultProps {
   status: "success" | "failed";
-  /** Stripe session id, when present on the return URL. */
   sessionId?: string;
-  /** Distinguishes service booking vs digital product vs office checkout. */
   type?: string;
 }
 
 function resolveKind(type?: string): PaymentKind {
   const t = (type ?? "").toLowerCase();
+  if (t.includes("membership") || t.includes("subscription")) {
+    return "membership";
+  }
   if (t.includes("checkout") || t.includes("order") || t.includes("office")) {
     return "checkout";
   }
@@ -81,7 +83,29 @@ const COPY = {
         "Your payment was cancelled or didn't go through, so we haven't charged you. Your cart is still available if you'd like to try again.",
     },
   },
+  membership: {
+    success: {
+      eyebrow: "Payment confirmed",
+      title: "Welcome to the hub",
+      message:
+        "Your membership is active. You now have access to the community forum and member perks — a receipt is on its way to your inbox.",
+    },
+    failed: {
+      eyebrow: "Payment not completed",
+      title: "Membership not activated",
+      message:
+        "Your payment was cancelled or didn't go through, so we haven't charged you. You can pick a plan again whenever you're ready.",
+    },
+  },
 } as const;
+
+function TypeIcon({ kind }: { kind: PaymentKind }) {
+  if (kind === "checkout")
+    return <ShoppingBag className="h-3.5 w-3.5 text-violet-bright" />;
+  if (kind === "membership")
+    return <Crown className="h-3.5 w-3.5 text-violet-bright" />;
+  return <BookOpen className="h-3.5 w-3.5 text-violet-bright" />;
+}
 
 export function PaymentResult({
   status,
@@ -127,11 +151,7 @@ export function PaymentResult({
 
         {type ? (
           <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-hairline bg-white/3 px-3 py-1 text-xs text-mist">
-            {kind === "checkout" ? (
-              <ShoppingBag className="h-3.5 w-3.5 text-violet-bright" />
-            ) : (
-              <BookOpen className="h-3.5 w-3.5 text-violet-bright" />
-            )}
+            <TypeIcon kind={kind} />
             {type}
           </p>
         ) : null}
@@ -170,6 +190,17 @@ export function PaymentResult({
                   </Link>
                 </Button>
               </>
+            ) : kind === "membership" ? (
+              <>
+                <Button asChild size="lg" className="w-full">
+                  <Link href="/membership">
+                    View your plan <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/forum">Enter the forum</Link>
+                </Button>
+              </>
             ) : (
               <>
                 <Button asChild size="lg" className="w-full">
@@ -204,6 +235,19 @@ export function PaymentResult({
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link href="/office-supplies">Back to supplies</Link>
+              </Button>
+            </>
+          ) : kind === "membership" ? (
+            <>
+              <Button asChild size="lg" className="w-full">
+                <Link href="/membership">
+                  Try again <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/">
+                  <Home className="h-4 w-4" /> Back to home
+                </Link>
               </Button>
             </>
           ) : (

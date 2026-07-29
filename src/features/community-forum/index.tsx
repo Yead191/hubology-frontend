@@ -17,7 +17,6 @@ import {
 import { PostCard } from "@/features/community-forum/sections/post-card";
 import { NewPostModal } from "@/features/community-forum/sections/new-post-modal";
 import { EmptyState } from "@/features/community-forum/sections/empty-state";
-import { useMembership } from "@/features/membership/membership-context";
 import { ForumLockCard } from "@/features/membership/sections/forum-lock";
 
 const TAB_EMPTY: Record<
@@ -42,9 +41,14 @@ const TAB_EMPTY: Record<
   },
 };
 
-export default function CommunityForum() {
+export default function CommunityForum({
+  hasForumAccess,
+  isLoggedIn,
+}: {
+  hasForumAccess: boolean;
+  isLoggedIn: boolean;
+}) {
   const { posts, myPosts, likedPosts, commentedPosts } = useForum();
-  const { hasForumAccess } = useMembership();
 
   const [tab, setTab] = React.useState<ForumTab>("feed");
   const [query, setQuery] = React.useState("");
@@ -120,7 +124,7 @@ export default function CommunityForum() {
 
             {/* Lock overlay */}
             <div className="absolute inset-0 flex items-start justify-center pt-8 sm:pt-16">
-              <ForumLockCard />
+              <ForumLockCard isLoggedIn={isLoggedIn} />
             </div>
           </div>
         </div>

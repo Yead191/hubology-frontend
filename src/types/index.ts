@@ -128,22 +128,36 @@ export interface ForumPost {
 /* ------------------------------------------------------------------ *
  * Membership
  * ------------------------------------------------------------------ */
+/** API query / plan field: `month` | `year`. */
+export type MembershipRecurring = "month" | "year";
+
+/** @deprecated Prefer MembershipRecurring — kept for older UI labels. */
 export type BillingCycle = "monthly" | "yearly";
 
+/** Membership package as returned by GET /membership?recurring=… */
 export interface MembershipPlan {
-  id: string;
+  _id: string;
   name: string;
   tagline: string;
-  /** Per-month price when billed monthly. */
-  priceMonthly: number;
-  /** Per-month price when billed yearly (i.e. the discounted rate). */
-  priceYearly: number;
-  currency: string;
-  features: string[];
-  /** Visually elevate this plan as the recommended tier. */
+  type?: string;
+  price: number;
+  recurring: MembershipRecurring;
+  interval?: number;
   featured?: boolean;
-  /** Short ribbon label, e.g. "Most popular". */
   highlight?: string;
+  features: string[];
+  productId?: string;
+  priceId?: string;
+  /** Stripe payment link — open when the user chooses this plan. */
+  paymentUrl?: string;
+}
+
+/** Active subscription nested on GET /user/profile. */
+export interface UserSubscription {
+  _id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
 }
 
 /* ------------------------------------------------------------------ *

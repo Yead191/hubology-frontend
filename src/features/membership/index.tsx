@@ -1,11 +1,16 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MessagesSquare, ShieldCheck, Sparkles } from "lucide-react";
 
+import type {
+  MembershipPlan,
+  MembershipRecurring,
+  UserSubscription,
+} from "@/types";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/components/sections/cta-band";
-import { useMembership } from "@/features/membership/membership-context";
 import { BillingToggle } from "@/features/membership/sections/billing-toggle";
 import { PlanCard } from "@/features/membership/sections/plan-card";
 import { ActivePlanBanner } from "@/features/membership/sections/active-plan-banner";
@@ -17,9 +22,25 @@ const TRUST = [
   { icon: Sparkles, label: "New perks added every month" },
 ];
 
-export default function Membership() {
-  const { plans, billingCycle, setBillingCycle, isSubscribed } =
-    useMembership();
+export default function Membership({
+  plans,
+  recurring,
+  subscription,
+  isLoggedIn,
+}: {
+  plans: MembershipPlan[];
+  recurring: MembershipRecurring;
+  subscription: UserSubscription | null;
+  isLoggedIn: boolean;
+}) {
+  const router = useRouter();
+
+  function setRecurring(next: MembershipRecurring) {
+    const params = new URLSearchParams();
+    if (next === "year") params.set("recurring", "year");
+    const qs = params.toString();
+    router.push(qs ? `/membership?${qs}` : "/membership");
+  }
 
   return (
     <>
@@ -30,7 +51,6 @@ export default function Membership() {
         />
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          {/* Header */}
           <Reveal className="mx-auto max-w-2xl text-center">
             <h1 className="mt-3 text-balance font-display text-4xl font-bold leading-[1.1] text-cloud sm:text-5xl">
               One membership,{" "}
@@ -42,28 +62,39 @@ export default function Membership() {
             </p>
           </Reveal>
 
-          {/* Active plan banner (only when subscribed) */}
-          {isSubscribed && (
+          {subscription ? (
             <Reveal className="mx-auto mt-10 max-w-3xl">
-              <ActivePlanBanner />
+              <ActivePlanBanner subscription={subscription} />
             </Reveal>
-          )}
+          ) : null}
 
-          {/* Billing toggle */}
           <Reveal delay={80} className="mt-10 flex justify-center">
-            <BillingToggle value={billingCycle} onChange={setBillingCycle} />
+            <BillingToggle value={recurring} onChange={setRecurring} />
           </Reveal>
 
-          {/* Plans */}
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {plans.map((plan, i) => (
-              <Reveal key={plan.id} delay={(i % 3) * 90} className="h-full">
-                <PlanCard plan={plan} />
-              </Reveal>
-            ))}
-          </div>
+          {plans.length > 0 ? (
+            <div
+              className={`mt-12 grid gap-6 ${plans.length === 1 ? "mx-auto max-w-md md:grid-cols-1" : plans.length === 2 ? "mx-auto max-w-3xl md:grid-cols-2" : "md:grid-cols-3"}`}
+            >
+              {plans.map((plan, i) => (
+                <Reveal key={plan._id} delay={(i % 3) * 90} className="h-full">
+                  <PlanCard
+                    plan={plan}
+                    subscription={subscription}
+                    isLoggedIn={isLoggedIn}
+                  />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <div className="mx-auto mt-12 max-w-md rounded-3xl border border-dashed border-hairline-strong bg-panel/30 px-6 py-12 text-center">
+              <p className="text-mist">
+                No {recurring === "year" ? "yearly" : "monthly"} plans available
+                right now.
+              </p>
+            </div>
+          )}
 
-          {/* Trust strip */}
           <Reveal
             delay={120}
             className="mx-auto mt-12 flex max-w-3xl flex-wrap items-center justify-center gap-x-8 gap-y-3"
@@ -81,7 +112,6 @@ export default function Membership() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="relative px-4 pb-24 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <MembershipFaq />

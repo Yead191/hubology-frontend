@@ -3,23 +3,30 @@
 import Link from "next/link";
 import { BadgeCheck, ArrowRight } from "lucide-react";
 
-import { formatPrice } from "@/lib/utils";
+import type { UserSubscription } from "@/types";
 import { Button } from "@/components/ui/button";
-import { useMembership } from "@/features/membership/membership-context";
+
+function formatDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 /**
- * Shown at the top of the membership page once the viewer is subscribed:
- * confirms their plan, links into the forum, and allows cancelling.
+ * Shown at the top of the membership page once the viewer has an active
+ * subscription on their profile.
  */
-export function ActivePlanBanner() {
-  const { activePlan, billingCycle, cancel } = useMembership();
-  if (!activePlan) return null;
-
-  const price =
-    billingCycle === "yearly"
-      ? activePlan.priceYearly
-      : activePlan.priceMonthly;
-
+export function ActivePlanBanner({
+  subscription,
+}: {
+  subscription: UserSubscription;
+}) {
   return (
     <div className="border-gradient glow-violet flex flex-col gap-4 rounded-3xl bg-panel/70 p-6 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
@@ -28,11 +35,11 @@ export function ActivePlanBanner() {
         </span>
         <div>
           <p className="font-display text-lg font-semibold text-cloud">
-            You&apos;re on the {activePlan.name} plan
+            You&apos;re on the {subscription.name} plan
           </p>
           <p className="text-sm text-mist">
-            {formatPrice(price, activePlan.currency)}/month · full community
-            forum access unlocked
+            Active through {formatDate(subscription.end_date)} · community forum
+            access unlocked
           </p>
         </div>
       </div>
@@ -43,9 +50,6 @@ export function ActivePlanBanner() {
             Enter the forum
             <ArrowRight className="h-4 w-4" />
           </Link>
-        </Button>
-        <Button variant="ghost" onClick={cancel}>
-          Cancel
         </Button>
       </div>
     </div>

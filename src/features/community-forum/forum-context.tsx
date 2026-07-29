@@ -2,8 +2,8 @@
 
 import * as React from "react";
 
-import type { ForumAuthor, ForumCategory, ForumPost } from "@/types";
-import { useAuth } from "@/components/auth/auth-context";
+import type { ForumAuthor, ForumAuthorRole, ForumCategory, ForumPost } from "@/types";
+import { getImageUrl } from "@/lib/getImageUrl";
 import { SEED_POSTS } from "@/data/forum";
 
 interface NewPostInput {
@@ -40,18 +40,45 @@ const ForumContext = React.createContext<ForumContextValue | null>(null);
 let commentSeq = 0;
 let postSeq = 0;
 
-export function ForumProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoggedIn } = useAuth();
-  const [posts, setPosts] = React.useState<ForumPost[]>(SEED_POSTS);
+function mapForumRole(role?: string): ForumAuthorRole {
+  const r = (role ?? "").toLowerCase();
+  if (r === "vendor" || r === "expert") return "vendor";
+  return "member";
+}
 
-  // The demo auth user is a founder/member by default.
-  const currentUser = React.useMemo<ForumAuthor | null>(
-    () =>
-      user
-        ? { name: user.name, avatarUrl: user.avatar, role: "member" }
-        : null,
-    [user],
-  );
+function toForumAuthor(user: {
+  name?: string;
+  image?: string;
+  role?: string;
+  company?: string;
+  interest?: string;
+} | null): ForumAuthor | null {
+  if (!user?.name) return null;
+  return {
+    name: user.name,
+    avatarUrl: getImageUrl(user.image) ?? user.image ?? "",
+    role: mapForumRole(user.role),
+    headline: user.company || user.interest || undefined,
+  };
+}
+
+export function ForumProvider({
+  children,
+  user = null,
+}: {
+  children: React.ReactNode;
+  /** Profile from getProfile() — null when logged out. */
+  user?: {
+    name?: string;
+    image?: string;
+    role?: string;
+    company?: string;
+    interest?: string;
+  } | null;
+}) {
+  const [posts, setPosts] = React.useState<ForumPost[]>(SEED_POSTS);
+  const isLoggedIn = Boolean(user);
+  const currentUser = React.useMemo(() => toForumAuthor(user), [user]);
 
   const getPost = React.useCallback(
     (id: string) => posts.find((p) => p.id === id),
@@ -153,7 +180,11 @@ export function ForumProvider({ children }: { children: React.ReactNode }) {
       myPosts: mine,
       likedPosts: liked,
       commentedPosts: commented,
-      stats: { posts: mine.length, comments: commentCount, likes: liked.length },
+      stats: {
+        posts: mine.length,
+        comments: commentCount,
+        likes: liked.length,
+      },
     };
   }, [posts, currentUser]);
 
@@ -192,7 +223,9 @@ export function ForumProvider({ children }: { children: React.ReactNode }) {
     ],
   );
 
-  return <ForumContext.Provider value={value}>{children}</ForumContext.Provider>;
+  return (
+    <ForumContext.Provider value={value}>{children}</ForumContext.Provider>
+  );
 }
 
 export function useForum() {
