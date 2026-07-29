@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/logo";
 import { NotificationMenu } from "@/components/layout/notification-menu";
 import { ProfileMenu } from "@/components/layout/profile-menu";
-import { useAuth } from "@/components/auth/auth-context";
 import { useCart } from "@/components/cart/cart-context";
 import {
   DropdownMenu,
@@ -24,6 +23,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import Cookies from "js-cookie";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -33,10 +33,17 @@ function isActive(pathname: string, href: string) {
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isLoggedIn, user } = useAuth();
   const { cartCount } = useCart();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const isLoggedIn = Cookies.get("accessToken");
+  const user: any = {
+    name: "Helena Thorne",
+    email: "helena@thornetax.com",
+    avatar: "https://i.pravatar.cc/200?img=5",
+    role: "member",
+  };
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -105,9 +112,7 @@ export function Navbar() {
                     href={item.href}
                     className={cn(
                       "relative rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 flex items-center",
-                      active
-                        ? "text-cloud"
-                        : "text-mist hover:text-cloud",
+                      active ? "text-cloud" : "text-mist hover:text-cloud",
                     )}
                   >
                     {active && (
@@ -157,7 +162,11 @@ export function Navbar() {
               onClick={() => setMobileOpen((o) => !o)}
               className="grid h-10 w-10 place-items-center rounded-full border border-hairline bg-white/3 text-cloud transition-colors hover:bg-white/[0.07] lg:hidden"
             >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
         </nav>
@@ -176,7 +185,9 @@ export function Navbar() {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
-                const isAnySubActive = item.subItems.some((sub) => isActive(pathname, sub.href));
+                const isAnySubActive = item.subItems.some((sub) =>
+                  isActive(pathname, sub.href),
+                );
                 return (
                   <li key={item.href} className="flex flex-col gap-1">
                     <Collapsible defaultOpen={false}>

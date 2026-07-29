@@ -13,6 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth, type MockUser } from "@/components/auth/auth-context";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function initials(name: string) {
   return name
@@ -24,7 +27,13 @@ function initials(name: string) {
 }
 
 export function ProfileMenu({ user }: { user: MockUser }) {
-  const { logout } = useAuth();
+  const router = useRouter();
+  const logout = () => {
+    Cookies.remove("accessToken");
+    Cookies.remove("role");
+    toast.success("Logged out successfully");
+    router.refresh();
+  };
 
   return (
     <DropdownMenu>
@@ -42,7 +51,9 @@ export function ProfileMenu({ user }: { user: MockUser }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>
           <span className="flex flex-col">
-            <span className="text-sm font-semibold text-cloud">{user.name}</span>
+            <span className="text-sm font-semibold text-cloud">
+              {user.name}
+            </span>
             <span className="text-xs text-mist">{user.email}</span>
           </span>
         </DropdownMenuLabel>

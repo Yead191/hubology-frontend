@@ -2,15 +2,18 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   memberRegisterSchema,
   expertiseOptions,
   type MemberRegisterValues,
 } from "@/lib/validators";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +28,8 @@ import { GoogleButton, AuthDivider } from "@/components/auth/google-button";
 import { FieldError } from "@/components/auth/field-error";
 
 export function MemberRegisterForm() {
-  const [done, setDone] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -45,19 +48,43 @@ export function MemberRegisterForm() {
     },
   });
 
-  // Submit via FormData, as requested — ready to POST to a real endpoint.
   async function onSubmit(values: MemberRegisterValues) {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) =>
-      formData.append(key, String(value)),
-    );
-    await new Promise((r) => setTimeout(r, 900));
-    // eslint-disable-next-line no-console
-    console.log("member registration:", Object.fromEntries(formData));
-    setDone(true);
-  }
+    try {
+      const response = await nextFetch("/auth/register", {
+        method: "POST",
+        body: {
+          fullName: values.fullName,
+          email: values.email,
+          company: values.company,
+          interest: values.interest,
+          password: values.password,
+        },
+      });
 
-  if (done) return <RegisterSuccess role="member" />;
+      if (response?.success) {
+        toast.success(
+          response?.message || "Account created — verify your email to continue.",
+        );
+        router.push(
+          `/verify-otp?email=${encodeURIComponent(values.email)}&flow=verify`,
+        );
+        return;
+      }
+
+      if (response?.error && Array.isArray(response.error)) {
+        response.error.forEach((err: { message: string }) => {
+          toast.error(err.message, { id: "register" });
+        });
+      } else {
+        toast.error(response?.message || "Registration failed. Try again.", {
+          id: "register",
+        });
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      toast.error("Network error. Please try again.", { id: "register" });
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
