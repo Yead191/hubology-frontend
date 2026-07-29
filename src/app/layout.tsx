@@ -9,6 +9,7 @@ import { CartProvider } from "@/components/cart/cart-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DemoAuthToggle } from "@/components/layout/demo-auth-toggle";
+import { Toaster } from "sonner";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -39,6 +40,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sora.variable} ${manrope.variable}`}>
       <body className="min-h-screen bg-ink text-cloud antialiased scroll-smooth">
+        <Toaster
+          position="bottom-right"
+          richColors
+          duration={2000}
+          closeButton={true}
+        />
         <AuthProvider>
           <MembershipProvider>
             <PurchaseProvider>

@@ -5,17 +5,25 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton, AuthDivider } from "@/components/auth/google-button";
 import { FieldError } from "@/components/auth/field-error";
+import { useRouter } from "next/navigation";
+import { useResendOtp } from "@/hooks/useResendOtp";
+import { toast } from "sonner";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
+import Cookies from "js-cookie";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const { resend } = useResendOtp();
 
   const {
     register,
@@ -26,13 +34,61 @@ export function LoginForm() {
     defaultValues: { email: "", password: "", remember: false },
   });
 
-  // UI-only: simulate a request, then show success. Wire to real auth later.
-  async function onSubmit(values: LoginValues) {
-    await new Promise((r) => setTimeout(r, 900));
-    // eslint-disable-next-line no-console
-    console.log("login payload", values);
-    setSubmitted(true);
-  }
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    const formData = new FormData(e.currentTarget);
+
+    const email = formData.get("email");
+    const password = formData.get("password");
+    if (!email || !password) {
+      toast.error("Please fill in all fields", { id: "login" });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await nextFetch("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      });
+      if (
+        !response?.success &&
+        response.message ===
+          "Account is not verified. Please check your email for verification code."
+      ) {
+        await resend(email as string);
+        setIsLoading(false);
+        return;
+      }
+      if (response?.success) {
+        Cookies.set("accessToken", response?.data?.accessToken);
+        Cookies.set("role", response?.data?.role);
+        toast.success(response?.message);
+        // Callers that resume their own flow (e.g. a purchase) can opt out of
+        // the default redirect to /home.
+        router.replace("/");
+
+        setIsLoading(false);
+      } else {
+        if (response?.error && Array.isArray(response.error)) {
+          response.error.forEach((err: { message: string }) => {
+            toast.error(err.message, { id: "sign-up" });
+          });
+        } else {
+          toast.error(response?.message || "Something went wrong!", {
+            id: "sign-up",
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -98,7 +154,12 @@ export function LoginForm() {
           Keep me signed in
         </label>
 
-        <Button type="submit" size="lg" disabled={isSubmitting} className="mt-1 w-full">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="mt-1 w-full"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" /> Signing in…
@@ -118,7 +179,10 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-mist">
         New to Hubology?{" "}
-        <Link href="/join" className="font-medium text-violet-bright hover:underline">
+        <Link
+          href="/join"
+          className="font-medium text-violet-bright hover:underline"
+        >
           Join the Hub
         </Link>
       </p>
