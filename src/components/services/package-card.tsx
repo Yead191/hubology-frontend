@@ -41,7 +41,10 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
 
       <ul className="mt-7 flex flex-1 flex-col gap-3.5">
         {pkg.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-3 text-sm text-cloud/85">
+          <li
+            key={feature}
+            className="flex items-start gap-3 text-sm text-cloud/85"
+          >
             <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-violet/15 text-violet-bright">
               <Check className="h-3 w-3" />
             </span>
@@ -51,15 +54,12 @@ export function PackageCard({ pkg }: { pkg: ServicePackage }) {
       </ul>
 
       <div className="mt-8 flex flex-col gap-2.5">
-        <BookNowButton
-          service={pkg}
-          variant="premium"
-          className="w-full"
-        >
+        <BookNowButton service={pkg} variant="premium" className="w-full">
           Book now
         </BookNowButton>
+
         <Link
-          href={`/services/${pkg.slug}`}
+          href={`/services/${pkg?._id}`}
           className="text-center text-sm font-medium text-mist transition-colors hover:text-cloud"
         >
           View details

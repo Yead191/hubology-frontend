@@ -4,19 +4,26 @@
    ============================================================ */
 
 export interface Price {
-  currency: string;
+  /** Optional — API omits it; formatPrice falls back to "$". */
+  currency?: string;
   amount: number;
   frequency: string;
 }
 
 export interface ServicePackage {
-  slug: string;
+  /** Mongo id from the API — used as the booking's `service` reference. */
+  _id?: string;
+  /** URL slug for mock/static data; API records may not have one. */
+  slug?: string;
   title: string;
   tagline: string;
   price: Price;
   features: string[];
   /** Highlight the card with extra glow (e.g. "most popular"). */
   featured?: boolean;
+  /** API extras (present on real records). */
+  image?: string;
+  longDescription?: string;
 }
 
 export interface ServiceDetail {

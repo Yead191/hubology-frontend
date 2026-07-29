@@ -2,15 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Lock, CalendarClock, ShieldCheck } from "lucide-react";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 import type { ServicePackage } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { bookingSchema, type BookingValues } from "@/lib/validators";
-import { useAuth } from "@/components/auth/auth-context";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +20,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldError } from "@/components/auth/field-error";
 
-/** Booking intake modal. Requires login; prefills contact from the user. */
+// Change this if your create-booking route differs. On success the API is
+// expected to return a Stripe Checkout URL on `data` (see resolveStripeUrl).
+const BOOKING_ENDPOINT = "/bookings";
+
+/** Pulls the Stripe Checkout URL out of the various shapes an API might return. */
+function resolveStripeUrl(data: unknown): string | undefined {
+  if (typeof data === "string") return data;
+  if (data && typeof data === "object") {
+    const d = data as Record<string, unknown>;
+    const candidate =
+      d.url ?? d.checkoutUrl ?? d.paymentUrl ?? d.stripeUrl ?? d.sessionUrl;
+    if (typeof candidate === "string") return candidate;
+  }
+  return undefined;
+}
+
+/** Booking intake modal. Requires login; contact details come from the token. */
 export function BookingModal({
   service,
   open,
@@ -28,10 +46,17 @@ export function BookingModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const router = useRouter();
-  const { user, isLoggedIn } = useAuth();
   const [redirecting, setRedirecting] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const today = new Date().toISOString().slice(0, 10);
+  // Send the user back to the page they were booking from after they log in.
+  const pathname = usePathname();
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname)}`;
+
+  // Auth is driven by the accessToken cookie set at login. Re-check on open.
+  React.useEffect(() => {
+    if (open) setIsLoggedIn(Boolean(Cookies.get("accessToken")));
+  }, [open]);
 
   const {
     register,
@@ -40,42 +65,58 @@ export function BookingModal({
     formState: { errors },
   } = useForm<BookingValues>({
     resolver: zodResolver(bookingSchema),
-    defaultValues: { fullName: "", email: "", date: "", time: "", notes: "" },
+    defaultValues: { date: "", time: "", note: "" },
   });
 
-  // Prefill contact details from the signed-in user each time we open.
   React.useEffect(() => {
-    if (open && user) {
-      reset({
-        fullName: user.name,
-        email: user.email,
-        date: "",
-        time: "",
-        notes: "",
-      });
-    }
-  }, [open, user, reset]);
+    if (open) reset({ date: "", time: "", note: "" });
+  }, [open, reset]);
 
   async function onSubmit(values: BookingValues) {
+    if (!service._id) {
+      toast.error("This service is unavailable to book right now.", {
+        id: "booking",
+      });
+      return;
+    }
+
     setRedirecting(true);
+    try {
+      const response = await nextFetch(BOOKING_ENDPOINT, {
+        method: "POST",
+        body: {
+          service: service._id,
+          // date input -> ISO at UTC midnight (e.g. 2026-08-15T00:00:00.000Z)
+          preferredDate: new Date(values.date).toISOString(),
+          preferredTime: values.time,
+          note: values.note ?? "",
+        },
+      });
 
-    // ── Stripe integration point ───────────────────────────────
-    // In production, POST these details to your API to create a
-    // Checkout Session, then redirect to session.url:
-    //   const { url } = await createCheckoutSession({ slug: service.slug, ...values })
-    //   window.location.href = url
-    // Stripe collects card + billing and redirects back to success_url.
-    // Here we simulate that round-trip and land on the confirmation.
-    const reference = `HB-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    const params = new URLSearchParams({
-      service: service.slug,
-      ref: reference,
-      date: values.date,
-      time: values.time,
-    });
+      if (!response?.success) {
+        toast.error(response?.message || "Could not create your booking.", {
+          id: "booking",
+        });
+        setRedirecting(false);
+        return;
+      }
 
-    await new Promise((r) => setTimeout(r, 1200));
-    router.push(`/booking/confirmation?${params.toString()}`);
+      const stripeUrl = resolveStripeUrl(response.data);
+      if (!stripeUrl) {
+        toast.error("Payment link unavailable. Please try again.", {
+          id: "booking",
+        });
+        setRedirecting(false);
+        return;
+      }
+
+      // Hand off to Stripe Checkout. Keep the spinner during navigation.
+      window.location.href = stripeUrl;
+    } catch (err) {
+      console.error("Booking error:", err);
+      toast.error("Network error. Please try again.", { id: "booking" });
+      setRedirecting(false);
+    }
   }
 
   // ── Login gate ─────────────────────────────────────────────
@@ -97,7 +138,7 @@ export function BookingModal({
           </p>
           <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center">
             <Button asChild>
-              <Link href="/login">Sign in</Link>
+              <Link href={loginHref}>Sign in</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/join">Create an account</Link>
@@ -113,11 +154,11 @@ export function BookingModal({
       open={open}
       onClose={redirecting ? () => {} : onClose}
       title={`Book ${service.title}`}
-      description="Tell us a little about your needs, then continue to secure checkout."
+      description="Pick a time that works, then continue to secure checkout."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         {/* Order summary */}
-        <div className="flex items-center justify-between rounded-2xl border border-hairline bg-white/[0.03] px-4 py-3">
+        <div className="flex items-center justify-between rounded-2xl border border-hairline bg-white/3 px-4 py-3">
           <div className="flex flex-col">
             <span className="text-sm font-medium text-cloud">
               {service.title}
@@ -132,27 +173,6 @@ export function BookingModal({
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="fullName">Full name</Label>
-            <Input
-              id="fullName"
-              aria-invalid={!!errors.fullName}
-              {...register("fullName")}
-            />
-            <FieldError message={errors.fullName?.message} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              aria-invalid={!!errors.email}
-              {...register("email")}
-            />
-            <FieldError message={errors.email?.message} />
-          </div>
-
           <div className="flex flex-col gap-2">
             <Label htmlFor="date">Preferred date</Label>
             <Input
@@ -178,15 +198,17 @@ export function BookingModal({
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="notes">Briefly, what do you need?</Label>
+          <Label htmlFor="note">
+            Add a note <span className="text-faint">(optional)</span>
+          </Label>
           <Textarea
-            id="notes"
+            id="note"
             rows={3}
             placeholder="e.g. Forming a 2-person LLC in Delaware, need it filed this month."
-            aria-invalid={!!errors.notes}
-            {...register("notes")}
+            aria-invalid={!!errors.note}
+            {...register("note")}
           />
-          <FieldError message={errors.notes?.message} />
+          <FieldError message={errors.note?.message} />
         </div>
 
         <Button type="submit" size="lg" disabled={redirecting} className="w-full">

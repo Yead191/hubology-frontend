@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton, AuthDivider } from "@/components/auth/google-button";
 import { FieldError } from "@/components/auth/field-error";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useResendOtp } from "@/hooks/useResendOtp";
 import { toast } from "sonner";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
@@ -20,6 +20,9 @@ import Cookies from "js-cookie";
 export function LoginForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Return the user to where they came from (e.g. the booking page), else home.
+  const redirectTo = searchParams.get("redirect") || "/";
   const { resend } = useResendOtp();
 
   const {
@@ -60,7 +63,7 @@ export function LoginForm() {
         Cookies.set("accessToken", response?.data?.createToken);
         Cookies.set("role", response?.data?.role);
         toast.success(response?.message || "Welcome back!");
-        router.replace("/");
+        router.replace(redirectTo);
         return;
       }
 

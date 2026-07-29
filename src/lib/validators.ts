@@ -99,9 +99,9 @@ export const expertRegisterSchema = z.object({
 export type ExpertRegisterValues = z.infer<typeof expertRegisterSchema>;
 
 /* ------------------- Service booking (intake) ------------------- */
+// Name/email come from the authenticated token on the backend, so we only
+// collect scheduling details here.
 export const bookingSchema = z.object({
-  fullName: z.string().min(2, "Please enter your full name"),
-  email: z.string().min(1, "Email is required").email("Enter a valid email"),
   date: z
     .string()
     .min(1, "Choose a preferred date")
@@ -110,10 +110,11 @@ export const bookingSchema = z.object({
       "Choose a date in the future",
     ),
   time: z.string().min(1, "Choose a preferred time"),
-  notes: z
+  note: z
     .string()
-    .min(10, "A sentence or two helps your expert prepare")
-    .max(500, "Please keep this under 500 characters"),
+    .max(500, "Please keep this under 500 characters")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type BookingValues = z.infer<typeof bookingSchema>;
