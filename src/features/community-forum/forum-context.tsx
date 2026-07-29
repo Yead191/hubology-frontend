@@ -2,51 +2,27 @@
 
 import * as React from "react";
 
-import type { ForumAuthor, ForumAuthorRole, ForumCategory, ForumPost } from "@/types";
+import type { ForumAuthor, ForumAuthorRole, ForumPost, ForumStats } from "@/types";
 import { getImageUrl } from "@/lib/getImageUrl";
-import { SEED_POSTS } from "@/data/forum";
-
-interface NewPostInput {
-  category: ForumCategory;
-  content: string;
-}
 
 interface ForumContextValue {
-  posts: ForumPost[];
-  /** The signed-in viewer mapped to a forum author, or null if logged out. */
   currentUser: ForumAuthor | null;
   isLoggedIn: boolean;
-
-  getPost: (id: string) => ForumPost | undefined;
-  toggleLike: (postId: string) => void;
-  addComment: (postId: string, text: string) => void;
-  addPost: (input: NewPostInput) => ForumPost | null;
-  updatePost: (postId: string, input: NewPostInput) => void;
-  deletePost: (postId: string) => void;
-  /** True when the given post was authored by the current user. */
+  userId: string | null;
+  stats: ForumStats;
   isOwnPost: (post: ForumPost) => boolean;
-
-  /** Posts authored by the current user. */
-  myPosts: ForumPost[];
-  /** Posts the current user has liked. */
-  likedPosts: ForumPost[];
-  /** Posts the current user has commented on. */
-  commentedPosts: ForumPost[];
-  stats: { posts: number; comments: number; likes: number };
 }
 
 const ForumContext = React.createContext<ForumContextValue | null>(null);
 
-let commentSeq = 0;
-let postSeq = 0;
-
-function mapForumRole(role?: string): ForumAuthorRole {
+function mapRole(role?: string): ForumAuthorRole {
   const r = (role ?? "").toLowerCase();
   if (r === "vendor" || r === "expert") return "vendor";
   return "member";
 }
 
 function toForumAuthor(user: {
+  _id?: string;
   name?: string;
   image?: string;
   role?: string;
@@ -55,9 +31,10 @@ function toForumAuthor(user: {
 } | null): ForumAuthor | null {
   if (!user?.name) return null;
   return {
+    id: user._id,
     name: user.name,
     avatarUrl: getImageUrl(user.image) ?? user.image ?? "",
-    role: mapForumRole(user.role),
+    role: mapRole(user.role),
     headline: user.company || user.interest || undefined,
   };
 }
@@ -65,162 +42,38 @@ function toForumAuthor(user: {
 export function ForumProvider({
   children,
   user = null,
+  stats = { posts: 0, comments: 0, likes: 0 },
 }: {
   children: React.ReactNode;
-  /** Profile from getProfile() — null when logged out. */
   user?: {
+    _id?: string;
     name?: string;
     image?: string;
     role?: string;
     company?: string;
     interest?: string;
   } | null;
+  stats?: ForumStats;
 }) {
-  const [posts, setPosts] = React.useState<ForumPost[]>(SEED_POSTS);
   const isLoggedIn = Boolean(user);
   const currentUser = React.useMemo(() => toForumAuthor(user), [user]);
-
-  const getPost = React.useCallback(
-    (id: string) => posts.find((p) => p.id === id),
-    [posts],
-  );
-
-  const toggleLike = React.useCallback((postId: string) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              likedByMe: !p.likedByMe,
-              likes: p.likes + (p.likedByMe ? -1 : 1),
-            }
-          : p,
-      ),
-    );
-  }, []);
-
-  const addComment = React.useCallback(
-    (postId: string, text: string) => {
-      const trimmed = text.trim();
-      if (!currentUser || !trimmed) return;
-      const comment = {
-        id: `comment-new-${++commentSeq}`,
-        author: currentUser,
-        text: trimmed,
-        timeAgo: "Just now",
-      };
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === postId ? { ...p, comments: [...p.comments, comment] } : p,
-        ),
-      );
-    },
-    [currentUser],
-  );
-
-  const addPost = React.useCallback(
-    ({ category, content }: NewPostInput) => {
-      const trimmed = content.trim();
-      if (!currentUser || !trimmed) return null;
-      const post: ForumPost = {
-        id: `post-new-${++postSeq}`,
-        author: currentUser,
-        category,
-        content: trimmed,
-        timeAgo: "Just now",
-        likes: 0,
-        likedByMe: false,
-        comments: [],
-      };
-      setPosts((prev) => [post, ...prev]);
-      return post;
-    },
-    [currentUser],
-  );
-
-  const updatePost = React.useCallback(
-    (postId: string, { category, content }: NewPostInput) => {
-      const trimmed = content.trim();
-      if (!trimmed) return;
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === postId
-            ? { ...p, category, content: trimmed, timeAgo: "Edited just now" }
-            : p,
-        ),
-      );
-    },
-    [],
-  );
-
-  const deletePost = React.useCallback((postId: string) => {
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
-  }, []);
+  const userId = user?._id ?? null;
 
   const isOwnPost = React.useCallback(
-    (post: ForumPost) => !!currentUser && post.author.name === currentUser.name,
-    [currentUser],
+    (post: ForumPost) =>
+      Boolean(userId && post.author.id && post.author.id === userId),
+    [userId],
   );
-
-  const { myPosts, likedPosts, commentedPosts, stats } = React.useMemo(() => {
-    const name = currentUser?.name;
-    const mine = name ? posts.filter((p) => p.author.name === name) : [];
-    const liked = posts.filter((p) => p.likedByMe);
-    const commented = name
-      ? posts.filter((p) => p.comments.some((c) => c.author.name === name))
-      : [];
-    const commentCount = name
-      ? posts.reduce(
-          (sum, p) =>
-            sum + p.comments.filter((c) => c.author.name === name).length,
-          0,
-        )
-      : 0;
-    return {
-      myPosts: mine,
-      likedPosts: liked,
-      commentedPosts: commented,
-      stats: {
-        posts: mine.length,
-        comments: commentCount,
-        likes: liked.length,
-      },
-    };
-  }, [posts, currentUser]);
 
   const value = React.useMemo<ForumContextValue>(
     () => ({
-      posts,
       currentUser,
       isLoggedIn,
-      getPost,
-      toggleLike,
-      addComment,
-      addPost,
-      updatePost,
-      deletePost,
-      isOwnPost,
-      myPosts,
-      likedPosts,
-      commentedPosts,
+      userId,
       stats,
+      isOwnPost,
     }),
-    [
-      posts,
-      currentUser,
-      isLoggedIn,
-      getPost,
-      toggleLike,
-      addComment,
-      addPost,
-      updatePost,
-      deletePost,
-      isOwnPost,
-      myPosts,
-      likedPosts,
-      commentedPosts,
-      stats,
-    ],
+    [currentUser, isLoggedIn, userId, stats, isOwnPost],
   );
 
   return (

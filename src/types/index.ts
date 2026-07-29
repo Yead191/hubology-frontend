@@ -99,6 +99,8 @@ export type ForumCategory =
 export type ForumAuthorRole = "member" | "vendor";
 
 export interface ForumAuthor {
+  /** API author `_id` when available. */
+  id?: string;
   name: string;
   avatarUrl: string;
   role: ForumAuthorRole;
@@ -111,6 +113,7 @@ export interface ForumComment {
   author: ForumAuthor;
   text: string;
   timeAgo: string;
+  createdAt?: string;
 }
 
 export interface ForumPost {
@@ -119,10 +122,22 @@ export interface ForumPost {
   category: ForumCategory;
   content: string;
   timeAgo: string;
+  createdAt?: string;
   likes: number;
   /** True when the current viewer has liked this post. */
   likedByMe: boolean;
-  comments: ForumComment[];
+  /** Total comment count from the API (`totalComments`). */
+  commentCount: number;
+  /** Loaded on the detail page via GET /comment/:postId. */
+  comments?: ForumComment[];
+}
+
+export type ForumTab = "feed" | "posts" | "comments" | "likes";
+
+export interface ForumStats {
+  posts: number;
+  comments: number;
+  likes: number;
 }
 
 /* ------------------------------------------------------------------ *

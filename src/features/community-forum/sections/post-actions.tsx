@@ -1,14 +1,16 @@
 "use client";
 
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { Heart, MessageCircle, Share2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { useForum } from "@/features/community-forum/forum-context";
+import { toggleForumLike } from "@/helpers/next-fetch/forumActions";
 
 /**
- * Like / comment / share action row for a post. The like button is
- * fully functional (optimistic toggle via the forum context); the
- * comment button focuses or expands the thread via `onComment`.
+ * Like / comment / share action row. Like hits POST /like/:postId.
  */
 export function PostActions({
   postId,
@@ -25,40 +27,72 @@ export function PostActions({
   onComment?: () => void;
   className?: string;
 }) {
-  const { toggleLike, isLoggedIn } = useForum();
+  const router = useRouter();
+  const { isLoggedIn } = useForum();
+  const [pending, setPending] = React.useState(false);
+  const [liked, setLiked] = React.useState(likedByMe);
+  const [likeCount, setLikeCount] = React.useState(likes);
+
+  React.useEffect(() => {
+    setLiked(likedByMe);
+    setLikeCount(likes);
+  }, [likedByMe, likes]);
+
+  async function handleLike() {
+    if (!isLoggedIn || pending) return;
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikeCount((c) => c + (nextLiked ? 1 : -1));
+    setPending(true);
+    try {
+      const res = await toggleForumLike(postId);
+      if (!res.success) {
+        setLiked(!nextLiked);
+        setLikeCount((c) => c + (nextLiked ? -1 : 1));
+        toast.error(res.message || "Could not update like.", { id: "like" });
+        return;
+      }
+      router.refresh();
+    } catch {
+      setLiked(!nextLiked);
+      setLikeCount((c) => c + (nextLiked ? -1 : 1));
+      toast.error("Network error. Please try again.", { id: "like" });
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
-    <div
-      className={cn(
-        "flex items-center gap-1 text-sm text-mist",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center gap-1 text-sm text-mist", className)}>
       <button
         type="button"
-        onClick={() => isLoggedIn && toggleLike(postId)}
-        disabled={!isLoggedIn}
-        aria-pressed={likedByMe}
-        aria-label={likedByMe ? "Unlike" : "Like"}
+        onClick={handleLike}
+        disabled={!isLoggedIn || pending}
+        aria-pressed={liked}
+        aria-label={liked ? "Unlike" : "Like"}
         className={cn(
           "group inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-medium transition-colors",
-          "hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-60",
-          likedByMe ? "text-rose-400" : "hover:text-cloud",
+          "hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60",
+          liked ? "text-rose-400" : "hover:text-cloud",
         )}
       >
-        <Heart
-          className={cn(
-            "h-[18px] w-[18px] transition-transform group-active:scale-90",
-            likedByMe && "fill-rose-400",
-          )}
-        />
-        <span className="tabular-nums">{likes}</span>
+        {pending ? (
+          <Loader2 className="h-[18px] w-[18px] animate-spin" />
+        ) : (
+          <Heart
+            className={cn(
+              "h-[18px] w-[18px] transition-transform group-active:scale-90",
+              liked && "fill-rose-400",
+            )}
+          />
+        )}
+        <span className="tabular-nums">{likeCount}</span>
       </button>
 
       <button
         type="button"
         onClick={onComment}
-        className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-medium transition-colors hover:bg-white/[0.05] hover:text-cloud"
+        className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-medium transition-colors hover:bg-white/5 hover:text-cloud"
       >
         <MessageCircle className="h-[18px] w-[18px]" />
         <span className="tabular-nums">{commentCount}</span>

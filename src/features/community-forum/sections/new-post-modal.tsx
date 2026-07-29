@@ -1,6 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import type { ForumCategory, ForumPost } from "@/types";
 import { FORUM_CATEGORIES } from "@/data/forum";
@@ -16,13 +19,13 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useForum } from "@/features/community-forum/forum-context";
+import {
+  createForumPost,
+  updateForumPost,
+} from "@/helpers/next-fetch/forumActions";
 
 const MAX = 1000;
 
-/**
- * Modal form for composing or editing a post (category + description).
- * Pass `post` to open in edit mode; omit it to create a new post.
- */
 export function NewPostModal({
   open,
   onClose,
@@ -34,12 +37,13 @@ export function NewPostModal({
   onCreated?: (postId: string) => void;
   post?: ForumPost;
 }) {
-  const { currentUser, addPost, updatePost } = useForum();
+  const router = useRouter();
+  const { currentUser } = useForum();
   const isEditing = !!post;
   const [category, setCategory] = React.useState<ForumCategory | "">("");
   const [content, setContent] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
 
-  // Seed the form from the edited post (or clear it) on each open.
   React.useEffect(() => {
     if (open) {
       setCategory(post?.category ?? "");
@@ -47,20 +51,58 @@ export function NewPostModal({
     }
   }, [open, post]);
 
-  const canSubmit = category !== "" && content.trim().length > 0;
+  const canSubmit =
+    category !== "" && content.trim().length > 0 && !submitting;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
-    if (isEditing && post) {
-      updatePost(post.id, { category: category as ForumCategory, content });
+    if (!canSubmit || !category) return;
+
+    setSubmitting(true);
+    try {
+      if (isEditing && post) {
+        const res = await updateForumPost(post.id, {
+          category: category as ForumCategory,
+          content: content.trim(),
+        });
+        if (!res.success) {
+          toast.error(res.message || "Could not update post.", {
+            id: "forum-post",
+          });
+          return;
+        }
+        toast.success("Post updated", { id: "forum-post" });
+        onClose();
+        router.refresh();
+        return;
+      }
+
+      const res = await createForumPost({
+        category: category as ForumCategory,
+        content: content.trim(),
+      });
+      if (!res.success) {
+        toast.error(res.message || "Could not publish post.", {
+          id: "forum-post",
+        });
+        return;
+      }
+      toast.success("Post published", { id: "forum-post" });
+      const createdId =
+        typeof res.data === "object" && res.data && "_id" in res.data
+          ? String((res.data as { _id: string })._id)
+          : typeof res.data === "string"
+            ? res.data
+            : undefined;
       onClose();
-      return;
+      router.refresh();
+      if (createdId) onCreated?.(createdId);
+    } catch {
+      toast.error("Network error. Please try again.", { id: "forum-post" });
+    } finally {
+      setSubmitting(false);
     }
-    const created = addPost({ category: category as ForumCategory, content });
-    onClose();
-    if (created) onCreated?.(created.id);
-  };
+  }
 
   return (
     <Modal
@@ -74,8 +116,7 @@ export function NewPostModal({
       }
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        {/* Posting-as identity (profile info captured on submit) */}
-        {currentUser && (
+        {currentUser ? (
           <div className="flex items-center gap-3 rounded-2xl border border-hairline bg-white/3 px-4 py-3">
             <Avatar className="h-9 w-9 ring-1 ring-hairline-strong">
               <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
@@ -92,7 +133,7 @@ export function NewPostModal({
               </p>
             </div>
           </div>
-        )}
+        ) : null}
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-cloud">Category</label>
@@ -120,7 +161,10 @@ export function NewPostModal({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="post-content" className="text-sm font-medium text-cloud">
+          <label
+            htmlFor="post-content"
+            className="text-sm font-medium text-cloud"
+          >
             Description
           </label>
           <Textarea
@@ -137,11 +181,24 @@ export function NewPostModal({
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="ghost" onClick={onClose}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onClose}
+            disabled={submitting}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={!canSubmit}>
-            {isEditing ? "Save changes" : "Publish post"}
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Saving…
+              </>
+            ) : isEditing ? (
+              "Save changes"
+            ) : (
+              "Publish post"
+            )}
           </Button>
         </div>
       </form>

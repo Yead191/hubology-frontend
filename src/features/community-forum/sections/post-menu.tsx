@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal, Pencil, Trash2, Flag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { MoreHorizontal, Pencil, Trash2, Flag, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import type { ForumPost } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -13,34 +15,46 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useForum } from "@/features/community-forum/forum-context";
+import { deleteForumPost } from "@/helpers/next-fetch/forumActions";
 import { NewPostModal } from "./new-post-modal";
 import { ReportModal } from "./report-modal";
 
-/**
- * Owner-only "⋯" menu for a post: edit (re-opens the composer in edit
- * mode) and delete (with a confirmation step). Renders nothing for
- * posts the current user didn't author.
- */
 export function PostMenu({
   post,
   onDeleted,
 }: {
   post: ForumPost;
-  /** Called after a successful delete — e.g. to navigate away. */
   onDeleted?: () => void;
 }) {
-  const { isOwnPost, deletePost } = useForum();
+  const router = useRouter();
+  const { isOwnPost } = useForum();
   const [editOpen, setEditOpen] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [reportOpen, setReportOpen] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
 
   const own = isOwnPost(post);
 
-  const handleDelete = () => {
-    deletePost(post.id);
-    setConfirmOpen(false);
-    onDeleted?.();
-  };
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const res = await deleteForumPost(post.id);
+      if (!res.success) {
+        toast.error(res.message || "Could not delete post.", {
+          id: "delete-post",
+        });
+        return;
+      }
+      toast.success("Post deleted", { id: "delete-post" });
+      setConfirmOpen(false);
+      onDeleted?.();
+      router.refresh();
+    } catch {
+      toast.error("Network error. Please try again.", { id: "delete-post" });
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <>
@@ -81,10 +95,12 @@ export function PostMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Edit composer */}
-      <NewPostModal open={editOpen} onClose={() => setEditOpen(false)} post={post} />
+      <NewPostModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        post={post}
+      />
 
-      {/* Delete confirmation */}
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -93,21 +109,33 @@ export function PostMenu({
         className="max-w-md"
       >
         <div className="flex justify-end gap-3">
-          <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
+          <Button
+            variant="ghost"
+            onClick={() => setConfirmOpen(false)}
+            disabled={deleting}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleDelete}
-            className="bg-destructive text-destructive-foreground shadow-[0_10px_30px_-10px_rgba(240,67,106,0.7)] hover:bg-destructive/90 hover:shadow-[0_16px_44px_-12px_rgba(240,67,106,0.9)]"
+            disabled={deleting}
+            className="bg-destructive text-destructive-foreground shadow-[0_10px_30px_-10px_rgba(240,67,106,0.7)] hover:bg-destructive/90"
           >
-            <Trash2 className="h-4 w-4" />
+            {deleting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
             Delete post
           </Button>
         </div>
       </Modal>
 
-      {/* Report modal */}
-      <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} post={post} />
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        post={post}
+      />
     </>
   );
 }

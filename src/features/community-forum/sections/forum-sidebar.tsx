@@ -2,12 +2,13 @@
 
 import { Plus, Newspaper, FileText, MessageSquare, Heart, type LucideIcon } from "lucide-react";
 
+import type { ForumTab } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useForum } from "@/features/community-forum/forum-context";
 import { ProfileCard } from "./profile-card";
 
-export type ForumTab = "feed" | "posts" | "comments" | "likes";
+export type { ForumTab };
 
 interface TabDef {
   id: ForumTab;

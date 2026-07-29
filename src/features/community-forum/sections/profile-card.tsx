@@ -30,7 +30,9 @@ export function ProfileCard() {
           Sign in to post, comment, and track your activity.
         </p>
         <Button asChild className="mt-4 w-full">
-          <Link href="/login">Sign in</Link>
+          <Link href={`/login?redirect=${encodeURIComponent("/forum")}`}>
+            Sign in
+          </Link>
         </Button>
       </div>
     );

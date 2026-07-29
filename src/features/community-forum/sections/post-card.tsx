@@ -8,24 +8,18 @@ import type { ForumPost } from "@/types";
 import { CategoryBadge } from "./category-badge";
 import { AuthorByline } from "./author-byline";
 import { PostActions } from "./post-actions";
-import { CommentItem } from "./comment-item";
 import { CommentComposer } from "./comment-composer";
 import { PostMenu } from "./post-menu";
 
-const PREVIEW_COMMENTS = 2;
-
 /**
- * A post in the feed. Content clamps with a "Read more" link to the
- * detail page; the comment button reveals an inline thread (preview +
- * composer) without leaving the feed.
+ * A post in the feed. Content clamps with expand; comments live on the
+ * detail page (API returns counts on the list, not nested comments).
  */
 export function PostCard({ post }: { post: ForumPost }) {
   const [expanded, setExpanded] = React.useState(false);
-  const [showComments, setShowComments] = React.useState(false);
+  const [showComposer, setShowComposer] = React.useState(false);
 
   const longContent = post.content.length > 280;
-  const previewComments = post.comments.slice(-PREVIEW_COMMENTS);
-  const hiddenCount = post.comments.length - previewComments.length;
 
   return (
     <article className="border-gradient rounded-3xl bg-panel/40 p-5 transition-colors duration-300 hover:bg-panel/60 sm:p-6">
@@ -63,8 +57,8 @@ export function PostCard({ post }: { post: ForumPost }) {
           postId={post.id}
           likes={post.likes}
           likedByMe={post.likedByMe}
-          commentCount={post.comments.length}
-          onComment={() => setShowComments((v) => !v)}
+          commentCount={post.commentCount}
+          onComment={() => setShowComposer((v) => !v)}
         />
       </div>
 
@@ -75,28 +69,19 @@ export function PostCard({ post }: { post: ForumPost }) {
         View full thread →
       </Link>
 
-      {showComments && (
-        <div className="mt-4 flex flex-col gap-4">
-          {hiddenCount > 0 && (
+      {showComposer ? (
+        <div className="mt-4 flex flex-col gap-3">
+          {post.commentCount > 0 ? (
             <Link
               href={`/forum/${post.id}`}
               className="text-sm font-medium text-mist transition-colors hover:text-cloud"
             >
-              View all {post.comments.length} comments
+              View all {post.commentCount} comments
             </Link>
-          )}
-
-          {post.comments.length > 0 && (
-            <ul className="flex flex-col gap-4">
-              {previewComments.map((c) => (
-                <CommentItem key={c.id} comment={c} />
-              ))}
-            </ul>
-          )}
-
+          ) : null}
           <CommentComposer postId={post.id} autoFocus />
         </div>
-      )}
+      ) : null}
     </article>
   );
 }

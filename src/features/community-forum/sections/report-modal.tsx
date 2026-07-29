@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { ForumPost } from "@/types";
+import { reportForumPost } from "@/helpers/next-fetch/forumActions";
+import { toast } from "sonner";
 
 interface ReportReason {
   id: string;
@@ -82,35 +84,45 @@ export function ReportModal({
     }
   }, [open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const isOther = selectedReason === "other";
+  const canSubmit =
+    selectedReason !== null && (!isOther || details.trim().length > 0);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedReason) return;
 
-    const payload = {
-      postId: post.id,
-      postCategory: post.category,
-      postAuthor: post.author.name,
-      reason: selectedReason,
-      details: isOther ? details : undefined,
-      submittedAt: new Date().toISOString(),
-    };
-
-    console.log("[ReportModal] Submitted Data:", payload);
-
     setStatus("loading");
+    try {
+      const description = isOther
+        ? details.trim()
+        : (REPORT_REASONS.find((r) => r.id === selectedReason)?.label ??
+          selectedReason);
 
-    // Simulate backend submission API call with a premium loading delay
-    setTimeout(() => {
+      const res = await reportForumPost({
+        post: post.id,
+        reason: selectedReason,
+        description,
+      });
+
+      if (!res.success) {
+        toast.error(res.message || "Could not submit report.", {
+          id: "report",
+        });
+        setStatus("idle");
+        return;
+      }
+
       setStatus("success");
-    }, 1200);
+    } catch {
+      toast.error("Network error. Please try again.", { id: "report" });
+      setStatus("idle");
+    }
   };
 
   const handleClose = () => {
     onClose();
   };
-
-  const isOther = selectedReason === "other";
-  const canSubmit = selectedReason !== null && (!isOther || details.trim().length > 0);
 
   return (
     <Modal

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 
-import type { UserSubscription } from "@/types";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
+import {
+  hasForumAccess,
+  mapForumComment,
+  mapForumPost,
+} from "@/lib/forum";
 import { PostDetail } from "@/features/community-forum/sections/post-detail";
 import { ForumLockCard } from "@/features/membership/sections/forum-lock";
 import { Aurora } from "@/components/ui/aurora";
@@ -11,27 +16,11 @@ export const metadata: Metadata = {
   description: "Read the full discussion and join the conversation.",
 };
 
-function hasActiveSubscription(subscription?: UserSubscription | null) {
-  if (!subscription?.name) return false;
-  if (!subscription.end_date) return true;
-  return new Date(subscription.end_date).getTime() > Date.now();
-}
-
-function hasForumAccess(user: {
-  role?: string;
-  subscription?: UserSubscription | null;
-} | null) {
-  if (!user) return false;
-  const role = (user.role ?? "").toLowerCase();
-  if (role === "expert" || role === "vendor") return true;
-  return hasActiveSubscription(user.subscription);
-}
-
-export default async function PostDetailPage({
-  params,
-}: {
+interface PageProps {
   params: Promise<{ postId: string }>;
-}) {
+}
+
+export default async function PostDetailPage({ params }: PageProps) {
   const { postId } = await params;
   const user = await getProfile();
   const unlocked = hasForumAccess(user);
@@ -50,5 +39,23 @@ export default async function PostDetailPage({
     );
   }
 
-  return <PostDetail postId={postId} />;
+  const [postRes, commentsRes] = await Promise.all([
+    nextFetch(`/posts/${postId}`, {
+      method: "GET",
+      cache: "no-store",
+      tags: [`forum-post-${postId}`],
+    }),
+    nextFetch(`/comment/${postId}`, {
+      method: "GET",
+      cache: "no-store",
+      tags: [`forum-comments-${postId}`],
+    }),
+  ]);
+
+  const post = postRes.success && postRes.data ? mapForumPost(postRes.data) : null;
+  const comments = commentsRes.success
+    ? (commentsRes.data ?? []).map(mapForumComment)
+    : [];
+
+  return <PostDetail post={post} comments={comments} />;
 }

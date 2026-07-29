@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 
+import type { ForumComment, ForumPost } from "@/types";
 import { Button } from "@/components/ui/button";
-import { useForum } from "@/features/community-forum/forum-context";
 import { CategoryBadge } from "./category-badge";
 import { AuthorByline } from "./author-byline";
 import { PostActions } from "./post-actions";
@@ -14,10 +14,14 @@ import { CommentComposer } from "./comment-composer";
 import { PostMenu } from "./post-menu";
 
 /** Full-page view of a single post with its complete comment thread. */
-export function PostDetail({ postId }: { postId: string }) {
+export function PostDetail({
+  post,
+  comments,
+}: {
+  post: ForumPost | null;
+  comments: ForumComment[];
+}) {
   const router = useRouter();
-  const { getPost } = useForum();
-  const post = getPost(postId);
 
   const backLink = (
     <Link
@@ -50,6 +54,8 @@ export function PostDetail({ postId }: { postId: string }) {
     );
   }
 
+  const commentCount = comments.length || post.commentCount;
+
   return (
     <section className="relative min-h-screen pt-28 pb-20">
       <div className="mx-auto max-w-2xl px-4 sm:px-6">
@@ -74,29 +80,27 @@ export function PostDetail({ postId }: { postId: string }) {
               postId={post.id}
               likes={post.likes}
               likedByMe={post.likedByMe}
-              commentCount={post.comments.length}
+              commentCount={commentCount}
             />
           </div>
         </article>
 
-        {/* Comments */}
         <div className="mt-6">
           <h2 className="flex items-center gap-2 px-1 font-display text-lg font-semibold text-cloud">
             <MessageCircle className="h-5 w-5 text-violet-bright" />
-            {post.comments.length}{" "}
-            {post.comments.length === 1 ? "Comment" : "Comments"}
+            {commentCount} {commentCount === 1 ? "Comment" : "Comments"}
           </h2>
 
           <div className="mt-4 border-gradient rounded-3xl bg-panel/40 p-5 sm:p-6">
             <CommentComposer postId={post.id} />
 
-            {post.comments.length > 0 && (
+            {comments.length > 0 ? (
               <ul className="mt-6 flex flex-col gap-5 border-t border-hairline pt-6">
-                {post.comments.map((c) => (
-                  <CommentItem key={c.id} comment={c} />
+                {comments.map((c) => (
+                  <CommentItem key={c.id} comment={c} postId={post.id} />
                 ))}
               </ul>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

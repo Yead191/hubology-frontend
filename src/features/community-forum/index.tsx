@@ -1,14 +1,19 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { MessageSquareDashed, SearchX } from "lucide-react";
 
-import type { ForumPost } from "@/types";
+import type {
+  ForumCategory,
+  ForumPost,
+  ForumTab,
+  Pagination,
+} from "@/types";
 import { Aurora } from "@/components/ui/aurora";
-import { useForum } from "@/features/community-forum/forum-context";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import {
   ForumSidebar,
-  type ForumTab,
 } from "@/features/community-forum/sections/forum-sidebar";
 import {
   FeedToolbar,
@@ -19,10 +24,7 @@ import { NewPostModal } from "@/features/community-forum/sections/new-post-modal
 import { EmptyState } from "@/features/community-forum/sections/empty-state";
 import { ForumLockCard } from "@/features/membership/sections/forum-lock";
 
-const TAB_EMPTY: Record<
-  ForumTab,
-  { title: string; message: string }
-> = {
+const TAB_EMPTY: Record<ForumTab, { title: string; message: string }> = {
   feed: {
     title: "No posts yet",
     message: "Be the first to start a discussion with the community.",
@@ -41,50 +43,94 @@ const TAB_EMPTY: Record<
   },
 };
 
+export interface ForumFilters {
+  searchTerm: string;
+  category: ForumCategory | "All";
+  page: number;
+  limit: number;
+}
+
+function buildForumHref(
+  tab: ForumTab,
+  filters: Partial<ForumFilters>,
+) {
+  const params = new URLSearchParams();
+  if (tab !== "feed") params.set("tab", tab);
+  // Search / category only apply to the community feed.
+  if (tab === "feed") {
+    const search = (filters.searchTerm ?? "").trim();
+    if (search) params.set("searchTerm", search);
+    if (filters.category && filters.category !== "All") {
+      params.set("category", filters.category);
+    }
+  }
+  if (filters.page && filters.page > 1) {
+    params.set("page", String(filters.page));
+  }
+  if (filters.limit && filters.limit !== 10) {
+    params.set("limit", String(filters.limit));
+  }
+  const qs = params.toString();
+  return qs ? `/forum?${qs}` : "/forum";
+}
+
 export default function CommunityForum({
   hasForumAccess,
   isLoggedIn,
+  posts,
+  pagination,
+  tab,
+  filters,
 }: {
   hasForumAccess: boolean;
   isLoggedIn: boolean;
+  posts: ForumPost[];
+  pagination?: Pagination;
+  tab: ForumTab;
+  filters: ForumFilters;
 }) {
-  const { posts, myPosts, likedPosts, commentedPosts } = useForum();
-
-  const [tab, setTab] = React.useState<ForumTab>("feed");
-  const [query, setQuery] = React.useState("");
-  const [category, setCategory] = React.useState<CategoryFilter>("All");
+  const router = useRouter();
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [searchInput, setSearchInput] = React.useState(filters.searchTerm);
 
-  // 1) Pick the base list from the active sidebar tab.
-  const base: ForumPost[] = React.useMemo(() => {
-    switch (tab) {
-      case "posts":
-        return myPosts;
-      case "likes":
-        return likedPosts;
-      case "comments":
-        return commentedPosts;
-      default:
-        return posts;
-    }
-  }, [tab, posts, myPosts, likedPosts, commentedPosts]);
+  React.useEffect(() => {
+    setSearchInput(filters.searchTerm);
+  }, [filters.searchTerm]);
 
-  // 2) Apply category + search filters.
-  const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return base.filter((p) => {
-      if (category !== "All" && p.category !== category) return false;
-      if (!q) return true;
-      return (
-        p.content.toLowerCase().includes(q) ||
-        p.author.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    });
-  }, [base, category, query]);
+  const push = React.useCallback(
+    (next: { tab?: ForumTab } & Partial<ForumFilters>) => {
+      const nextTab = next.tab ?? tab;
+      const href = buildForumHref(nextTab, {
+        searchTerm:
+          nextTab === "feed"
+            ? (next.searchTerm ?? filters.searchTerm)
+            : "",
+        category:
+          nextTab === "feed" ? (next.category ?? filters.category) : "All",
+        page: next.page ?? 1,
+        limit: next.limit ?? filters.limit,
+      });
+      router.push(href);
+      // Soft-nav between ?tab= values can reuse a stale RSC payload —
+      // refresh forces the matching list endpoint to re-run.
+      router.refresh();
+    },
+    [router, tab, filters],
+  );
 
-  const isSearching = query.trim() !== "" || category !== "All";
+  // Debounced search only applies on the community feed.
+  React.useEffect(() => {
+    if (tab !== "feed") return;
+    if (searchInput === filters.searchTerm) return;
+    const timer = setTimeout(() => {
+      push({ tab: "feed", searchTerm: searchInput, page: 1 });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.searchTerm, push, tab]);
+
   const empty = TAB_EMPTY[tab];
+  const isSearching =
+    Boolean(filters.searchTerm.trim()) || filters.category !== "All";
 
   const header = (
     <header className="max-w-2xl">
@@ -98,7 +144,6 @@ export default function CommunityForum({
     </header>
   );
 
-  // Members-only gate: show a blurred preview behind the lock card.
   if (!hasForumAccess) {
     return (
       <section className="relative min-h-screen overflow-hidden pt-28 pb-20">
@@ -108,24 +153,8 @@ export default function CommunityForum({
         />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           {header}
-
-          <div className="relative mt-10">
-            {/* Decorative, non-interactive preview of the real feed */}
-            <div
-              aria-hidden
-              className="pointer-events-none select-none blur-[7px] mask-[linear-gradient(to_bottom,black,transparent_80%)]"
-            >
-              <div className="mx-auto flex max-w-2xl flex-col gap-5 opacity-70">
-                {posts.slice(0, 3).map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
-            </div>
-
-            {/* Lock overlay */}
-            <div className="absolute inset-0 flex items-start justify-center pt-8 sm:pt-16">
-              <ForumLockCard isLoggedIn={isLoggedIn} />
-            </div>
+          <div className="relative mt-10 flex justify-center pt-8 sm:pt-16">
+            <ForumLockCard isLoggedIn={isLoggedIn} />
           </div>
         </div>
       </section>
@@ -142,28 +171,29 @@ export default function CommunityForum({
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         {header}
 
-        {/* Two-column workspace */}
         <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr] lg:gap-8">
-          {/* Left rail */}
           <div className="lg:sticky lg:top-28 lg:self-start">
             <ForumSidebar
               active={tab}
-              onChange={setTab}
+              onChange={(next) => push({ tab: next, page: 1 })}
               onNewPost={() => setModalOpen(true)}
             />
           </div>
 
-          {/* Feed */}
           <div className="flex flex-col gap-5">
-            <FeedToolbar
-              query={query}
-              onQueryChange={setQuery}
-              category={category}
-              onCategoryChange={setCategory}
-            />
+            {tab === "feed" ? (
+              <FeedToolbar
+                query={searchInput}
+                onQueryChange={setSearchInput}
+                category={filters.category as CategoryFilter}
+                onCategoryChange={(c) =>
+                  push({ category: c, searchTerm: searchInput, page: 1 })
+                }
+              />
+            ) : null}
 
-            {filtered.length === 0 ? (
-              isSearching ? (
+            {posts.length === 0 ? (
+              isSearching && tab === "feed" ? (
                 <EmptyState
                   icon={SearchX}
                   title="No matching posts"
@@ -177,12 +207,19 @@ export default function CommunityForum({
                 />
               )
             ) : (
-              <div className="flex flex-col gap-5">
-                {filtered.map((post) => (
-                  <PostCard key={post.id} post={post} />
+              <div key={tab} className="flex flex-col gap-5">
+                {posts.map((post) => (
+                  <PostCard key={`${tab}-${post.id}`} post={post} />
                 ))}
               </div>
             )}
+
+            {pagination && pagination.totalPage > 1 ? (
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={(page) => push({ page })}
+              />
+            ) : null}
           </div>
         </div>
       </div>
