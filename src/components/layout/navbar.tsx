@@ -2,16 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, ChevronDown } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X, ChevronDown } from "lucide-react";
 
+import type { CartData } from "@/types";
 import { cn } from "@/lib/utils";
 import { navItems } from "@/data/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/logo";
 import { NotificationMenu } from "@/components/layout/notification-menu";
 import { ProfileMenu } from "@/components/layout/profile-menu";
-import { useCart } from "@/components/cart/cart-context";
+import { CartMenu } from "@/components/layout/cart-menu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,10 +30,14 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function Navbar({ user }: { user: any }) {
+export function Navbar({
+  user,
+  cart,
+}: {
+  user: any;
+  cart?: CartData | null;
+}) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { cartCount } = useCart();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -51,7 +56,8 @@ export function Navbar({ user }: { user: any }) {
       <div className="max-w-6xl w-full px-4 lg:px-6">
         <nav
           className={cn(
-            "flex w-full items-center justify-between gap-4 rounded-full border  px-3 py-2.5 transition-all duration-500 ease-out-soft glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl",
+            "flex w-full items-center justify-between gap-4 rounded-full border px-3 py-2.5 transition-all duration-500 ease-out-soft glass-dark border-hairline-strong shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl",
+            scrolled && "shadow-[0_12px_48px_-12px_rgba(0,0,0,0.75)]",
           )}
         >
           <div className="flex items-center gap-2 pl-2">
@@ -70,7 +76,7 @@ export function Navbar({ user }: { user: any }) {
                       <DropdownMenuTrigger asChild>
                         <button
                           className={cn(
-                            "relative flex items-center gap-1 rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 outline-none cursor-pointer ",
+                            "relative flex cursor-pointer items-center gap-1 rounded-full px-4 py-2 text-xs font-medium outline-none transition-colors duration-300",
                             active
                               ? "text-cloud!"
                               : "text-mist! hover:text-cloud!",
@@ -102,7 +108,7 @@ export function Navbar({ user }: { user: any }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "relative rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 flex items-center",
+                      "relative flex items-center rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300",
                       active ? "text-cloud" : "text-mist hover:text-cloud",
                     )}
                   >
@@ -118,17 +124,7 @@ export function Navbar({ user }: { user: any }) {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => router.push("/checkout")}
-              className="relative grid h-10 w-10 place-items-center rounded-full border border-hairline bg-white/3 text-mist transition-colors hover:text-cloud hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/40"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-violet-bright text-[10px] font-bold text-white">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            <CartMenu cart={cart} />
 
             {user && user._id ? (
               <div className="hidden items-center gap-2 sm:flex">
@@ -176,14 +172,11 @@ export function Navbar({ user }: { user: any }) {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
-                const isAnySubActive = item.subItems.some((sub) =>
-                  isActive(pathname, sub.href),
-                );
                 return (
                   <li key={item.href} className="flex flex-col gap-1">
                     <Collapsible defaultOpen={false}>
                       <CollapsibleTrigger asChild>
-                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-mist tracking-wider transition-colors hover:bg-white/4">
+                        <button className="group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold tracking-wider text-mist transition-colors hover:bg-white/4">
                           {item.label}
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                         </button>
@@ -197,7 +190,7 @@ export function Navbar({ user }: { user: any }) {
                                 key={subItem.href}
                                 href={subItem.href}
                                 className={cn(
-                                  "block rounded-2xl px-4 py-3 ml-2 text-sm font-medium transition-colors",
+                                  "ml-2 block rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
                                   subActive
                                     ? "bg-white/6 text-cloud"
                                     : "text-mist hover:bg-white/4 hover:text-cloud",

@@ -1,28 +1,74 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, SearchX, X } from "lucide-react";
 
+import type { Book, Pagination } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { Input } from "@/components/ui/input";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import { ProductGrid } from "@/features/office-supplies/sections/product-grid";
-import { getAllTangibleProducts } from "@/data/office-supplies";
 
-export default function OfficeSuppliesExperience() {
-  const allProducts = React.useMemo(() => getAllTangibleProducts(), []);
-  const [searchQuery, setSearchQuery] = React.useState("");
+export interface OfficeFilters {
+  searchTerm: string;
+  page: number;
+  limit: number;
+}
 
-  const filteredProducts = React.useMemo(() => {
-    if (!searchQuery) return allProducts;
-    const lowerQuery = searchQuery.toLowerCase();
-    return allProducts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(lowerQuery) ||
-        p.subtitle.toLowerCase().includes(lowerQuery) ||
-        p.description.toLowerCase().includes(lowerQuery)
-    );
-  }, [searchQuery, allProducts]);
+interface OfficeSuppliesExperienceProps {
+  products: Book[];
+  pagination?: Pagination;
+  filters: OfficeFilters;
+}
+
+function buildOfficeHref(filters: OfficeFilters) {
+  const params = new URLSearchParams();
+  const search = (filters.searchTerm ?? "").trim();
+  if (search) params.set("searchTerm", search);
+  if (filters.page > 1) params.set("page", String(filters.page));
+  if (filters.limit !== 10) params.set("limit", String(filters.limit));
+  const qs = params.toString();
+  return qs ? `/office-supplies?${qs}` : "/office-supplies";
+}
+
+export default function OfficeSuppliesExperience({
+  products,
+  pagination,
+  filters,
+}: OfficeSuppliesExperienceProps) {
+  const router = useRouter();
+  const [searchInput, setSearchInput] = React.useState(
+    filters.searchTerm ?? "",
+  );
+
+  React.useEffect(() => {
+    setSearchInput(filters.searchTerm ?? "");
+  }, [filters.searchTerm]);
+
+  const push = React.useCallback(
+    (next: Partial<OfficeFilters>) => {
+      router.push(
+        buildOfficeHref({
+          searchTerm: next.searchTerm ?? filters.searchTerm,
+          page: next.page ?? 1,
+          limit: next.limit ?? filters.limit,
+        }),
+      );
+    },
+    [router, filters.searchTerm, filters.limit],
+  );
+
+  React.useEffect(() => {
+    if (searchInput === (filters.searchTerm ?? "")) return;
+    const timer = setTimeout(() => {
+      push({ searchTerm: searchInput, page: 1 });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.searchTerm, push]);
+
+  const hasResults = products.length > 0;
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
@@ -32,14 +78,15 @@ export default function OfficeSuppliesExperience() {
       />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Header */}
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <header className="max-w-2xl">
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cloud sm:text-4xl">
               Office <span className="text-gradient">Supplies</span>
             </h1>
             <p className="mt-3 text-pretty text-mist">
-              Premium physical goods designed to keep founders organized and focused on what matters most. From notebooks to vision boards, equip your office with the best tools.
+              Premium physical goods designed to keep founders organized and
+              focused on what matters most. From notebooks to vision boards,
+              equip your office with the best tools.
             </p>
           </header>
 
@@ -48,26 +95,57 @@ export default function OfficeSuppliesExperience() {
             <Input
               type="search"
               placeholder="Search products..."
-              className="pl-9 bg-white/5 border-hairline-strong focus:border-violet-bright"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-hairline-strong bg-white/5 pl-9 pr-9 focus:border-violet-bright"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
+            {searchInput ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-mist hover:text-cloud"
+                onClick={() => {
+                  setSearchInput("");
+                  push({ searchTerm: "", page: 1 });
+                }}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
           </div>
         </Reveal>
 
-        {/* Experience */}
         <div className="mt-10">
-          {filteredProducts.length > 0 ? (
-            <ProductGrid products={filteredProducts} />
+          {hasResults ? (
+            <>
+              <ProductGrid products={products} />
+              {pagination && pagination.totalPage > 1 ? (
+                <PaginationControls
+                  pagination={pagination}
+                  onPageChange={(page) => push({ page })}
+                />
+              ) : null}
+            </>
           ) : (
             <div className="flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-hairline-strong bg-panel/30">
-              <p className="text-mist">No products found for "{searchQuery}"</p>
-              <button
-                onClick={() => setSearchQuery("")}
-                className="mt-4 text-sm text-violet-bright hover:underline"
-              >
-                Clear search
-              </button>
+              <SearchX className="mb-3 h-8 w-8 text-faint" />
+              <p className="text-mist">
+                {filters.searchTerm
+                  ? `No products found for “${filters.searchTerm}”`
+                  : "No office supplies available yet."}
+              </p>
+              {filters.searchTerm ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput("");
+                    push({ searchTerm: "", page: 1 });
+                  }}
+                  className="mt-4 text-sm text-violet-bright hover:underline"
+                >
+                  Clear search
+                </button>
+              ) : null}
             </div>
           )}
         </div>

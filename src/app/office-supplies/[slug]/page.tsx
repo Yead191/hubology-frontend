@@ -1,41 +1,37 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getTangibleProductBySlug, getAllTangibleProducts } from "@/data/office-supplies";
+import type { Book } from "@/types";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import TangibleProductDetailView from "@/features/office-supplies/detail-view";
 
-export async function generateStaticParams() {
-  return getAllTangibleProducts().map((product) => ({
-    slug: product.slug,
-  }));
+interface PageProps {
+  /** Route param is named `slug` but carries the product `_id`. */
+  params: Promise<{ slug: string }>;
+}
+
+async function getProduct(id: string) {
+  const res = await nextFetch<Book>(`/books/${id}`, {
+    method: "GET",
+    cache: "force-cache",
+    next: { tags: ["office-supplies", `book-${id}`], revalidate: 60 * 60 },
+  });
+  return res.success ? res.data : null;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const product = getTangibleProductBySlug(slug);
-  if (!product) return {};
-
-  return {
-    title: product.title,
-    description: product.subtitle,
-  };
+}: PageProps): Promise<Metadata> {
+  const { slug: id } = await params;
+  const product = await getProduct(id);
+  if (!product) return { title: "Product not found" };
+  return { title: product.title, description: product.subtitle };
 }
 
-export default async function TangibleProductPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const product = getTangibleProductBySlug(slug);
-
-  if (!product) {
-    notFound();
-  }
+export default async function TangibleProductPage({ params }: PageProps) {
+  const { slug: id } = await params;
+  const product = await getProduct(id);
+  if (!product) notFound();
 
   return <TangibleProductDetailView product={product} />;
 }

@@ -10,6 +10,11 @@ export function bookHref(book: Book) {
   return `/store/${book._id}`;
 }
 
+/** Office supply product detail URL (same book `_id` as the API). */
+export function officeProductHref(book: Book) {
+  return `/office-supplies/${book._id}`;
+}
+
 export function bookCoverUrl(book: Book) {
   return getImageUrl(book.image) ?? undefined;
 }

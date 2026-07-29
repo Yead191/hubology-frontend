@@ -157,7 +157,7 @@ export interface BookReview {
   text: string;
 }
 
-/** Book / digital product as returned by GET /books. */
+/** Book / digital / office product as returned by GET /books. */
 export interface Book {
   _id: string;
   type?: string;
@@ -168,16 +168,20 @@ export interface Book {
   currency?: string;
   image?: string | null;
   /** Two-stop gradient for procedural / 3D covers. */
-  accent: [string, string] | string[];
+  accent?: [string, string] | string[];
   /** Downloadable file path (PDF), unlocked after purchase. */
   file?: string | null;
-  details: {
+  details?: {
     publisher?: string;
     firstPublish?: string;
     edition?: string;
     status?: string;
     inStock?: boolean;
     pages?: number;
+    /** Office / tangible product fields */
+    material?: string;
+    dimensions?: string;
+    weight?: string;
   };
   /** Optional — not always present on API records. */
   shares?: number;
@@ -230,7 +234,40 @@ export interface TangibleProduct {
 }
 
 /* ------------------------------------------------------------------ *
- * Cart
+ * Cart (API)
+ * ------------------------------------------------------------------ */
+export interface CartProductRef {
+  _id: string;
+  title: string;
+  image?: string | null;
+}
+
+export interface ApiCartLine {
+  _id: string;
+  product: CartProductRef;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+}
+
+export interface CartPriceBreakdown {
+  products_price: number;
+  serviceFee: number;
+  delivery_charge: number;
+  discount_amount: number;
+  total_price: number;
+  tax: number;
+  subtotal: number;
+}
+
+/** Shape of `data` from GET /cart. */
+export interface CartData {
+  cart: ApiCartLine[];
+  price_breakdown: CartPriceBreakdown;
+}
+
+/* ------------------------------------------------------------------ *
+ * Cart (legacy localStorage — checkout still uses this)
  * ------------------------------------------------------------------ */
 export interface CartItem {
   id: string; // The product id
