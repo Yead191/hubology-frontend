@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { navItems } from "@/data/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/logo";
-import { NotificationMenu } from "@/components/layout/notification-menu";
+import { TopbarNotifications } from "@/components/layout/Notification/TopbarNotifications";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import { CartMenu } from "@/components/layout/cart-menu";
 import {
@@ -128,7 +128,7 @@ export function Navbar({
 
             {user && user._id ? (
               <div className="hidden items-center gap-2 sm:flex">
-                <NotificationMenu />
+                <TopbarNotifications userId={user._id} />
                 <ProfileMenu user={user} />
               </div>
             ) : (
@@ -237,7 +237,7 @@ export function Navbar({
                     <span className="text-xs text-mist">{user.email}</span>
                   </span>
                 </div>
-                <NotificationMenu />
+                <TopbarNotifications userId={user._id} />
               </div>
             ) : (
               <>
