@@ -53,6 +53,7 @@ export default async function PostDetailPage({ params }: PageProps) {
   ]);
 
   const post = postRes.success && postRes.data ? mapForumPost(postRes.data) : null;
+  console.log(post)
   const comments = commentsRes.success
     ? (commentsRes.data ?? []).map(mapForumComment)
     : [];

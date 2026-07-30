@@ -202,6 +202,3 @@ export function getServiceDetail(slug: string): ServiceDetail | undefined {
   return serviceDetails[slug];
 }
 
-export function getServiceSlugs(): string[] {
-  return servicePackages.map((p) => p.slug);
-}

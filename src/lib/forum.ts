@@ -9,18 +9,18 @@ import type {
 import { getImageUrl } from "@/lib/getImageUrl";
 import { CATEGORY_VALUES } from "@/data/forum";
 
-export function hasActiveSubscription(
-  subscription?: UserSubscription | null,
-) {
+export function hasActiveSubscription(subscription?: UserSubscription | null) {
   if (!subscription?.name) return false;
   if (!subscription.end_date) return true;
   return new Date(subscription.end_date).getTime() > Date.now();
 }
 
-export function hasForumAccess(user: {
-  role?: string;
-  subscription?: UserSubscription | null;
-} | null) {
+export function hasForumAccess(
+  user: {
+    role?: string;
+    subscription?: UserSubscription | null;
+  } | null,
+) {
   if (!user) return false;
   const role = (user.role ?? "").toLowerCase();
   if (role === "expert" || role === "vendor") return true;
@@ -78,7 +78,7 @@ export function mapForumPost(raw: any): ForumPost {
     createdAt: post?.createdAt,
     timeAgo: formatTimeAgo(post?.createdAt),
     likes: Number(post?.totalLikes ?? post?.likes ?? 0),
-    likedByMe: Boolean(post?.isLiked ?? post?.likedByMe),
+    likedByMe: Boolean(post?.isLiked ?? post?.isLikeByMe),
     commentCount: Number(post?.totalComments ?? post?.commentCount ?? 0),
     comments: Array.isArray(post?.comments)
       ? post.comments.map(mapForumComment)
