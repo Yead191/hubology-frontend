@@ -76,5 +76,5 @@ export async function reportForumPost(body: {
   reason: string;
   description: string;
 }) {
-  return nextFetch("/post", { method: "POST", body });
+  return nextFetch("/report", { method: "POST", body });
 }
