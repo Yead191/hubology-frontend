@@ -204,7 +204,7 @@ export function PaymentResult({
             ) : (
               <>
                 <Button asChild size="lg" className="w-full">
-                  <Link href="/membership">
+                  <Link href="/dashboard">
                     Go to dashboard <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>

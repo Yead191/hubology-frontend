@@ -66,17 +66,17 @@ export function ProfileMenu({ user }: { user: any }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/membership">
+          <Link href="/dashboard">
             <LayoutDashboard /> Dashboard
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/membership">
+          <Link href="/dashboard/profile">
             <User /> My Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/membership">
+          <Link href="/dashboard/profile#password">
             <Settings /> Settings
           </Link>
         </DropdownMenuItem>

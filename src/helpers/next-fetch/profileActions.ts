@@ -1,30 +1,29 @@
-"use server"
+"use server";
 
-import { nextFetch } from "./NextFetch"
-import { revalidateTags } from "./revalidateTags"
+import { nextFetch } from "./NextFetch";
+import { revalidateTags } from "./revalidateTags";
 
-/** PATCH /user/profile — form-data (name, contact, image, document) */
+/** PATCH /user/profile — form-data (name, contact, image, …) */
 export async function updateUserProfile(formData: FormData) {
   const result = await nextFetch("/user/profile", {
     method: "PATCH",
     body: formData,
-  })
+  });
 
   if (result.success) {
-    await revalidateTags(["user-profile"])
+    await revalidateTags(["user-profile"]);
   }
 
-  return result
+  return result;
 }
 
 /** POST /auth/change-password */
 export async function changePassword(body: {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  currentPassword: string;
+  newPassword: string;
 }) {
   return nextFetch("/auth/change-password", {
     method: "POST",
     body,
-  })
+  });
 }
