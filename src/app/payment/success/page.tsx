@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { PaymentResult } from "@/features/service-booking/sections/payment-result";
-import { revalidateTags } from "@/helpers/next-fetch/revalidateTags";
+import { PaymentCacheRefresh } from "@/features/service-booking/sections/payment-cache-refresh";
 
 export const metadata: Metadata = {
   title: "Payment successful",
@@ -18,16 +18,19 @@ interface PageProps {
 export default async function PaymentSuccessPage({ searchParams }: PageProps) {
   const { session_id, type } = await searchParams;
 
-  // Membership subscription lands on the profile — refresh cached profile.
   const t = (type ?? "").toLowerCase();
+  const tags: string[] = [];
   if (t.includes("membership") || t.includes("subscription")) {
-    await revalidateTags(["user-profile"]);
+    tags.push("user-profile");
   }
   if (t.includes("checkout") || t.includes("order")) {
-    await revalidateTags(["cart"]);
+    tags.push("cart");
   }
 
   return (
-    <PaymentResult status="success" sessionId={session_id} type={type} />
+    <>
+      <PaymentCacheRefresh tags={tags} />
+      <PaymentResult status="success" sessionId={session_id} type={type} />
+    </>
   );
 }
