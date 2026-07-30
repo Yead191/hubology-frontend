@@ -22,15 +22,16 @@ function parseRecurring(value?: string): MembershipRecurring {
 export default async function MembershipPage({ searchParams }: PageProps) {
   const { recurring: raw } = await searchParams;
   const recurring = parseRecurring(raw);
+  const user = await getProfile();
 
-  const [res, user] = await Promise.all([
-    nextFetch<MembershipPlan[]>(`/membership?recurring=${recurring}`, {
+  const res = await nextFetch<MembershipPlan[]>(
+    `/membership?recurring=${recurring}&type=${user?.role?.toLowerCase() ?? "user"}`,
+    {
       method: "GET",
       cache: "force-cache",
       next: { tags: ["membership"], revalidate: 60 * 60 },
-    }),
-    getProfile(),
-  ]);
+    },
+  );
 
   const plans = res.success ? (res.data ?? []) : [];
 

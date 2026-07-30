@@ -45,7 +45,7 @@ export function LoginForm() {
         method: "POST",
         body: { email, password },
       });
-      console.log(response);
+      // console.log(response);
       // Unverified account → send a fresh code and route to verification.
       if (
         !response?.success &&

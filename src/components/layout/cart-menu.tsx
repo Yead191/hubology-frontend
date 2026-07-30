@@ -60,19 +60,19 @@ export function CartMenu({ cart }: { cart?: CartData | null }) {
         ) : (
           <>
             <ul className="max-h-72 overflow-y-auto p-2">
-              {lines.map((line) => {
-                const image = getImageUrl(line.product?.image);
+              {lines?.map((line) => {
+                const image = getImageUrl(line?.product?.image);
                 return (
-                  <li key={line._id}>
+                  <li key={line?._id}>
                     <Link
-                      href={`/office-supplies/${line.product._id}`}
+                      href={`/office-supplies/${line?.product?._id}`}
                       className="flex gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-white/5"
                     >
                       <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-hairline bg-ink/40">
                         {image ? (
                           <Image
                             src={image}
-                            alt={line.product.title}
+                            alt={line?.product?.title}
                             fill
                             sizes="48px"
                             className="object-cover"
@@ -85,12 +85,12 @@ export function CartMenu({ cart }: { cart?: CartData | null }) {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="line-clamp-1 text-sm font-medium text-cloud">
-                          {line.product.title}
+                          {line?.product?.title}
                         </span>
                         <span className="mt-0.5 flex items-center justify-between text-xs text-mist">
-                          <span>× {line.quantity}</span>
+                          <span>× {line?.quantity}</span>
                           <span className="font-medium text-cloud">
-                            {formatPrice(line.total_price)}
+                            {formatPrice(line?.total_price)}
                           </span>
                         </span>
                       </span>

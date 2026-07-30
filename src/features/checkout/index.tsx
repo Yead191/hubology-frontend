@@ -275,16 +275,16 @@ export default function CheckoutExperience({
               ) : (
                 <>
                   <ul className="mb-6 max-h-[40vh] space-y-4 overflow-y-auto pr-1">
-                    {lines.map((line) => {
-                      const image = getImageUrl(line.product?.image);
-                      const busy = updatingId === line._id;
+                    {lines?.map((line) => {
+                      const image = getImageUrl(line?.product?.image);
+                      const busy = updatingId === line?._id;
                       return (
-                        <li key={line._id} className="flex gap-4">
+                        <li key={line?._id} className="flex gap-4">
                           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-hairline bg-ink">
                             {image ? (
                               <Image
                                 src={image}
-                                alt={line.product.title}
+                                alt={line?.product?.title}
                                 fill
                                 sizes="64px"
                                 className="object-cover"
@@ -298,10 +298,10 @@ export default function CheckoutExperience({
                           <div className="flex flex-1 flex-col justify-between py-0.5">
                             <div>
                               <h4 className="line-clamp-1 text-sm font-medium text-cloud">
-                                {line.product.title}
+                                {line?.product?.title}
                               </h4>
                               <p className="text-xs text-mist">
-                                {formatPrice(line.unit_price)} each
+                                {formatPrice(line?.unit_price)} each
                               </p>
                             </div>
                             <div className="flex items-center justify-between gap-2">
@@ -310,7 +310,7 @@ export default function CheckoutExperience({
                                   type="button"
                                   disabled={busy || submitting}
                                   onClick={() =>
-                                    handleQuantity(line._id, -1)
+                                    handleQuantity(line?._id, -1)
                                   }
                                   className="px-2 py-1 text-mist transition-colors hover:text-cloud disabled:opacity-40"
                                   aria-label="Decrease quantity"
@@ -322,12 +322,12 @@ export default function CheckoutExperience({
                                   )}
                                 </button>
                                 <span className="w-6 text-center text-xs text-cloud">
-                                  {line.quantity}
+                                  {line?.quantity}
                                 </span>
                                 <button
                                   type="button"
                                   disabled={busy || submitting}
-                                  onClick={() => handleQuantity(line._id, 1)}
+                                  onClick={() => handleQuantity(line?._id, 1)}
                                   className="px-2 py-1 text-mist transition-colors hover:text-cloud disabled:opacity-40"
                                   aria-label="Increase quantity"
                                 >
@@ -335,7 +335,7 @@ export default function CheckoutExperience({
                                 </button>
                               </div>
                               <span className="text-sm font-medium text-cloud">
-                                {formatPrice(line.total_price)}
+                                {formatPrice(line?.total_price)}
                               </span>
                             </div>
                           </div>
