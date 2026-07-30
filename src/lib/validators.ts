@@ -56,7 +56,7 @@ export const expertRegisterSchema = z.object({
   company: z.string().min(2, "Please enter your company or organization"),
   bio: z
     .string()
-    .min(40, "Tell members a bit more — at least 40 characters")
+    .min(10, "Tell members a bit more — at least 40 characters")
     .max(600, "Please keep your bio under 600 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
