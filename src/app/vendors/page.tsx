@@ -5,6 +5,7 @@ import type { Pagination, Vendor } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
+import getProfile from "@/helpers/next-fetch/getProfile";
 
 export const metadata: Metadata = {
   title: "Vendors",
@@ -65,16 +66,32 @@ async function VendorsLoader({
   filters: VendorFilterState & { page: number; limit: number };
 }) {
   const qs = buildQuery(filters);
-  const res = await nextFetch<Vendor[]>(`/vendor?${qs}`, {
-    method: "GET",
-    cache: "no-store",
-  });
+
+  const [res, profile] = await Promise.all([
+    nextFetch<Vendor[]>(`/vendor?${qs}`, {
+      method: "GET",
+      cache: "no-store",
+    }),
+    getProfile(),
+  ]);
 
   const vendors = res.success ? (res.data ?? []) : [];
   const pagination: Pagination | undefined = res.pagination;
 
   return (
-    <Vendors vendors={vendors} pagination={pagination} filters={filters} />
+    <Vendors
+      vendors={vendors}
+      pagination={pagination}
+      filters={filters}
+      viewer={
+        profile
+          ? {
+              role: profile.role,
+              subscription: profile.subscription ?? null,
+            }
+          : null
+      }
+    />
   );
 }
 

@@ -4,11 +4,12 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { SearchX } from "lucide-react";
 
-import type { Pagination, Vendor } from "@/types";
+import type { Pagination, UserSubscription, Vendor } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { VendorCard } from "@/features/vendors/sections/vendor-card";
 import { VendorPagination } from "@/features/vendors/sections/vendor-pagination";
+import { VendorSubscriptionModal } from "@/features/vendors/sections/vendor-subscription-modal";
 import {
   VendorFilters,
   DEFAULT_FILTERS,
@@ -19,6 +20,10 @@ interface VendorsProps {
   vendors: Vendor[];
   pagination?: Pagination;
   filters: VendorFilterState & { page: number; limit: number };
+  viewer?: {
+    role?: string;
+    subscription?: UserSubscription | null;
+  } | null;
 }
 
 /** Build a /vendors query string from the current filter + page state. */
@@ -40,7 +45,12 @@ function buildVendorsHref(
   return qs ? `/vendors?${qs}` : "/vendors";
 }
 
-export default function Vendors({ vendors, pagination, filters }: VendorsProps) {
+export default function Vendors({
+  vendors,
+  pagination,
+  filters,
+  viewer,
+}: VendorsProps) {
   const router = useRouter();
   // Local search text for responsive typing; URL updates are debounced.
   const [searchInput, setSearchInput] = React.useState(filters.search ?? "");
@@ -106,6 +116,11 @@ export default function Vendors({ vendors, pagination, filters }: VendorsProps) 
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
+      <VendorSubscriptionModal
+        role={viewer?.role}
+        subscription={viewer?.subscription}
+      />
+
       <Aurora
         animated
         className="-top-10 left-1/2 h-120 w-176 -translate-x-1/2 opacity-40"

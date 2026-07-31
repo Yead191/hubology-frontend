@@ -37,7 +37,7 @@ export function ExpertStepper({
                   isActive &&
                     "border-violet/60 bg-violet/15 text-cloud ring-4 ring-violet/10",
                   !isComplete && !isActive &&
-                    "border-hairline-strong bg-white/[0.02] text-faint",
+                    "border-hairline-strong bg-white/2 text-faint",
                 )}
               >
                 {isComplete ? <Check className="h-4 w-4" /> : i + 1}

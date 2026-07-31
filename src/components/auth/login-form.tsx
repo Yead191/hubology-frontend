@@ -128,9 +128,9 @@ export function LoginForm() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-mist transition-colors hover:text-cloud"
             >
               {showPassword ? (
-                <EyeOff className="h-[18px] w-[18px]" />
+                <EyeOff className="h-4.5 w-4.5" />
               ) : (
-                <Eye className="h-[18px] w-[18px]" />
+                <Eye className="h-4.5 w-4.5" />
               )}
             </button>
           </div>
@@ -140,7 +140,7 @@ export function LoginForm() {
         <label className="flex cursor-pointer select-none items-center gap-2.5 text-sm text-mist">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-hairline-strong bg-white/[0.03] accent-violet"
+            className="h-4 w-4 rounded border-hairline-strong bg-white/3 accent-violet"
             {...register("remember")}
           />
           Keep me signed in
