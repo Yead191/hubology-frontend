@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Check, Lock, Sparkles } from "lucide-react";
+import { Check, Loader2, Lock, Sparkles } from "lucide-react";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 import type { MembershipPlan, UserSubscription } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
+import { subscribeToPlan } from "@/helpers/next-fetch/subscriptionActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
@@ -15,9 +17,20 @@ function hasAccessToken() {
   return Boolean(Cookies.get("accessToken"));
 }
 
+function resolveStripeUrl(data: unknown): string | undefined {
+  if (typeof data === "string") return data;
+  if (data && typeof data === "object") {
+    const d = data as Record<string, unknown>;
+    const candidate =
+      d.url ?? d.checkoutUrl ?? d.paymentUrl ?? d.stripeUrl ?? d.sessionUrl;
+    if (typeof candidate === "string") return candidate;
+  }
+  return undefined;
+}
+
 /**
  * A single membership tier from the API. Purchase requires login, then
- * redirects to the plan's Stripe `paymentUrl`.
+ * calls POST /subscription/subscribe/:planId and redirects to Stripe.
  */
 export function PlanCard({
   plan,
@@ -29,13 +42,12 @@ export function PlanCard({
   isLoggedIn?: boolean;
 }) {
   const redirectPath =
-    plan.recurring === "year"
-      ? "/membership?recurring=year"
-      : "/membership";
+    plan.recurring === "year" ? "/membership?recurring=year" : "/membership";
   const loginHref = `/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(isLoggedInProp);
+  const [submitting, setSubmitting] = React.useState(false);
 
   React.useEffect(() => {
     setIsLoggedIn(isLoggedInProp || hasAccessToken());
@@ -47,8 +59,8 @@ export function PlanCard({
 
   const periodLabel = plan.recurring === "year" ? "year" : "month";
 
-  function handleClick() {
-    if (isActive) return;
+  async function handleClick() {
+    if (isActive || submitting) return;
 
     if (!hasAccessToken()) {
       setIsLoggedIn(false);
@@ -57,15 +69,40 @@ export function PlanCard({
     }
     setIsLoggedIn(true);
 
-    if (!plan.paymentUrl) return;
-    window.location.href = plan.paymentUrl;
+    setSubmitting(true);
+    try {
+      const res = await subscribeToPlan(plan._id);
+      if (!res.success) {
+        toast.error(res.message || "Could not start subscription.", {
+          id: "subscribe",
+        });
+        return;
+      }
+
+      const paymentUrl = resolveStripeUrl(res.data);
+      if (!paymentUrl) {
+        toast.error("No payment link returned. Please try again.", {
+          id: "subscribe",
+        });
+        return;
+      }
+
+      window.location.href = paymentUrl;
+    } catch (err) {
+      console.error("Subscribe error:", err);
+      toast.error("Network error. Please try again.", { id: "subscribe" });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const ctaLabel = isActive
     ? "Current plan"
-    : isLoggedIn
-      ? `Choose ${plan.name}`
-      : "Sign in to subscribe";
+    : submitting
+      ? "Redirecting…"
+      : isLoggedIn
+        ? `Choose ${plan.name}`
+        : "Sign in to subscribe";
 
   return (
     <>
@@ -125,19 +162,22 @@ export function PlanCard({
 
         <Button
           type="button"
-          onClick={handleClick}
-          disabled={isActive || (!plan.paymentUrl && isLoggedIn)}
+          onClick={() => void handleClick()}
+          disabled={isActive || submitting}
           variant={plan.featured ? "default" : "outline"}
           className="mt-8 w-full disabled:opacity-100"
           style={{
-            background:
-              plan.featured && !isActive
-                ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
-                : "",
-            border: plan.featured && !isActive ? "1px solid #fff" : "",
+            background: !isActive
+              ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
+              : "",
+            border: !isActive ? "1px solid #fff" : "",
           }}
         >
-          {!isLoggedIn && !isActive ? (
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> {ctaLabel}
+            </>
+          ) : !isLoggedIn && !isActive ? (
             <>
               <Lock className="h-4 w-4" /> {ctaLabel}
             </>
