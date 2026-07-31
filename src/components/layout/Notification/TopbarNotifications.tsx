@@ -21,6 +21,7 @@ import {
   readAllNotificationsAction,
   readNotificationAction,
   type NotificationItem,
+  type NotificationsPayload,
 } from "./actions";
 
 interface TopbarNotificationsProps {
@@ -43,6 +44,27 @@ function relativeTime(iso: string) {
   return new Date(iso).toLocaleDateString();
 }
 
+function parsePayload(data: NotificationsPayload | undefined | null) {
+  if (!data || typeof data !== "object") {
+    return { list: [] as NotificationItem[], unreadCount: 0 };
+  }
+  const list = Array.isArray(data.data) ? data.data : [];
+  const unreadCount =
+    typeof data.unreadCount === "number"
+      ? data.unreadCount
+      : list.filter((n) => !n.seen).length;
+  return { list, unreadCount };
+}
+
+function resolveNotificationPath(path?: string) {
+  if (!path) return undefined;
+  if (path === "/subscriptions" || path === "/orders") {
+    return `/dashboard${path}`;
+  }
+  if (path.startsWith("/dashboard")) return path;
+  return path;
+}
+
 export function TopbarNotifications({
   userId,
   className,
@@ -58,100 +80,190 @@ export function TopbarNotifications({
 
   const [page, setPage] = React.useState(1);
   const [totalPage, setTotalPage] = React.useState(1);
+
+  const pageRef = React.useRef(1);
+  const totalPageRef = React.useRef(1);
   const loadingMoreRef = React.useRef(false);
+  const fetchingRef = React.useRef(false);
+  const openRef = React.useRef(false);
+  const fetchGenRef = React.useRef(0);
+  const listRef = React.useRef<HTMLDivElement | null>(null);
+  const syncRef = React.useRef<(opts?: { quiet?: boolean }) => Promise<void>>(
+    async () => {},
+  );
 
   const hasMore = page < totalPage;
 
-  const loadNotifications = React.useCallback(async () => {
-    if (!userId) return;
+  const syncFromServer = React.useCallback(
+    async (opts?: { quiet?: boolean }) => {
+      if (!userId) return;
 
-    setIsFetching(true);
-    const res = await getNotificationsAction(1, PAGE_LIMIT);
-    if (res.success && Array.isArray(res.data)) {
-      const list = res.data;
-      setNotifications(list);
-      setUnreadCount(list.filter((n) => !n.seen).length);
-      setPage(res.pagination?.page ?? 1);
-      setTotalPage(res.pagination?.totalPage ?? 1);
-    } else if (!res.success) {
-      toast.error(res.message || "Failed to load notifications.");
-    }
+      const gen = ++fetchGenRef.current;
+      fetchingRef.current = true;
+      if (!opts?.quiet) setIsFetching(true);
 
-    setIsFetching(false);
-  }, [userId]);
+      try {
+        const res = await getNotificationsAction(1, PAGE_LIMIT);
+        // Ignore stale responses (e.g. an older socket sync finishing late).
+        if (gen !== fetchGenRef.current) return;
+
+        if (res.success) {
+          const { list, unreadCount: count } = parsePayload(res.data);
+          setNotifications(list);
+          setUnreadCount(count);
+
+          const nextPage = Number(res.pagination?.page) || 1;
+          const nextTotal = Number(res.pagination?.totalPage) || 1;
+          pageRef.current = nextPage;
+          totalPageRef.current = nextTotal;
+          setPage(nextPage);
+          setTotalPage(nextTotal);
+          loadingMoreRef.current = false;
+        } else if (!opts?.quiet) {
+          toast.error(res.message || "Failed to load notifications.", {
+            id: "notifications",
+          });
+        }
+      } catch {
+        if (!opts?.quiet && gen === fetchGenRef.current) {
+          toast.error("Network error. Please try again.", {
+            id: "notifications",
+          });
+        }
+      } finally {
+        if (gen === fetchGenRef.current) {
+          fetchingRef.current = false;
+          setIsFetching(false);
+        }
+      }
+    },
+    [userId],
+  );
+
+  syncRef.current = syncFromServer;
 
   const loadMore = React.useCallback(async () => {
-    if (loadingMoreRef.current || page >= totalPage) return;
+    if (
+      !userId ||
+      fetchingRef.current ||
+      loadingMoreRef.current ||
+      pageRef.current >= totalPageRef.current
+    ) {
+      return;
+    }
 
     loadingMoreRef.current = true;
     setIsLoadingMore(true);
-    const nextPage = page + 1;
+    const nextPage = pageRef.current + 1;
+    const gen = fetchGenRef.current;
 
-    const res = await getNotificationsAction(nextPage, PAGE_LIMIT);
-    if (res.success && Array.isArray(res.data)) {
-      const incoming = res.data;
-      setNotifications((prev) => {
-        const seenIds = new Set(prev.map((n) => n._id));
-        const fresh = incoming.filter((n) => !seenIds.has(n._id));
-        return fresh.length ? [...prev, ...fresh] : prev;
-      });
-      setPage(res.pagination?.page ?? nextPage);
-      if (res.pagination?.totalPage) setTotalPage(res.pagination.totalPage);
-    }
+    try {
+      const res = await getNotificationsAction(nextPage, PAGE_LIMIT);
+      if (gen !== fetchGenRef.current) return;
 
-    loadingMoreRef.current = false;
-    setIsLoadingMore(false);
-  }, [page, totalPage]);
+      if (res.success) {
+        const { list: incoming, unreadCount: count } = parsePayload(res.data);
 
-  const handleScroll = React.useCallback(
-    (e: React.UIEvent<HTMLDivElement>) => {
-      const el = e.currentTarget;
-      if (el.scrollHeight - el.scrollTop - el.clientHeight < 140) {
-        void loadMore();
+        setNotifications((prev) => {
+          const seenIds = new Set(prev.map((n) => n._id));
+          const fresh = incoming.filter((n) => !seenIds.has(n._id));
+          return fresh.length ? [...prev, ...fresh] : prev;
+        });
+        setUnreadCount(count);
+
+        const resolvedPage = Number(res.pagination?.page) || nextPage;
+        const resolvedTotal =
+          Number(res.pagination?.totalPage) || totalPageRef.current;
+        pageRef.current = resolvedPage;
+        totalPageRef.current = resolvedTotal;
+        setPage(resolvedPage);
+        setTotalPage(resolvedTotal);
       }
-    },
-    [loadMore],
-  );
+    } finally {
+      if (gen === fetchGenRef.current) {
+        loadingMoreRef.current = false;
+        setIsLoadingMore(false);
+      }
+    }
+  }, [userId]);
+
+  // Keep loading pages until the list is scrollable or we run out of pages.
+  const fillViewport = React.useCallback(() => {
+    const el = listRef.current;
+    if (!el || !openRef.current) return;
+    if (fetchingRef.current || loadingMoreRef.current) return;
+    if (pageRef.current >= totalPageRef.current) return;
+    if (el.scrollHeight <= el.clientHeight + 12) {
+      void loadMore();
+    }
+  }, [loadMore]);
 
   React.useEffect(() => {
-    if (open) void loadNotifications();
-  }, [loadNotifications, open]);
+    if (!open) return;
+    // Wait a frame so the dropdown portal + max-height are laid out.
+    const id = requestAnimationFrame(() => fillViewport());
+    return () => cancelAnimationFrame(id);
+  }, [open, notifications.length, page, totalPage, isFetching, isLoadingMore, fillViewport]);
 
+  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
+    const el = e.currentTarget;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 120) {
+      void loadMore();
+    }
+  }
+
+  // Initial badge/list sync on mount.
   React.useEffect(() => {
-    void loadNotifications();
-  }, [loadNotifications]);
+    void syncFromServer({ quiet: true });
+  }, [syncFromServer]);
 
+  // Socket — always refresh badge + list in the background (even when closed).
   React.useEffect(() => {
     if (!userId) return;
 
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL ||
       process.env.NEXT_PUBLIC_BASE_URL ||
-      "";
+      "http://10.10.26.173:5003";
 
     if (!socketUrl) return;
 
+    const token = Cookies.get("accessToken");
     const socket: Socket = io(socketUrl, {
       transports: ["websocket"],
-      auth: {
-        token: Cookies.get("accessToken"),
-      },
+      auth: token ? { token } : undefined,
     });
 
     const eventName = `get-notification::${userId}`;
-    socket.on(eventName, () => {
-      void loadNotifications();
+    const onNotify = () => {
+      // Quiet sync so the bell badge updates without opening the menu.
+      void syncRef.current({ quiet: true });
+    };
+
+    socket.on(eventName, onNotify);
+    socket.on("connect_error", (err) => {
+      console.warn("Notification socket error:", err.message);
     });
 
     return () => {
-      socket.off(eventName);
+      socket.off(eventName, onNotify);
       socket.disconnect();
     };
-  }, [loadNotifications, userId]);
+  }, [userId]);
+
+  function handleOpenChange(next: boolean) {
+    openRef.current = next;
+    setOpen(next);
+    if (next) {
+      // Fresh list when the user opens the panel.
+      void syncFromServer({ quiet: true });
+    }
+  }
 
   const handleRead = async (notification: NotificationItem) => {
     if (!notification.seen) {
       const previous = notifications;
+      const previousUnread = unreadCount;
       setNotifications((current) =>
         current.map((item) =>
           item._id === notification._id ? { ...item, seen: true } : item,
@@ -162,15 +274,18 @@ export function TopbarNotifications({
       const res = await readNotificationAction(notification._id);
       if (!res.success) {
         setNotifications(previous);
-        setUnreadCount((current) => current + 1);
-        toast.error(res.message || "Failed to update notification.");
+        setUnreadCount(previousUnread);
+        toast.error(res.message || "Failed to update notification.", {
+          id: "notifications",
+        });
         return;
       }
     }
 
-    if (notification.path) {
-      setOpen(false);
-      router.push(notification.path);
+    const href = resolveNotificationPath(notification.path);
+    if (href) {
+      handleOpenChange(false);
+      router.push(href);
     }
   };
 
@@ -178,6 +293,7 @@ export function TopbarNotifications({
     if (!notifications.length || unreadCount === 0) return;
 
     const previous = notifications;
+    const previousUnread = unreadCount;
     setNotifications((current) =>
       current.map((item) => ({ ...item, seen: true })),
     );
@@ -186,13 +302,15 @@ export function TopbarNotifications({
     const res = await readAllNotificationsAction();
     if (!res.success) {
       setNotifications(previous);
-      setUnreadCount(previous.filter((item) => !item.seen).length);
-      toast.error(res.message || "Failed to update notifications.");
+      setUnreadCount(previousUnread);
+      toast.error(res.message || "Failed to update notifications.", {
+        id: "notifications",
+      });
     }
   };
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -231,7 +349,7 @@ export function TopbarNotifications({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={handleReadAll}
+              onClick={() => void handleReadAll()}
               disabled={isFetching || unreadCount === 0}
               className="h-8 gap-1 rounded-lg px-2 text-xs font-medium text-mist hover:bg-white/5 hover:text-cloud disabled:opacity-40"
             >
@@ -244,8 +362,9 @@ export function TopbarNotifications({
         <DropdownMenuSeparator className="m-0 bg-hairline" />
 
         <div
+          ref={listRef}
           onScroll={handleScroll}
-          className="max-h-104 divide-y divide-hairline overflow-y-auto"
+          className="max-h-104 divide-y divide-hairline overflow-y-auto overscroll-contain"
         >
           {isFetching && notifications.length === 0 ? (
             <div className="flex items-center justify-center gap-2 px-4 py-12 text-sm text-mist">
@@ -259,7 +378,7 @@ export function TopbarNotifications({
               </div>
               <p className="text-sm font-medium text-cloud">All caught up</p>
               <p className="mt-1 text-xs text-mist">
-                You have no new notifications.
+                You have no notifications yet.
               </p>
             </div>
           ) : (
@@ -325,6 +444,21 @@ export function TopbarNotifications({
                   Loading more…
                 </div>
               )}
+
+              {hasMore && !isLoadingMore && (
+                <div className="p-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs text-mist hover:text-cloud"
+                    onClick={() => void loadMore()}
+                  >
+                    Load more
+                  </Button>
+                </div>
+              )}
+
               {!hasMore && notifications.length > 0 && (
                 <p className="py-3 text-center text-[11px] text-faint">
                   No more notifications

@@ -15,8 +15,14 @@ export interface NotificationItem {
   updatedAt?: string;
 }
 
+/** Nested shape returned by GET /notification. */
+export interface NotificationsPayload {
+  unreadCount: number;
+  data: NotificationItem[];
+}
+
 export async function getNotificationsAction(page = 1, limit = 10) {
-  return nextFetch<NotificationItem[]>(
+  return nextFetch<NotificationsPayload>(
     `/notification?page=${page}&limit=${limit}`,
     {
       method: "GET",

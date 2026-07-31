@@ -127,10 +127,13 @@ export function Navbar({
             <CartMenu cart={cart} />
 
             {user && user._id ? (
-              <div className="hidden items-center gap-2 sm:flex">
+              <>
+                {/* Single instance — also shown on mobile so socket/badge stay in sync */}
                 <TopbarNotifications userId={user._id} />
-                <ProfileMenu user={user} />
-              </div>
+                <div className="hidden items-center gap-2 sm:flex">
+                  <ProfileMenu user={user} />
+                </div>
+              </>
             ) : (
               <div className="hidden items-center gap-2 sm:flex">
                 <Button asChild variant="ghost" size="sm">
@@ -227,17 +230,14 @@ export function Navbar({
 
           <div className="mt-3 flex flex-col gap-2 border-t border-hairline pt-3">
             {user && user._id ? (
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-3">
-                  <ProfileMenu user={user} />
-                  <span className="flex flex-col">
-                    <span className="text-sm font-medium text-cloud">
-                      {user.name}
-                    </span>
-                    <span className="text-xs text-mist">{user.email}</span>
+              <div className="flex items-center gap-3 px-2">
+                <ProfileMenu user={user} />
+                <span className="flex flex-col">
+                  <span className="text-sm font-medium text-cloud">
+                    {user.name}
                   </span>
-                </div>
-                <TopbarNotifications userId={user._id} />
+                  <span className="text-xs text-mist">{user.email}</span>
+                </span>
               </div>
             ) : (
               <>
