@@ -144,7 +144,7 @@ export function ExpertRegisterForm() {
         method: "POST",
         body: formData,
       });
-      console.log(response);
+      // console.log(response);
       if (response?.success) {
         toast.success(
           response?.message ||

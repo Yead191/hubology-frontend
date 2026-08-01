@@ -70,7 +70,7 @@ async function VendorsLoader({
   const [res, profile] = await Promise.all([
     nextFetch<Vendor[]>(`/vendor?${qs}`, {
       method: "GET",
-      cache: "no-store",
+      cache: "default",
     }),
     getProfile(),
   ]);

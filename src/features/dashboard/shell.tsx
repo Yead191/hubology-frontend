@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { getImageUrl } from "@/lib/getImageUrl";
@@ -15,6 +15,11 @@ function initials(name: string) {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+}
+
+function isNavActive(pathname: string, href: string) {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  return pathname.startsWith(href);
 }
 
 export function DashboardShell({
@@ -31,9 +36,34 @@ export function DashboardShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  /**
+   * Production Router Cache can soft-navigate to the layout index (`/dashboard`)
+   * without swapping the page slot when coming from `/dashboard/*`. Force a
+   * refresh so Overview always remounts after build (`next start`).
+   */
+  function handleNavClick(
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) {
+    if (pathname === href) {
+      e.preventDefault();
+      return;
+    }
+
+    const leavingNestedForOverview =
+      href === "/dashboard" && pathname.startsWith("/dashboard/");
+
+    if (leavingNestedForOverview) {
+      e.preventDefault();
+      router.push(href);
+      router.refresh();
+    }
+  }
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-28 pb-16">
+    <section className="relative min-h-screen pt-28 pb-16">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(129,49,240,0.18),transparent_55%)]"
@@ -64,7 +94,11 @@ export function DashboardShell({
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr] lg:gap-8">
-          <aside className="lg:sticky lg:top-28 lg:self-start">
+          {/*
+            Sticky needs a non-overflow-hidden ancestor (removed from <section>).
+            top-32 clears the fixed site navbar; z-10 keeps links above page chrome.
+          */}
+          <aside className="relative z-10 lg:sticky lg:top-32 lg:self-start lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto">
             <div className="border-gradient overflow-hidden rounded-3xl bg-panel/60 backdrop-blur-md">
               <div className="border-b border-hairline bg-white/2 p-5">
                 <div className="flex items-center gap-3">
@@ -94,14 +128,13 @@ export function DashboardShell({
               <nav className="flex flex-col gap-1 p-2">
                 {DASHBOARD_NAV.map((item) => {
                   const Icon = item.icon;
-                  const active =
-                    item.href === "/dashboard"
-                      ? pathname === "/dashboard"
-                      : pathname.startsWith(item.href);
+                  const active = isNavActive(pathname, item.href);
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch
+                      onClick={(e) => handleNavClick(e, item.href)}
                       className={cn(
                         "flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-colors",
                         active
@@ -123,7 +156,9 @@ export function DashboardShell({
             </div>
           </aside>
 
-          <div className="min-w-0">{children}</div>
+          <div key={pathname} className="min-w-0">
+            {children}
+          </div>
         </div>
       </div>
     </section>
