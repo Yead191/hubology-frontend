@@ -4,7 +4,7 @@ export function getImageUrl(imageurl: string | null | undefined) {
     const baseUrl = (
       process.env.IMAGE_BASE_URL ||
       process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-      "http://10.10.26.164:5002"
+      "https://api.thehubology.com"
     )?.replace("/files", "");
 
     return `${baseUrl}${imageurl}`;
@@ -13,6 +13,6 @@ export function getImageUrl(imageurl: string | null | undefined) {
   return (
     (process.env.IMAGE_BASE_URL ||
       process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-      "http://10.10.26.164:5002/files") + imageurl
+      "https://api.thehubology.com/files") + imageurl
   );
 }
