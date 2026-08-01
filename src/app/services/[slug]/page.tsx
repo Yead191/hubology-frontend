@@ -7,6 +7,7 @@ import { ArrowLeft, Check, ShieldCheck, Lock, Star } from "lucide-react";
 import type { ServicePackage } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { buildMetadata } from "@/lib/seo";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,11 +34,33 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug: id } = await params;
   const service = await getService(id);
-  if (!service) return { title: "Service not found" };
-  return {
+  if (!service) {
+    return buildMetadata({
+      title: "Service not found",
+      description: "This Hubology service package could not be found.",
+      path: `/services/${id}`,
+      noIndex: true,
+    });
+  }
+
+  const description =
+    service.tagline ||
+    service.longDescription ||
+    `Book ${service.title} with verified Hubology experts.`;
+
+  return buildMetadata({
     title: service.title,
-    description: service.tagline || service.longDescription,
-  };
+    description: description.slice(0, 160),
+    path: `/services/${id}`,
+    image: getImageUrl(service.image),
+    keywords: [
+      service.title,
+      "Hubology service package",
+      "book business expert",
+      "verified consultant service",
+      ...(service.features ?? []).slice(0, 4),
+    ],
+  });
 }
 
 const REASSURANCE = [

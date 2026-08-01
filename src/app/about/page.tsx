@@ -2,12 +2,23 @@ import type { Metadata } from "next";
 import { Building, Receipt, FileText, Users, Globe } from "lucide-react";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About Us | Hubology",
+export const metadata: Metadata = buildMetadata({
+  title: "About Us",
   description:
-    "The ultimate digital ecosystem designed to accelerate the growth of modern businesses.",
-};
+    "Learn about Hubology — the digital ecosystem helping entrepreneurs with company registration, bookkeeping, tax readiness, a vetted B2B marketplace, and a global peer network.",
+  path: "/about",
+  keywords: [
+    "about Hubology",
+    "The HUBology",
+    "business growth ecosystem",
+    "company registration platform",
+    "founder bookkeeping services",
+    "vetted B2B marketplace",
+    "entrepreneur peer network",
+  ],
+});
 
 const deliverables = [
   {

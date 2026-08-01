@@ -10,12 +10,22 @@ import {
   mapMyCommentedItems,
 } from "@/lib/forum";
 import CommunityForum from "@/features/community-forum";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Community Forum",
+export const metadata: Metadata = buildMetadata({
+  title: "Community Forum for Founders",
   description:
-    "Ask questions and get answers from verified experts in the Hubology community.",
-};
+    "Join the Hubology community forum — ask questions, share playbooks, and get answers from verified experts and fellow founders.",
+  path: "/forum",
+  keywords: [
+    "founder community forum",
+    "entrepreneur discussion board",
+    "ask business experts",
+    "startup Q&A community",
+    "verified expert forum",
+    "business peer network",
+  ],
+});
 
 /** Always re-run list fetches when ?tab= / filters change. */
 export const dynamic = "force-dynamic";

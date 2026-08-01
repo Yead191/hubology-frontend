@@ -4,10 +4,12 @@ import { ShieldCheck } from "lucide-react";
 import { FocusShell } from "@/components/auth/focus-shell";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 
-export const metadata: Metadata = {
-  title: "Reset password",
-  description: "Choose a new password for your Hubology account.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Reset password",
+  "Choose a new password for your Hubology account.",
+);
 
 export default function ResetPasswordPage() {
   return (

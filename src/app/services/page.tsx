@@ -9,11 +9,24 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import type { ServicePackage } from "@/types";
 
-export const metadata: Metadata = {
-  title: "Services",
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Business Services & Expert Packages",
   description:
-    "Browse Hubology service packages and connect with verified experts across formation, tax, legal, branding, growth, and fundraising.",
-};
+    "Browse Hubology service packages and book verified experts for company formation, tax strategy, legal counsel, branding, growth marketing, and fundraising.",
+  path: "/services",
+  keywords: [
+    "business consulting services",
+    "company formation services",
+    "tax strategy consultants",
+    "legal counsel for startups",
+    "brand strategy experts",
+    "growth marketing consultants",
+    "fundraising advisors",
+    "hire verified business experts",
+  ],
+});
 
 export default function ServicesPage() {
   return (

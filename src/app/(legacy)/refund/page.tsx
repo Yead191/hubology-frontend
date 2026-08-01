@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
-export const metadata: Metadata = {
-  title: "Refund Policy | Hubology",
-  description: "Guidelines and procedures for returns and refunds.",
-};
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Refund Policy",
+  description:
+    "Understand Hubology refund and return guidelines for services, digital products, memberships, and office supplies.",
+  path: "/refund",
+  keywords: ["Hubology refund policy", "return policy", "cancellation refunds"],
+});
 
 export default function RefundPolicyPage() {
   return (

@@ -5,10 +5,12 @@ import { MailCheck } from "lucide-react";
 import { FocusShell } from "@/components/auth/focus-shell";
 import { VerifyOtpForm } from "@/components/auth/verify-otp-form";
 
-export const metadata: Metadata = {
-  title: "Verify your email",
-  description: "Enter the one-time code we sent to your email.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Verify your email",
+  "Enter the one-time code we sent to your email.",
+);
 
 interface PageProps {
   searchParams: Promise<{ email?: string; flow?: string }>;

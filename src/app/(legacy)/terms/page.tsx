@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
-export const metadata: Metadata = {
-  title: "Terms and Conditions | Hubology",
-  description: "Rules and guidelines for using Hubology.",
-};
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Terms and Conditions",
+  description:
+    "Read the Hubology terms and conditions covering account use, services, memberships, and platform guidelines.",
+  path: "/terms",
+  keywords: ["Hubology terms of service", "terms and conditions", "platform rules"],
+});
 
 export default function TermsPage() {
   return (

@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { RegisterBenefits } from "@/components/register/register-benefits";
 import { MemberRegisterForm } from "@/components/register/member-register-form";
 import { ExpertRegisterForm } from "@/components/register/expert-register-form";
+import { buildMetadata } from "@/lib/seo";
 
 type Role = "member" | "expert";
 
@@ -29,17 +30,12 @@ export function generateStaticParams() {
   return [{ role: "member" }, { role: "expert" }];
 }
 
-const copy: Record<
-  Role,
-  { title: string; subtitle: string; metaTitle: string }
-> = {
+const copy: Record<Role, { title: string; subtitle: string }> = {
   member: {
-    metaTitle: "Join as a Member",
     title: "Create your member account",
     subtitle: "Seek expert advice and connect with a community of founders.",
   },
   expert: {
-    metaTitle: "Apply as an Expert",
     title: "Apply to join as an expert",
     subtitle: "Share your expertise with high-level executives and founders.",
   },
@@ -49,8 +45,40 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { role } = await params;
-  if (role !== "member" && role !== "expert") return { title: "Register" };
-  return { title: copy[role as Role].metaTitle };
+  if (role === "member") {
+    return buildMetadata({
+      title: "Join as a Member",
+      description:
+        "Create your Hubology member account to access verified experts, book services, join the community forum, and grow your business.",
+      path: "/register/member",
+      keywords: [
+        "Hubology member signup",
+        "create founder account",
+        "join entrepreneur community",
+        "register for Hubology",
+      ],
+    });
+  }
+  if (role === "expert") {
+    return buildMetadata({
+      title: "Apply as an Expert",
+      description:
+        "Apply to become a verified Hubology expert. Share your expertise with founders, set your rate, and grow your consulting practice.",
+      path: "/register/expert",
+      keywords: [
+        "become a Hubology expert",
+        "consultant vendor application",
+        "verified expert signup",
+        "join as business advisor",
+      ],
+    });
+  }
+  return buildMetadata({
+    title: "Register",
+    description: "Create your Hubology account.",
+    path: `/register/${role}`,
+    noIndex: true,
+  });
 }
 
 export default async function RegisterPage({ params }: PageProps) {

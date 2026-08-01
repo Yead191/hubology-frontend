@@ -6,11 +6,22 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { Aurora } from "@/components/ui/aurora";
 
-export const metadata: Metadata = {
-  title: "Join the Hub",
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Join Hubology",
   description:
-    "Join Hubology as a member seeking expert advice, or apply as a verified expert to share your expertise.",
-};
+    "Join Hubology as a member to access experts and the community forum, or apply as a verified expert to advise founders and grow your practice.",
+  path: "/join",
+  keywords: [
+    "join Hubology",
+    "sign up as member",
+    "apply as expert",
+    "become a verified consultant",
+    "founder membership signup",
+    "expert vendor application",
+  ],
+});
 
 export default function JoinPage() {
   return (

@@ -6,10 +6,12 @@ import getProfile from "@/helpers/next-fetch/getProfile";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import CheckoutExperience from "@/features/checkout";
 
-export const metadata: Metadata = {
-  title: "Checkout",
-  description: "Complete your order securely.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Checkout",
+  "Complete your Hubology order securely.",
+);
 
 export default async function CheckoutPage() {
   const user = await getProfile();

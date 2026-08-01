@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import { getServicePackage } from "@/data/services";
 import { BookingConfirmation } from "@/features/service-booking/sections/booking-confirmation";
 
-export const metadata: Metadata = {
-  title: "Booking confirmed",
-  description: "Your Hubology service booking is confirmed.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Booking confirmed",
+  "Your Hubology service booking is confirmed.",
+);
 
 export default async function BookingConfirmationPage({
   searchParams,

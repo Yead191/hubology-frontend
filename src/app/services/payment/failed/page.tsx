@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 
 import { PaymentResult } from "@/features/service-booking/sections/payment-result";
 
-export const metadata: Metadata = {
-  title: "Payment not completed",
-  description: "Your payment was cancelled or could not be processed.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Payment not completed",
+  "Your payment was cancelled or could not be processed.",
+);
 
 interface PageProps {
   searchParams: Promise<{

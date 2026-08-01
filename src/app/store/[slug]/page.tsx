@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import type { Book } from "@/types";
+import { getImageUrl } from "@/lib/getImageUrl";
+import { buildMetadata } from "@/lib/seo";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import { BookDetail } from "@/features/store/sections/book-detail";
@@ -26,7 +28,6 @@ async function hasPurchasedBook(bookId: string) {
     method: "GET",
     cache: "no-store",
   });
-  // console.log(res)
   return Boolean(res.success && res.data);
 }
 
@@ -35,8 +36,31 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug: id } = await params;
   const book = await getBook(id);
-  if (!book) return { title: "Book not found" };
-  return { title: book.title, description: book.subtitle };
+  if (!book) {
+    return buildMetadata({
+      title: "Book not found",
+      description: "This Hubology digital book could not be found.",
+      path: `/store/${id}`,
+      noIndex: true,
+    });
+  }
+
+  return buildMetadata({
+    title: book.title,
+    description: (
+      book.subtitle ||
+      book.description ||
+      `Buy and download ${book.title} from the Hubology digital bookstore.`
+    ).slice(0, 160),
+    path: `/store/${id}`,
+    image: getImageUrl(book.image),
+    keywords: [
+      book.title,
+      "digital business book",
+      "founder ebook download",
+      "Hubology bookstore",
+    ],
+  });
 }
 
 export default async function BookDetailPage({ params }: PageProps) {

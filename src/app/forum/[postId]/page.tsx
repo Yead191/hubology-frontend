@@ -7,17 +7,56 @@ import {
   mapForumComment,
   mapForumPost,
 } from "@/lib/forum";
+import { buildMetadata } from "@/lib/seo";
 import { PostDetail } from "@/features/community-forum/sections/post-detail";
 import { ForumLockCard } from "@/features/membership/sections/forum-lock";
 import { Aurora } from "@/components/ui/aurora";
 
-export const metadata: Metadata = {
-  title: "Post · Community Forum",
-  description: "Read the full discussion and join the conversation.",
-};
-
 interface PageProps {
   params: Promise<{ postId: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { postId } = await params;
+  const res = await nextFetch(`/posts/${postId}`, {
+    method: "GET",
+    cache: "no-store",
+    tags: [`forum-post-${postId}`],
+  });
+
+  if (!res.success || !res.data) {
+    return buildMetadata({
+      title: "Forum post",
+      description: "Read discussions from founders and verified experts on Hubology.",
+      path: `/forum/${postId}`,
+      noIndex: true,
+    });
+  }
+
+  const post = mapForumPost(res.data);
+  const snippet = post.content.replace(/\s+/g, " ").trim();
+  const title =
+    (snippet.slice(0, 60) || "Community forum post") +
+    (snippet.length > 60 ? "…" : "");
+  const description = (
+    snippet ||
+    "Join the conversation in the Hubology community forum."
+  ).slice(0, 160);
+
+  return buildMetadata({
+    title,
+    description,
+    path: `/forum/${postId}`,
+    keywords: [
+      post.category ?? "",
+      post.author?.name ?? "",
+      "Hubology forum discussion",
+      "founder community post",
+      "ask business experts",
+    ],
+  });
 }
 
 export default async function PostDetailPage({ params }: PageProps) {
@@ -52,8 +91,8 @@ export default async function PostDetailPage({ params }: PageProps) {
     }),
   ]);
 
-  const post = postRes.success && postRes.data ? mapForumPost(postRes.data) : null;
-  // console.log(post)
+  const post =
+    postRes.success && postRes.data ? mapForumPost(postRes.data) : null;
   const comments = commentsRes.success
     ? (commentsRes.data ?? []).map(mapForumComment)
     : [];

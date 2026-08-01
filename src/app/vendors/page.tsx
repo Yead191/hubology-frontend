@@ -7,11 +7,24 @@ import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
 import getProfile from "@/helpers/next-fetch/getProfile";
 
-export const metadata: Metadata = {
-  title: "Vendors",
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Verified Experts & Vendor Directory",
   description:
-    "Browse Hubology's directory of manually-verified experts. Search and filter by expertise, rate, and availability, then reach out directly.",
-};
+    "Browse Hubology's directory of manually verified business experts. Filter by expertise, hourly rate, and availability — then contact consultants directly.",
+  path: "/vendors",
+  keywords: [
+    "verified business experts",
+    "consultant directory",
+    "hire business advisor",
+    "expert marketplace",
+    "freelance business consultants",
+    "vendor directory",
+    "find a business coach",
+    "hourly consulting rates",
+  ],
+});
 
 interface PageProps {
   searchParams: Promise<{

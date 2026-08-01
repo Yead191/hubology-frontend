@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/legal-layout";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | Hubology",
-  description: "Learn how we collect, use, and protect your data.",
-};
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Privacy Policy",
+  description:
+    "Read the Hubology privacy policy to learn how we collect, use, store, and protect your personal data.",
+  path: "/privacy-policy",
+  keywords: ["Hubology privacy policy", "data protection", "personal data policy"],
+});
 
 export default function PrivacyPolicyPage() {
   return (

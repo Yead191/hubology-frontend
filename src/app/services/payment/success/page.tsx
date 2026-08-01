@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 
 import { PaymentResult } from "@/features/service-booking/sections/payment-result";
 
-export const metadata: Metadata = {
-  title: "Payment successful",
-  description: "Your Hubology payment is confirmed.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Payment successful",
+  "Your Hubology payment is confirmed.",
+);
 
 interface PageProps {
   searchParams: Promise<{

@@ -7,11 +7,21 @@ import OfficeSuppliesExperience, {
   type OfficeFilters,
 } from "@/features/office-supplies";
 
-export const metadata: Metadata = {
-  title: "Office Supplies",
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Office Supplies for Founders",
   description:
-    "Premium physical goods designed to keep founders organized and focused on what matters most.",
-};
+    "Shop premium office supplies and founder essentials from Hubology — organized tools and physical products that keep your workspace focused on growth.",
+  path: "/office-supplies",
+  keywords: [
+    "founder office supplies",
+    "entrepreneur workspace essentials",
+    "premium office products",
+    "startup office supplies online",
+    "business stationery and tools",
+  ],
+});
 
 interface PageProps {
   searchParams: Promise<{

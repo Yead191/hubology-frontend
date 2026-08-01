@@ -5,6 +5,12 @@ import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "sonner";
 import NavServer from "@/components/layout/NavServer";
+import {
+  DEFAULT_KEYWORDS,
+  SITE_NAME,
+  absoluteUrl,
+  getSiteUrl,
+} from "@/lib/seo";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -20,13 +26,52 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Hubology — Launch, grow, and scale your business",
-    template: "%s · Hubology",
+    default: `${SITE_NAME} — Launch, grow, and scale your business`,
+    template: `%s · ${SITE_NAME}`,
   },
   description:
-    "The all-in-one digital workspace to launch, grow, and scale your business. Access tools, resources, and a community of verified experts in one place.",
+    "Hubology is the all-in-one platform for founders: verified business experts, growth services, a member community forum, digital books, and tools to launch, grow, and scale.",
+  keywords: [...DEFAULT_KEYWORDS],
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: siteUrl }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "business",
+  alternates: { canonical: absoluteUrl("/") },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: absoluteUrl("/"),
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Launch, grow, and scale your business`,
+    description:
+      "Access verified experts, founder services, membership community, and growth resources in one digital workspace.",
+    images: [
+      {
+        url: absoluteUrl("/logo-hubology.svg"),
+        width: 1200,
+        height: 630,
+        alt: "Hubology — business growth platform for founders",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Launch, grow, and scale your business`,
+    description:
+      "Verified experts, services, community forum, and founder resources — all in one place.",
+    images: [absoluteUrl("/logo-hubology.svg")],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
 };
 
 export default function RootLayout({

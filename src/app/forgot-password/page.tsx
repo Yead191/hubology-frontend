@@ -4,10 +4,12 @@ import { KeyRound } from "lucide-react";
 import { FocusShell } from "@/components/auth/focus-shell";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
-export const metadata: Metadata = {
-  title: "Forgot password",
-  description: "Reset your Hubology password.",
-};
+import { noIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = noIndexMetadata(
+  "Forgot password",
+  "Reset your Hubology password.",
+);
 
 export default function ForgotPasswordPage() {
   return (

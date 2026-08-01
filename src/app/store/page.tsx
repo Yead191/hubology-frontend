@@ -7,11 +7,22 @@ import StoreExperience, {
   type StoreFilters,
 } from "@/features/store";
 
-export const metadata: Metadata = {
-  title: "Store",
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Digital Bookstore for Founders",
   description:
-    "Step into the Hubology 3D bookstore — a shelf of founder-built books. Browse in 3D, then buy and download.",
-};
+    "Shop Hubology's digital bookstore — practical founder books and downloadable guides on growth, operations, finance, and scaling. Browse, buy, and download instantly.",
+  path: "/store",
+  keywords: [
+    "founder digital books",
+    "startup ebook store",
+    "business growth books",
+    "entrepreneur guides download",
+    "digital bookstore",
+    "business PDF downloads",
+  ],
+});
 
 interface PageProps {
   searchParams: Promise<{

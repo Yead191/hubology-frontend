@@ -4,10 +4,16 @@ import { Suspense } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
 
-export const metadata: Metadata = {
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
   title: "Login",
-  description: "Sign in to your Hubology account.",
-};
+  description:
+    "Sign in to your Hubology account to access bookings, membership, the community forum, and your dashboard.",
+  path: "/login",
+  keywords: ["Hubology login", "sign in", "member login"],
+  noIndex: true,
+});
 
 export default function LoginPage() {
   return (

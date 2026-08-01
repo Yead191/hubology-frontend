@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 
 import getProfile from "@/helpers/next-fetch/getProfile";
 import { DashboardShell } from "@/features/dashboard/shell";
+import { noIndexMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Manage your Hubology account, bookings, and purchases.",
-};
+export const metadata: Metadata = noIndexMetadata(
+  "Dashboard",
+  "Manage your Hubology account, bookings, and purchases.",
+);
 
 export default async function DashboardLayout({
   children,

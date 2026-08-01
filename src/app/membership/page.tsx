@@ -4,12 +4,22 @@ import type { MembershipPlan, MembershipRecurring } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Membership from "@/features/membership";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Membership",
+export const metadata: Metadata = buildMetadata({
+  title: "Membership Plans",
   description:
-    "Unlock the Hubology community forum, verified experts, and member perks. Simple plans, cancel anytime.",
-};
+    "Unlock the Hubology community forum, verified expert access, and member perks. Compare monthly and yearly plans for founders and vendors — cancel anytime.",
+  path: "/membership",
+  keywords: [
+    "Hubology membership",
+    "founder membership plans",
+    "community forum access",
+    "vendor subscription",
+    "entrepreneur membership",
+    "monthly yearly business membership",
+  ],
+});
 
 interface PageProps {
   searchParams: Promise<{ recurring?: string }>;
