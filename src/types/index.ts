@@ -75,13 +75,16 @@ export interface Pagination {
   totalPage: number;
 }
 
+/** Testimonial as returned by GET /testimonial. */
 export interface Testimonial {
-  id: string;
-  quote: string;
+  _id: string;
   name: string;
+  quote: string;
   role: string;
   company: string;
-  avatar: string;
+  image?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /* ------------------------------------------------------------------ *

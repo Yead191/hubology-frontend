@@ -44,7 +44,7 @@ export default async function MembershipPage({ searchParams }: PageProps) {
   );
 
   const plans = res.success ? (res.data ?? []) : [];
-
+  // console.log(user)
   return (
     <Membership
       plans={plans}

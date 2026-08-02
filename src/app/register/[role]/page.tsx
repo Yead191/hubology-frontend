@@ -89,7 +89,7 @@ export default async function RegisterPage({ params }: PageProps) {
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-28 pb-20">
-      <Aurora className="-top-24 right-1/4 h-[34rem] w-[40rem] opacity-40" />
+      <Aurora className="-top-24 right-1/4 h-136 w-160 opacity-40" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
@@ -102,7 +102,7 @@ export default async function RegisterPage({ params }: PageProps) {
 
         <div className="grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           {/* Form column */}
-          <Reveal className="border-gradient relative rounded-[2rem] bg-panel/50 p-7 glow-soft sm:p-9">
+          <Reveal className="border-gradient relative rounded-4xl bg-panel/50 p-7 glow-soft sm:p-9">
             <Link href="/" className="mb-6 inline-block lg:hidden">
               <Logo />
             </Link>
