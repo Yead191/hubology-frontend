@@ -299,6 +299,26 @@ export interface CartData {
 }
 
 /* ------------------------------------------------------------------ *
+ * Contact inquiry — POST /inquiry
+ * ------------------------------------------------------------------ */
+export const PROJECT_BUDGETS = [
+  "UNDER_100",
+  "100_300",
+  "300_500",
+  "600_1000",
+  "ABOVE_1000",
+] as const;
+
+export type ProjectBudget = (typeof PROJECT_BUDGETS)[number];
+
+export interface Inquiry {
+  name: string;
+  email: string;
+  projectDescription: string;
+  budget: ProjectBudget;
+}
+
+/* ------------------------------------------------------------------ *
  * Cart (legacy localStorage — checkout still uses this)
  * ------------------------------------------------------------------ */
 export interface CartItem {

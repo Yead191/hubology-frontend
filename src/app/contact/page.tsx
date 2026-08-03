@@ -1,40 +1,53 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { PROJECT_BUDGETS, type ProjectBudget } from "@/types";
+import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
-import { z } from "zod";
+
+const BUDGET_OPTIONS: { value: ProjectBudget; label: string }[] = [
+  { value: "UNDER_100", label: "Under $100" },
+  { value: "100_300", label: "$100 – $300" },
+  { value: "300_500", label: "$300 – $500" },
+  { value: "600_1000", label: "$600 – $1,000" },
+  { value: "ABOVE_1000", label: "Above $1,000" },
+];
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
-  projectDetails: z.string().min(5, "Project details are required"),
-  budget: z.enum(["under100", "100to300", "300to500"]),
+  projectDescription: z.string().min(5, "Project description is required"),
+  budget: z.enum(PROJECT_BUDGETS),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
+
+const EMPTY_FORM: {
+  name: string;
+  email: string;
+  projectDescription: string;
+  budget: ProjectBudget | "";
+} = {
+  name: "",
+  email: "",
+  projectDescription: "",
+  budget: "",
+};
 
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeField, setActiveField] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState<Partial<ContactFormData>>({
-    name: "",
-    email: "",
-    projectDetails: "",
-    budget: undefined,
-  });
-
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
-    const checkValidation = () => {
-      const result = contactSchema.safeParse(formData);
-      setIsValid(result.success);
-    };
-    checkValidation();
+    setIsValid(contactSchema.safeParse(formData).success);
   }, [formData]);
 
   const handleChange = (
@@ -44,17 +57,56 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isValid) return;
+    const parsed = contactSchema.safeParse(formData);
+    if (!parsed.success) {
+      toast.error(
+        parsed.error.errors[0]?.message || "Please complete the form.",
+        { id: "inquiry" },
+      );
+      return;
+    }
 
     setIsSubmitting(true);
-    // Simulate network request
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const payload: ContactFormData = {
+        name: parsed.data.name.trim(),
+        email: parsed.data.email.trim(),
+        projectDescription: parsed.data.projectDescription.trim(),
+        budget: parsed.data.budget,
+      };
+
+      const res = await nextFetch("/inquiry", {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!res.success) {
+        if (res?.error && Array.isArray(res.error)) {
+          res.error.forEach((err: { message: string }) => {
+            toast.error(err.message, { id: "inquiry" });
+          });
+        } else {
+          toast.error(res.message || "Could not send your inquiry.", {
+            id: "inquiry",
+          });
+        }
+        return;
+      }
+
+      toast.success(res.message || "Inquiry sent successfully.", {
+        id: "inquiry",
+      });
       setIsSubmitted(true);
-    }, 1500);
-  };
+      setFormData(EMPTY_FORM);
+    } catch (err) {
+      console.error("Inquiry error:", err);
+      toast.error("Network error. Please try again.", { id: "inquiry" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   const getCircleClasses = (fieldName: string) => {
     const isActive = activeField === fieldName;
@@ -68,129 +120,116 @@ export default function ContactPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden pt-32 pb-24">
-      {/* Background Ambience */}
       <Aurora
         animated
-        className="absolute top-1/2 left-1/2 h-[800px] w-[1200px] -translate-x-1/2 -translate-y-1/2 opacity-20"
+        className="absolute top-1/2 left-1/2 h-200 w-300 -translate-x-1/2 -translate-y-1/2 opacity-20"
       />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <div className="text-center mb-16 lg:mb-24">
+          <div className="mb-16 text-center lg:mb-24">
             <h1 className="font-display text-4xl font-bold tracking-tight text-cloud sm:text-5xl md:text-6xl">
-              Let's create something <br className="hidden sm:block" />
+              Let&apos;s create something <br className="hidden sm:block" />
               <span className="text-gradient">extraordinary.</span>
             </h1>
             <p className="mt-6 text-lg text-mist">
-              Tell us about your project and we'll get back to you shortly.
+              Tell us about your project and we&apos;ll get back to you shortly.
             </p>
           </div>
         </Reveal>
 
         <Reveal delay={100}>
           {isSubmitted ? (
-            <div className="mx-auto flex max-w-2xl flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-700">
-              <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-brand-gradient glow-violet mb-8 shrink-0">
+            <div className="mx-auto flex max-w-2xl animate-in flex-col items-center justify-center text-center duration-700 fade-in zoom-in">
+              <div className="relative mb-8 flex h-32 w-32 shrink-0 items-center justify-center rounded-full bg-brand-gradient glow-violet">
                 <CheckCircle2 className="h-16 w-16 text-white" />
               </div>
-              <h2 className="font-display text-3xl font-bold text-cloud mb-4">
-                Message Sent Successfully!
+              <h2 className="mb-4 font-display text-3xl font-bold text-cloud">
+                Message sent successfully!
               </h2>
               <p className="text-lg text-mist">
                 Thank you for reaching out. Our team will review your request
                 and get back to you within 24 hours.
               </p>
               <button
-                onClick={() => {
-                  setIsSubmitted(false);
-                  setFormData({
-                    name: "",
-                    email: "",
-                    projectDetails: "",
-                    budget: undefined,
-                  });
-                }}
+                type="button"
+                onClick={() => setIsSubmitted(false)}
                 className="mt-10 rounded-full border border-hairline-strong bg-white/5 px-8 py-3 font-medium text-cloud transition-all hover:bg-white/10"
               >
-                Send Another Message
+                Send another message
               </button>
             </div>
           ) : (
             <form
-              onSubmit={handleSubmit}
-              className="flex flex-col items-center justify-center lg:flex-row gap-4 lg:gap-0"
+              onSubmit={(e) => void handleSubmit(e)}
+              className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:gap-0"
             >
-              {/* Circle 1: Name */}
-              <div className={getCircleClasses("name") + " z-1"}>
+              <div className={`${getCircleClasses("name")} z-1`}>
                 <input
                   required
                   name="name"
-                  value={formData.name || ""}
+                  value={formData.name}
                   onChange={handleChange}
                   onFocus={() => setActiveField("name")}
                   onBlur={() => setActiveField(null)}
                   type="text"
                   placeholder="Your Name"
-                  className="w-full bg-transparent px-6 py-4 text-center text-base lg:text-lg font-medium text-cloud placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 transition-colors"
+                  className="w-full bg-transparent px-6 py-4 text-center text-base font-medium text-cloud transition-colors placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 lg:text-lg"
                 />
               </div>
 
-              {/* Circle 2: Email */}
-              <div className={getCircleClasses("email") + " z-2"}>
+              <div className={`${getCircleClasses("email")} z-2`}>
                 <input
                   required
                   name="email"
-                  value={formData.email || ""}
+                  value={formData.email}
                   onChange={handleChange}
                   onFocus={() => setActiveField("email")}
                   onBlur={() => setActiveField(null)}
                   type="email"
                   placeholder="Your Email"
-                  className="w-full bg-transparent px-6 py-4 text-center text-base lg:text-lg font-medium text-cloud placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 transition-colors"
+                  className="w-full bg-transparent px-6 py-4 text-center text-base font-medium text-cloud transition-colors placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 lg:text-lg"
                 />
               </div>
 
-              {/* Circle 3: Project Details */}
-              <div className={getCircleClasses("projectDetails") + " z-3"}>
+              <div className={`${getCircleClasses("projectDescription")} z-3`}>
                 <input
                   required
-                  name="projectDetails"
-                  value={formData.projectDetails || ""}
+                  name="projectDescription"
+                  value={formData.projectDescription}
                   onChange={handleChange}
-                  onFocus={() => setActiveField("projectDetails")}
+                  onFocus={() => setActiveField("projectDescription")}
                   onBlur={() => setActiveField(null)}
                   type="text"
                   placeholder="Your project is about"
-                  className="w-full bg-transparent px-6 py-4 text-center text-base lg:text-lg font-medium text-cloud placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 transition-colors"
+                  className="w-full bg-transparent px-6 py-4 text-center text-base font-medium text-cloud transition-colors placeholder:text-mist focus:outline-none focus:placeholder:text-cloud/70 lg:text-lg"
                 />
               </div>
 
-              {/* Circle 4: Budget */}
-              <div className={getCircleClasses("budget") + " z-4"}>
+              <div className={`${getCircleClasses("budget")} z-4`}>
                 <select
                   required
                   name="budget"
-                  value={formData.budget || ""}
+                  value={formData.budget}
                   onChange={handleChange}
                   onFocus={() => setActiveField("budget")}
                   onBlur={() => setActiveField(null)}
-                  className="w-full cursor-pointer appearance-none bg-transparent px-6 py-4 text-center text-base lg:text-lg font-medium text-mist focus:text-cloud focus:outline-none transition-colors"
+                  className="w-full cursor-pointer appearance-none bg-transparent px-6 py-4 text-center text-base font-medium text-mist transition-colors focus:text-cloud focus:outline-none lg:text-lg"
                 >
                   <option value="" disabled className="bg-ink text-mist">
                     Project budget
                   </option>
-                  <option value="under100" className="bg-ink text-cloud">
-                    Under 100
-                  </option>
-                  <option value="100to300" className="bg-ink text-cloud">
-                    100 - 300
-                  </option>
-                  <option value="300to500" className="bg-ink text-cloud">
-                    300 - 500
-                  </option>
+                  {BUDGET_OPTIONS.map((opt) => (
+                    <option
+                      key={opt.value}
+                      value={opt.value}
+                      className="bg-ink text-cloud"
+                    >
+                      {opt.label}
+                    </option>
+                  ))}
                 </select>
-                {/* Custom dropdown arrow to match the theme */}
-                <div className="pointer-events-none absolute right-12 lg:right-16 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity">
+                <div className="pointer-events-none absolute right-12 top-1/2 -translate-y-1/2 opacity-50 transition-opacity group-hover:opacity-100 lg:right-16">
                   <svg
                     width="12"
                     height="8"
@@ -209,23 +248,25 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Circle 5: Submit Button */}
               <button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className={`group relative z-5 flex aspect-square w-full max-w-[220px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-full backdrop-blur-md transition-all duration-500
+                className={`group relative z-5 flex aspect-square w-full max-w-55 shrink-0 cursor-pointer flex-col items-center justify-center rounded-full backdrop-blur-md transition-all duration-500
                   ${
                     isValid
                       ? "border border-violet-bright/30 bg-brand-gradient glow-violet hover:z-50 hover:scale-105 hover:shadow-[0_0_80px_-15px_rgba(154,85,255,0.7)]"
-                      : "cursor-not-allowed border border-hairline-strong bg-panel/30 hover:bg-panel/50 text-mist"
+                      : "cursor-not-allowed border border-hairline-strong bg-panel/30 text-mist hover:bg-panel/50"
                   }
                 `}
               >
                 <div
-                  className={`flex items-center gap-2 text-base lg:text-lg font-semibold transition-colors duration-500 ${isValid ? "text-white" : "text-faint"}`}
+                  className={`flex items-center gap-2 text-base font-semibold transition-colors duration-500 lg:text-lg ${isValid ? "text-white" : "text-faint"}`}
                 >
                   {isSubmitting ? (
-                    <span className="animate-pulse">Sending...</span>
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Sending…</span>
+                    </>
                   ) : (
                     <>
                       <span>Send</span>

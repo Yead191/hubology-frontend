@@ -36,7 +36,7 @@ const footerLinks = [
     heading: "Get started",
     links: [
       { label: "Join as a Member", href: "/register/member" },
-      { label: "Apply as an Expert", href: "/register/expert" },
+      { label: "Apply as an Vendor", href: "/register/expert" },
       { label: "Login", href: "/login" },
     ],
   },
