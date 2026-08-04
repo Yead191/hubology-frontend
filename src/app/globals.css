@@ -272,6 +272,17 @@
     color: var(--color-cloud);
     font-weight: 600;
   }
+  .prose-legal a {
+    color: var(--color-violet-bright);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-legal a:hover {
+    color: var(--color-cloud);
+  }
+  .prose-legal li > p {
+    margin-bottom: 0;
+  }
 }
 
 /* ============================================================

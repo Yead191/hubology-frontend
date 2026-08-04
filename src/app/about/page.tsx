@@ -59,7 +59,7 @@ export default function AboutPage() {
       {/* Background Ambience */}
       <Aurora
         animated
-        className="-top-20 left-1/2 h-[600px] w-[1000px] -translate-x-1/2 opacity-30"
+        className="-top-20 left-1/2 h-150 w-250 -translate-x-1/2 opacity-30"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8 z-10">

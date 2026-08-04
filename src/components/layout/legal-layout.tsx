@@ -1,16 +1,24 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 
 interface LegalLayoutProps {
   title: string;
   effectiveDate?: string;
-  children: React.ReactNode;
+  /** HTML body from GET /disclaimer. */
+  html?: string;
+  children?: React.ReactNode;
 }
 
-export function LegalLayout({ title, effectiveDate, children }: LegalLayoutProps) {
+export function LegalLayout({
+  title,
+  effectiveDate,
+  html,
+  children,
+}: LegalLayoutProps) {
   return (
     <main className="relative min-h-screen overflow-hidden pt-28 pb-16">
       <Aurora
@@ -41,9 +49,20 @@ export function LegalLayout({ title, effectiveDate, children }: LegalLayoutProps
         </Reveal>
 
         <Reveal delay={100}>
-          <div className="prose-legal flex flex-col gap-3 text-sm leading-relaxed text-mist sm:text-[0.9375rem]">
-            {children}
-          </div>
+          {html ? (
+            <div
+              className="prose-legal text-sm leading-relaxed text-mist sm:text-[0.9375rem]"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          ) : children ? (
+            <div className="prose-legal flex flex-col gap-3 text-sm leading-relaxed text-mist sm:text-[0.9375rem]">
+              {children}
+            </div>
+          ) : (
+            <p className="text-sm text-mist">
+              This document is temporarily unavailable. Please try again later.
+            </p>
+          )}
         </Reveal>
       </div>
     </main>
