@@ -9,7 +9,11 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Read the Hubology terms and conditions covering account use, services, memberships, and platform guidelines.",
   path: "/terms",
-  keywords: ["Hubology terms of service", "terms and conditions", "platform rules"],
+  keywords: [
+    "Hubology terms of service",
+    "terms and conditions",
+    "platform rules",
+  ],
 });
 
 export default async function TermsPage() {
