@@ -20,9 +20,9 @@ const footerLinks = [
     heading: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Careers", href: "/" },
+      // { label: "Careers", href: "/" },
       { label: "Contact", href: "/contact" },
-      { label: "Blog", href: "/" },
+      { label: "Our Partners", href: "/partners" },
     ],
   },
   {
@@ -37,7 +37,7 @@ const footerLinks = [
     heading: "Get started",
     links: [
       { label: "Join as a Member", href: "/register/member" },
-      { label: "Apply as an Vendor", href: "/register/expert" },
+      { label: "Apply as a Vendor", href: "/register/expert" },
       { label: "Login", href: "/login" },
     ],
   },
