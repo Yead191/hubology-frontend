@@ -100,7 +100,7 @@ export type ExpertRegisterValues = z.infer<typeof expertRegisterSchema>;
 
 /* ------------------- Service booking (intake) ------------------- */
 // Name/email come from the authenticated token on the backend, so we only
-// collect scheduling details here.
+// collect scheduling + phone here.
 export const bookingSchema = z.object({
   date: z
     .string()
@@ -110,6 +110,10 @@ export const bookingSchema = z.object({
       "Choose a date in the future",
     ),
   time: z.string().min(1, "Choose a preferred time"),
+  phone: z
+    .string()
+    .min(6, "Enter a valid contact number")
+    .regex(/^[+()\-\s\d]+$/, "Enter a valid contact number"),
   note: z
     .string()
     .max(500, "Please keep this under 500 characters")

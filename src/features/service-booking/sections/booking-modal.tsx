@@ -65,11 +65,11 @@ export function BookingModal({
     formState: { errors },
   } = useForm<BookingValues>({
     resolver: zodResolver(bookingSchema),
-    defaultValues: { date: "", time: "", note: "" },
+    defaultValues: { date: "", time: "", phone: "", note: "" },
   });
 
   React.useEffect(() => {
-    if (open) reset({ date: "", time: "", note: "" });
+    if (open) reset({ date: "", time: "", phone: "", note: "" });
   }, [open, reset]);
 
   async function onSubmit(values: BookingValues) {
@@ -89,6 +89,7 @@ export function BookingModal({
           // date input -> ISO at UTC midnight (e.g. 2026-08-15T00:00:00.000Z)
           preferredDate: new Date(values.date).toISOString(),
           preferredTime: values.time,
+          phone: values.phone.trim(),
           note: values.note ?? "",
         },
       });
@@ -198,6 +199,20 @@ export function BookingModal({
         </div>
 
         <div className="flex flex-col gap-2">
+          <Label htmlFor="phone">Contact number</Label>
+          <Input
+            id="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder="+1 555 000 0000"
+            aria-invalid={!!errors.phone}
+            {...register("phone")}
+          />
+          <FieldError message={errors.phone?.message} />
+        </div>
+
+        <div className="flex flex-col gap-2">
           <Label htmlFor="note">
             Add a note <span className="text-faint">(optional)</span>
           </Label>
@@ -211,7 +226,12 @@ export function BookingModal({
           <FieldError message={errors.note?.message} />
         </div>
 
-        <Button type="submit" size="lg" disabled={redirecting} className="w-full">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={redirecting}
+          className="w-full"
+        >
           {redirecting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" /> Redirecting to secure

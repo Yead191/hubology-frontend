@@ -21,6 +21,7 @@ export interface DashboardBooking {
   service?: { _id?: string; title?: string };
   preferredDate?: string;
   preferredTime?: string;
+  phone?: string;
   note?: string;
   price?: number;
   status?: string;
@@ -112,6 +113,7 @@ export function BookingsTable({ bookings }: { bookings: DashboardBooking[] }) {
             <Row label="Preferred date" value={formatDate(selected.preferredDate)} />
             <Row label="Preferred time" value={selected.preferredTime || "—"} />
             <Row label="Price" value={formatMoney(selected.price)} />
+            <Row label="Contact number" value={selected.phone || "—"} />
             <Row label="Status" value={selected.status || "—"} />
             <Row label="Payment" value={selected.paymentStatus || "—"} />
             <Row label="Booked on" value={formatDate(selected.createdAt)} />
