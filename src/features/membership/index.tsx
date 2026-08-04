@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { MessagesSquare, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, MessagesSquare, ShieldCheck, Sparkles } from "lucide-react";
 
 import type {
   MembershipPlan,
@@ -16,30 +16,74 @@ import { PlanCard } from "@/features/membership/sections/plan-card";
 import { ActivePlanBanner } from "@/features/membership/sections/active-plan-banner";
 import { MembershipFaq } from "@/features/membership/sections/membership-faq";
 
-const TRUST = [
-  { icon: MessagesSquare, label: "Your key to the community forum" },
-  { icon: ShieldCheck, label: "Cancel anytime, no lock-in" },
-  { icon: Sparkles, label: "New perks added every month" },
-];
+export type MembershipAudience = "user" | "vendor";
+
+const COPY: Record<
+  MembershipAudience,
+  {
+    basePath: string;
+    title: React.ReactNode;
+    subtitle: string;
+    trust: { icon: typeof MessagesSquare; label: string }[];
+  }
+> = {
+  user: {
+    basePath: "/membership",
+    title: (
+      <>
+        One membership,{" "}
+        <span className="text-gradient">the whole hub</span>
+      </>
+    ),
+    subtitle:
+      "Your key to the community forum, verified experts, and everything founders need to grow. Choose the plan that fits where you are.",
+    trust: [
+      { icon: MessagesSquare, label: "Your key to the community forum" },
+      { icon: ShieldCheck, label: "Cancel anytime, no lock-in" },
+      { icon: Sparkles, label: "New perks added every month" },
+    ],
+  },
+  vendor: {
+    basePath: "/membership/vendor",
+    title: (
+      <>
+        Get listed.{" "}
+        <span className="text-gradient">Get discovered.</span>
+      </>
+    ),
+    subtitle:
+      "Vendor membership puts your expert profile in the Hubology directory so founders can find, contact, and book you. Choose the plan that fits your practice.",
+    trust: [
+      { icon: Eye, label: "Appear in the public vendor directory" },
+      { icon: ShieldCheck, label: "Cancel anytime, no lock-in" },
+      { icon: Sparkles, label: "Reach founders actively looking for help" },
+    ],
+  },
+};
 
 export default function Membership({
+  audience = "user",
   plans,
   recurring,
   subscription,
   isLoggedIn,
+  userRole,
 }: {
+  audience?: MembershipAudience;
   plans: MembershipPlan[];
   recurring: MembershipRecurring;
   subscription: UserSubscription | null;
   isLoggedIn: boolean;
+  userRole?: string | null;
 }) {
   const router = useRouter();
+  const copy = COPY[audience];
 
   function setRecurring(next: MembershipRecurring) {
     const params = new URLSearchParams();
     if (next === "year") params.set("recurring", "year");
     const qs = params.toString();
-    router.push(qs ? `/membership?${qs}` : "/membership");
+    router.push(qs ? `${copy.basePath}?${qs}` : copy.basePath);
   }
 
   return (
@@ -53,12 +97,10 @@ export default function Membership({
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <h1 className="mt-3 text-balance font-display text-4xl font-bold leading-[1.1] text-cloud sm:text-5xl">
-              One membership,{" "}
-              <span className="text-gradient">the whole hub</span>
+              {copy.title}
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-pretty text-lg leading-relaxed text-mist">
-              Your key to the community forum, verified experts, and everything
-              founders need to grow. Choose the plan that fits where you are.
+              {copy.subtitle}
             </p>
           </Reveal>
 
@@ -69,7 +111,11 @@ export default function Membership({
           ) : null}
 
           <Reveal delay={80} className="mt-10 flex justify-center">
-            <BillingToggle value={recurring} onChange={setRecurring} />
+            <BillingToggle
+              value={recurring}
+              onChange={setRecurring}
+              basePath={copy.basePath}
+            />
           </Reveal>
 
           {plans.length > 0 ? (
@@ -82,6 +128,9 @@ export default function Membership({
                     plan={plan}
                     subscription={subscription}
                     isLoggedIn={isLoggedIn}
+                    redirectBase={copy.basePath}
+                    audience={audience}
+                    userRole={userRole}
                   />
                 </Reveal>
               ))}
@@ -89,7 +138,8 @@ export default function Membership({
           ) : (
             <div className="mx-auto mt-12 max-w-md rounded-3xl border border-dashed border-hairline-strong bg-panel/30 px-6 py-12 text-center">
               <p className="text-mist">
-                No {recurring === "year" ? "yearly" : "monthly"} plans available
+                No {recurring === "year" ? "yearly" : "monthly"}{" "}
+                {audience === "vendor" ? "vendor" : "member"} plans available
                 right now.
               </p>
             </div>
@@ -99,7 +149,7 @@ export default function Membership({
             delay={120}
             className="mx-auto mt-12 flex max-w-3xl flex-wrap items-center justify-center gap-x-8 gap-y-3"
           >
-            {TRUST.map(({ icon: Icon, label }) => (
+            {copy.trust.map(({ icon: Icon, label }) => (
               <span
                 key={label}
                 className="inline-flex items-center gap-2 text-sm text-mist"
@@ -114,7 +164,7 @@ export default function Membership({
 
       <section className="relative px-4 pb-24 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <MembershipFaq />
+          <MembershipFaq audience={audience} />
         </div>
       </section>
 

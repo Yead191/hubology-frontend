@@ -9,9 +9,11 @@ import type { MembershipRecurring } from "@/types";
 export function BillingToggle({
   value,
   onChange,
+  basePath = "/membership",
 }: {
   value: MembershipRecurring;
   onChange: (cycle: MembershipRecurring) => void;
+  basePath?: string;
 }) {
   const router = useRouter();
 
@@ -19,7 +21,7 @@ export function BillingToggle({
     onChange(cycle);
     // Prefetch the alternate list for snappier switches.
     router.prefetch(
-      cycle === "year" ? "/membership?recurring=year" : "/membership",
+      cycle === "year" ? `${basePath}?recurring=year` : basePath,
     );
   }
 

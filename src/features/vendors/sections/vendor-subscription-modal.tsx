@@ -74,8 +74,8 @@ export function VendorSubscriptionModal({
         </p>
         <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center">
           <Button asChild>
-            <Link href="/membership">
-              View subscription plans
+            <Link href="/membership/vendor">
+              View vendor plans
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

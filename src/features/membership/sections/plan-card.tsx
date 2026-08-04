@@ -13,8 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 
+type MembershipAudience = "user" | "vendor";
+
 function hasAccessToken() {
   return Boolean(Cookies.get("accessToken"));
+}
+
+function normalizeRole(role?: string | null) {
+  return (role ?? Cookies.get("role") ?? "").toLowerCase();
+}
+
+function isVendorRole(role?: string | null) {
+  const r = normalizeRole(role);
+  return r === "vendor" || r === "expert";
 }
 
 function resolveStripeUrl(data: unknown): string | undefined {
@@ -31,21 +42,32 @@ function resolveStripeUrl(data: unknown): string | undefined {
 /**
  * A single membership tier from the API. Purchase requires login, then
  * calls POST /subscription/subscribe/:planId and redirects to Stripe.
+ * Vendors may only buy vendor plans; members may only buy user plans.
  */
 export function PlanCard({
   plan,
   subscription,
   isLoggedIn: isLoggedInProp = false,
+  redirectBase = "/membership",
+  audience = "user",
+  userRole,
 }: {
   plan: MembershipPlan;
   subscription?: UserSubscription | null;
   isLoggedIn?: boolean;
+  /** Base path used after login (member vs vendor membership page). */
+  redirectBase?: string;
+  audience?: MembershipAudience;
+  userRole?: string | null;
 }) {
   const redirectPath =
-    plan.recurring === "year" ? "/membership?recurring=year" : "/membership";
+    plan.recurring === "year"
+      ? `${redirectBase}?recurring=year`
+      : redirectBase;
   const loginHref = `/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   const [loginOpen, setLoginOpen] = React.useState(false);
+  const [roleGateOpen, setRoleGateOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(isLoggedInProp);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -59,6 +81,14 @@ export function PlanCard({
 
   const periodLabel = plan.recurring === "year" ? "year" : "month";
 
+  const roleMismatch =
+    isLoggedIn &&
+    ((audience === "user" && isVendorRole(userRole)) ||
+      (audience === "vendor" && !isVendorRole(userRole)));
+
+  const alternateHref =
+    audience === "user" ? "/membership/vendor" : "/membership";
+
   async function handleClick() {
     if (isActive || submitting) return;
 
@@ -68,6 +98,21 @@ export function PlanCard({
       return;
     }
     setIsLoggedIn(true);
+
+    // Role gate — vendors can't buy member plans and vice versa.
+    if (
+      (audience === "user" && isVendorRole(userRole)) ||
+      (audience === "vendor" && !isVendorRole(userRole))
+    ) {
+      setRoleGateOpen(true);
+      toast.error(
+        audience === "user"
+          ? "Vendor accounts can only subscribe to vendor plans."
+          : "Member accounts can only subscribe to member plans.",
+        { id: "subscribe-role" },
+      );
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -98,11 +143,15 @@ export function PlanCard({
 
   const ctaLabel = isActive
     ? "Current plan"
-    : submitting
-      ? "Redirecting…"
-      : isLoggedIn
-        ? `Choose ${plan.name}`
-        : "Sign in to subscribe";
+    : roleMismatch
+      ? audience === "user"
+        ? "Vendor plans only"
+        : "Member plans only"
+      : submitting
+        ? "Redirecting…"
+        : isLoggedIn
+          ? `Choose ${plan.name}`
+          : "Sign in to subscribe";
 
   return (
     <>
@@ -113,6 +162,7 @@ export function PlanCard({
             ? "bg-panel/70 glow-violet"
             : "bg-panel/40 hover:bg-panel/70 hover:glow-violet",
           isActive && "ring-1 ring-violet/50",
+          roleMismatch && "opacity-80",
         )}
       >
         {plan.highlight ? (
@@ -160,6 +210,14 @@ export function PlanCard({
           ))}
         </ul>
 
+        {roleMismatch ? (
+          <p className="mt-6 text-xs leading-relaxed text-mist">
+            {audience === "user"
+              ? "You're signed in as a vendor. Member plans aren't available for your account."
+              : "You're signed in as a member. Vendor plans aren't available for your account."}
+          </p>
+        ) : null}
+
         <Button
           type="button"
           onClick={() => void handleClick()}
@@ -167,10 +225,11 @@ export function PlanCard({
           variant={plan.featured ? "default" : "outline"}
           className="mt-8 w-full disabled:opacity-100"
           style={{
-            background: !isActive
-              ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
-              : "",
-            border: !isActive ? "1px solid #fff" : "",
+            background:
+              !isActive && !roleMismatch
+                ? "linear-gradient(160deg, #6e22e6 50%, #d65df3 80%)"
+                : "",
+            border: !isActive && !roleMismatch ? "1px solid #fff" : "",
           }}
         >
           {submitting ? (
@@ -178,6 +237,10 @@ export function PlanCard({
               <Loader2 className="h-4 w-4 animate-spin" /> {ctaLabel}
             </>
           ) : !isLoggedIn && !isActive ? (
+            <>
+              <Lock className="h-4 w-4" /> {ctaLabel}
+            </>
+          ) : roleMismatch ? (
             <>
               <Lock className="h-4 w-4" /> {ctaLabel}
             </>
@@ -207,6 +270,48 @@ export function PlanCard({
             </Button>
             <Button asChild variant="outline">
               <Link href="/join">Create an account</Link>
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={roleGateOpen}
+        onClose={() => setRoleGateOpen(false)}
+        title={
+          audience === "user"
+            ? "Vendor accounts only"
+            : "Member accounts only"
+        }
+        description={
+          audience === "user"
+            ? "These plans are for members. Switch to vendor membership to subscribe with your vendor account."
+            : "These plans are for vendors. Switch to member membership to subscribe with your member account."
+        }
+      >
+        <div className="flex flex-col items-center gap-5 py-2 text-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-gradient text-white shadow-[0_12px_40px_-10px_rgba(129,49,240,0.9)]">
+            <Lock className="h-6 w-6" />
+          </span>
+          <p className="max-w-xs text-sm text-mist">
+            {audience === "user"
+              ? "Go to vendor plans to continue."
+              : "Go to member plans to continue."}
+          </p>
+          <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center">
+            <Button asChild>
+              <Link href={alternateHref}>
+                {audience === "user"
+                  ? "View vendor plans"
+                  : "View member plans"}
+              </Link>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setRoleGateOpen(false)}
+            >
+              Close
             </Button>
           </div>
         </div>

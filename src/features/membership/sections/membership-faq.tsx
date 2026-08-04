@@ -1,6 +1,8 @@
 import { Plus } from "lucide-react";
 
-const FAQS = [
+type MembershipAudience = "user" | "vendor";
+
+const MEMBER_FAQS = [
   {
     q: "What does my membership unlock?",
     a: "Every plan includes full access to the community forum — where founders and verified experts share advice — plus the expert directory and member resources. Higher tiers add private sessions, events, and store discounts.",
@@ -19,8 +21,33 @@ const FAQS = [
   },
 ];
 
+const VENDOR_FAQS = [
+  {
+    q: "Why do vendors need a membership?",
+    a: "A vendor plan makes your expert profile visible in the Hubology directory so founders can discover, contact, and book you. Without an active plan, your listing stays hidden.",
+  },
+  {
+    q: "Can I browse the directory without a plan?",
+    a: "Yes. You can still view other experts. Subscribing is only required if you want your own profile to appear publicly.",
+  },
+  {
+    q: "Can I change or cancel my vendor plan later?",
+    a: "Absolutely. You can upgrade, downgrade, or cancel at any time — changes take effect from your next billing cycle and you keep access until then.",
+  },
+  {
+    q: "What's the difference between monthly and yearly billing?",
+    a: "Yearly billing gives you the same vendor membership at a lower effective monthly rate — roughly 20% off compared with paying month to month.",
+  },
+];
+
 /** Lightweight, accessible FAQ using native <details> disclosure. */
-export function MembershipFaq() {
+export function MembershipFaq({
+  audience = "user",
+}: {
+  audience?: MembershipAudience;
+}) {
+  const faqs = audience === "vendor" ? VENDOR_FAQS : MEMBER_FAQS;
+
   return (
     <div className="mx-auto max-w-3xl">
       <h2 className="text-center font-display text-2xl font-bold text-cloud sm:text-3xl">
@@ -28,7 +55,7 @@ export function MembershipFaq() {
       </h2>
 
       <div className="mt-8 flex flex-col gap-3">
-        {FAQS.map((item) => (
+        {faqs.map((item) => (
           <details
             key={item.q}
             className="group border-gradient rounded-2xl bg-panel/40 px-5 py-4 transition-colors hover:bg-panel/60 [&_summary::-webkit-details-marker]:hidden"

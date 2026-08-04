@@ -7,16 +7,16 @@ import Membership from "@/features/membership";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Member Membership Plans",
+  title: "Vendor Membership Plans",
   description:
-    "Unlock the Hubology community forum, verified expert access, and member perks. Compare monthly and yearly plans for founders — cancel anytime.",
-  path: "/membership",
+    "Subscribe to a Hubology vendor plan to appear in the expert directory, get discovered by founders, and grow your consulting practice.",
+  path: "/membership/vendor",
   keywords: [
-    "Hubology membership",
-    "founder membership plans",
-    "community forum access",
-    "entrepreneur membership",
-    "monthly yearly business membership",
+    "Hubology vendor membership",
+    "vendor subscription",
+    "expert directory listing",
+    "consultant membership plans",
+    "verified expert subscription",
   ],
 });
 
@@ -28,17 +28,17 @@ function parseRecurring(value?: string): MembershipRecurring {
   return value === "year" ? "year" : "month";
 }
 
-export default async function MembershipPage({ searchParams }: PageProps) {
+export default async function VendorMembershipPage({ searchParams }: PageProps) {
   const { recurring: raw } = await searchParams;
   const recurring = parseRecurring(raw);
   const user = await getProfile();
 
   const res = await nextFetch<MembershipPlan[]>(
-    `/membership?recurring=${recurring}&type=user`,
+    `/membership?recurring=${recurring}&type=vendor`,
     {
       method: "GET",
       cache: "force-cache",
-      next: { tags: ["membership", "membership-user"], revalidate: 60 * 60 },
+      next: { tags: ["membership", "membership-vendor"], revalidate: 60 * 60 },
     },
   );
 
@@ -46,7 +46,7 @@ export default async function MembershipPage({ searchParams }: PageProps) {
 
   return (
     <Membership
-      audience="user"
+      audience="vendor"
       plans={plans}
       recurring={recurring}
       subscription={user?.subscription ?? null}

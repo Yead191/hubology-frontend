@@ -12,7 +12,8 @@ const footerLinks = [
       { label: "Services", href: "/services" },
       { label: "Store", href: "/store" },
       { label: "Community Forum", href: "/forum" },
-      { label: "Membership", href: "/membership" },
+      { label: "Member Membership", href: "/membership" },
+      { label: "Vendor Membership", href: "/membership/vendor" },
     ],
   },
   {

@@ -17,7 +17,14 @@ export const navItems: NavItem[] = [
     ]
   },
   { label: "Community Forum", href: "/forum" },
-  { label: "Membership", href: "/membership" },
+  {
+    label: "Membership",
+    href: "/membership",
+    subItems: [
+      { label: "For Members", href: "/membership" },
+      { label: "For Vendors", href: "/membership/vendor" },
+    ],
+  },
   { label: "Contact", href: "/contact" },
   // { label: "IFundAyiti", href: "/ifundayiti" },
 ];
