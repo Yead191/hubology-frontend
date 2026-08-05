@@ -3,10 +3,10 @@ import { Suspense } from "react";
 
 import type { Pagination, Vendor } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
+import getProfile from "@/helpers/next-fetch/getProfile";
 import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
-import getProfile from "@/helpers/next-fetch/getProfile";
-
+import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -78,15 +78,16 @@ async function VendorsLoader({
 }: {
   filters: VendorFilterState & { page: number; limit: number };
 }) {
-  const qs = buildQuery(filters);
+  const profile = await getProfile();
+  if (!profile?._id) {
+    return <VendorLoginGate />;
+  }
 
-  const [res, profile] = await Promise.all([
-    nextFetch<Vendor[]>(`/vendor?${qs}`, {
-      method: "GET",
-      cache: "default",
-    }),
-    getProfile(),
-  ]);
+  const qs = buildQuery(filters);
+  const res = await nextFetch<Vendor[]>(`/vendor?${qs}`, {
+    method: "GET",
+    cache: "default",
+  });
 
   const vendors = res.success ? (res.data ?? []) : [];
   const pagination: Pagination | undefined = res.pagination;
@@ -96,14 +97,10 @@ async function VendorsLoader({
       vendors={vendors}
       pagination={pagination}
       filters={filters}
-      viewer={
-        profile
-          ? {
-              role: profile.role,
-              subscription: profile.subscription ?? null,
-            }
-          : null
-      }
+      viewer={{
+        role: profile.role,
+        subscription: profile.subscription ?? null,
+      }}
     />
   );
 }

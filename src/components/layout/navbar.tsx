@@ -51,6 +51,12 @@ export function Navbar({
   // Close the mobile sheet on route change.
   React.useEffect(() => setMobileOpen(false), [pathname]);
 
+  const isLoggedIn = Boolean(user?._id);
+  // Vendors directory is members-only — hide it for guests.
+  const visibleNavItems = navItems.filter(
+    (item) => item.href !== "/vendors" || isLoggedIn,
+  );
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center pt-4 pr-(--removed-body-scroll-bar-size)">
       <div className="max-w-6xl w-full px-4 lg:px-6">
@@ -66,7 +72,7 @@ export function Navbar({
 
           {/* Desktop nav items */}
           <ul className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
@@ -171,7 +177,7 @@ export function Navbar({
           )}
         >
           <ul className="flex flex-col gap-1">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {

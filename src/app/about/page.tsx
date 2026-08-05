@@ -86,9 +86,10 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-mist leading-relaxed">
-              To democratize business growth by giving every
-              entrepreneur—regardless of size or location—the tools, network,
-              and insights needed to thrive in a competitive digital economy.
+              To democratize business growth by giving every entrepreneur and
+              small business owner—regardless of size or location—the tools,
+              network, and insights needed to thrive in a competitive digital
+              economy.
             </p>
           </div>
         </Reveal>

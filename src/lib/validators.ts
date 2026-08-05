@@ -49,6 +49,7 @@ export const expertRegisterSchema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
   jobTitle: z.string().min(2, "Please enter your job title"),
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
+  photo: z.string().min(1, "Please upload your photo"),
   contactNo: z
     .string()
     .min(6, "Enter a valid contact number")

@@ -25,6 +25,7 @@ const STEPS: (StepMeta & { fields: (keyof ExpertRegisterValues)[] })[] = [
     id: "identity",
     label: "Your identity",
     fields: [
+      "photo",
       "fullName",
       "jobTitle",
       "email",
@@ -58,6 +59,7 @@ export function ExpertRegisterForm() {
     resolver: zodResolver(expertRegisterSchema),
     mode: "onTouched",
     defaultValues: {
+      photo: "",
       fullName: "",
       jobTitle: "",
       email: "",
@@ -78,6 +80,7 @@ export function ExpertRegisterForm() {
   });
 
   const {
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
@@ -94,12 +97,14 @@ export function ExpertRegisterForm() {
     if (preview) URL.revokeObjectURL(preview);
     setPhoto(file);
     setPreview(URL.createObjectURL(file));
+    setValue("photo", file.name, { shouldValidate: true, shouldDirty: true });
   }
 
   function clearPhoto() {
     if (preview) URL.revokeObjectURL(preview);
     setPhoto(null);
     setPreview(null);
+    setValue("photo", "", { shouldValidate: true, shouldDirty: true });
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -117,6 +122,12 @@ export function ExpertRegisterForm() {
   // Submit as multipart FormData to the vendor endpoint. Vendor-specific
   // fields are nested under a JSON `vendorProfile`, with the photo as `image`.
   async function onValid(values: ExpertRegisterValues) {
+    if (!photo) {
+      toast.error("Please upload a profile photo.", { id: "vendor-register" });
+      setStep(0);
+      return;
+    }
+
     try {
       const vendorProfile = {
         jobTitle: values.jobTitle,
@@ -138,7 +149,7 @@ export function ExpertRegisterForm() {
       formData.append("password", values.password);
       formData.append("company", values.company);
       formData.append("vendorProfile", JSON.stringify(vendorProfile));
-      if (photo) formData.append("image", photo);
+      formData.append("image", photo);
 
       const response = await nextFetch("/auth/register/vendor", {
         method: "POST",

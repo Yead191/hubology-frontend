@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import type { Vendor } from "@/types";
 import { getImageUrl } from "@/lib/getImageUrl";
 import { buildMetadata } from "@/lib/seo";
+import getProfile from "@/helpers/next-fetch/getProfile";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { VendorDetail } from "@/features/vendors/sections/vendor-detail";
+import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 
 interface PageProps {
   /** Route param is named `slug` but carries the vendor `_id`. */
@@ -59,6 +61,11 @@ export async function generateMetadata({
 
 export default async function VendorDetailPage({ params }: PageProps) {
   const { slug: id } = await params;
+  const profile = await getProfile();
+  if (!profile?._id) {
+    return <VendorLoginGate redirectPath={`/vendors/${id}`} />;
+  }
+
   const vendor = await getVendor(id);
   if (!vendor) notFound();
 

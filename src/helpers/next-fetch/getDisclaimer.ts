@@ -12,7 +12,7 @@ export type DisclaimerType =
 export async function getDisclaimer(type: DisclaimerType): Promise<string> {
   const res = await nextFetch<string>(`/disclaimer?type=${type}`, {
     method: "GET",
-    cache: "default",
+    cache: "force-cache",
     next: { tags: ["disclaimer", `disclaimer-${type}`], revalidate: 60 * 60 },
   });
 
