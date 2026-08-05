@@ -28,7 +28,7 @@ export function RoleCard({ option }: { option: RegistrationOption }) {
           "grid h-14 w-14 place-items-center rounded-2xl transition-transform duration-500 group-hover:scale-110",
           isSolid
             ? "bg-brand-gradient text-white shadow-[0_10px_30px_-8px_rgba(129,49,240,0.9)]"
-            : "border border-hairline-strong bg-white/[0.04] text-violet-bright",
+            : "border border-hairline-strong bg-white/4 text-violet-bright",
         )}
       >
         <Icon className="h-7 w-7" />
@@ -53,12 +53,7 @@ export function RoleCard({ option }: { option: RegistrationOption }) {
         ))}
       </ul>
 
-      <Button
-        asChild
-        size="lg"
-        variant={isSolid ? "default" : "outline"}
-        className="mt-8 w-full"
-      >
+      <Button asChild size="lg" variant="default" className="mt-8 w-full">
         <Link href={`/register/${option.role}`}>
           {option.button.text}
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />

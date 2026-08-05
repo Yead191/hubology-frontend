@@ -6,6 +6,7 @@ import { getImageUrl } from "@/lib/getImageUrl";
 import { buildMetadata } from "@/lib/seo";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
+import { hasActiveSubscription } from "@/lib/forum";
 import { VendorDetail } from "@/features/vendors/sections/vendor-detail";
 import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 
@@ -64,6 +65,16 @@ export default async function VendorDetailPage({ params }: PageProps) {
   const profile = await getProfile();
   if (!profile?._id) {
     return <VendorLoginGate redirectPath={`/vendors/${id}`} />;
+  }
+
+  if (!hasActiveSubscription(profile.subscription)) {
+    return (
+      <VendorLoginGate
+        redirectPath={`/vendors/${id}`}
+        isLoggedIn={true}
+        userRole={profile.role}
+      />
+    );
   }
 
   const vendor = await getVendor(id);

@@ -30,13 +30,7 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function Navbar({
-  user,
-  cart,
-}: {
-  user: any;
-  cart?: CartData | null;
-}) {
+export function Navbar({ user, cart }: { user: any; cart?: CartData | null }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -50,12 +44,6 @@ export function Navbar({
 
   // Close the mobile sheet on route change.
   React.useEffect(() => setMobileOpen(false), [pathname]);
-
-  const isLoggedIn = Boolean(user?._id);
-  // Vendors directory is members-only — hide it for guests.
-  const visibleNavItems = navItems.filter(
-    (item) => item.href !== "/vendors" || isLoggedIn,
-  );
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center pt-4 pr-(--removed-body-scroll-bar-size)">
@@ -72,7 +60,7 @@ export function Navbar({
 
           {/* Desktop nav items */}
           <ul className="hidden items-center gap-1 lg:flex">
-            {visibleNavItems.map((item) => {
+            {navItems.map((item) => {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
@@ -130,8 +118,7 @@ export function Navbar({
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            <CartMenu cart={cart} />
-
+            {user && user?._id && <CartMenu cart={cart} />}
             {user && user._id ? (
               <>
                 {/* Single instance — also shown on mobile so socket/badge stay in sync */}
@@ -177,7 +164,7 @@ export function Navbar({
           )}
         >
           <ul className="flex flex-col gap-1">
-            {visibleNavItems.map((item) => {
+            {navItems.map((item) => {
               const active = isActive(pathname, item.href);
 
               if (item.subItems) {
