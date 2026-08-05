@@ -6,6 +6,7 @@ import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
+import { hasActiveSubscription } from "@/lib/forum";
 import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 import { buildMetadata } from "@/lib/seo";
 
@@ -81,6 +82,10 @@ async function VendorsLoader({
   const profile = await getProfile();
   if (!profile?._id) {
     return <VendorLoginGate />;
+  }
+
+  if (!hasActiveSubscription(profile.subscription)) {
+    return <VendorLoginGate isLoggedIn={true} userRole={profile.role} />;
   }
 
   const qs = buildQuery(filters);
