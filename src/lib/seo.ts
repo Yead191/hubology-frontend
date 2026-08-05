@@ -20,6 +20,8 @@ export const SITE_NAME = "Hubology";
 
 export const DEFAULT_KEYWORDS = [
   "Hubology",
+  "the hubology",
+  "thehubology",
   "business growth platform",
   "verified business experts",
   "founder community",
@@ -88,7 +90,11 @@ export function buildMetadata({
       images: [ogImage],
     },
     robots: noIndex
-      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      ? {
+          index: false,
+          follow: false,
+          googleBot: { index: false, follow: false },
+        }
       : { index: true, follow: true },
   };
 }
@@ -97,8 +103,7 @@ export function noIndexMetadata(title: string, description?: string): Metadata {
   return buildMetadata({
     title,
     description:
-      description ||
-      "Private Hubology page. Sign in to access your account.",
+      description || "Private Hubology page. Sign in to access your account.",
     noIndex: true,
     keywords: [],
   });
