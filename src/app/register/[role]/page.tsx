@@ -184,7 +184,7 @@ export default async function RegisterPage({ params }: PageProps) {
               delay={200}
               className="mt-6 flex items-center gap-3 rounded-2xl border border-hairline bg-panel/30 px-5 py-4"
             >
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+              <Star className="h-4 w-4 fill-primary text-primary" />
               <p className="text-sm text-mist">
                 Trusted by founders and consultants worldwide.
               </p>

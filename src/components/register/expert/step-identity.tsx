@@ -39,14 +39,12 @@ export function StepIdentity({ photo }: { photo: PhotoControls }) {
       {/* Profile photo (required) */}
       <div className="flex flex-col gap-3">
         <Label>
-          Profile photo <span className="text-destructive">*</span>
+          Profile photo <span className="text-primary">*</span>
         </Label>
         <div className="flex flex-wrap items-center gap-4 sm:gap-5">
           <div
             className={`relative grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl border bg-white/3 ${
-              errors.photo
-                ? "border-destructive/60"
-                : "border-hairline-strong"
+              errors.photo ? "border-destructive/60" : "border-hairline-strong"
             }`}
           >
             {photo.preview ? (
