@@ -37,9 +37,11 @@ export function BookReviews({ book }: { book: Book }) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-cloud">Ratings &amp; reviews</h2>
+      <h2 className="text-lg font-semibold text-cloud">
+        Ratings &amp; reviews
+      </h2>
 
-      <div className="mt-4 flex items-center gap-4 rounded-2xl border border-hairline bg-white/[0.02] px-5 py-4">
+      <div className="mt-4 flex items-center gap-4 rounded-2xl border border-hairline bg-white/2 px-5 py-4">
         <span className="font-display text-4xl font-bold text-cloud">
           {rating.average.toFixed(1)}
         </span>
@@ -56,7 +58,7 @@ export function BookReviews({ book }: { book: Book }) {
         {rating.reviews.map((review, i) => (
           <li
             key={`${review.reviewerName}-${i}`}
-            className="rounded-2xl border border-hairline bg-white/[0.02] px-5 py-4"
+            className="rounded-2xl border border-hairline bg-white/2 px-5 py-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -68,7 +70,9 @@ export function BookReviews({ book }: { book: Book }) {
                 <p className="mt-1 text-xs text-faint">{review.date}</p>
               </div>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-mist">{review.text}</p>
+            <p className="mt-3 text-sm leading-relaxed text-mist">
+              {review.text}
+            </p>
           </li>
         ))}
       </ul>

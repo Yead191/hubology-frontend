@@ -48,8 +48,8 @@ export async function generateMetadata({
   return buildMetadata({
     title: book.title,
     description: (
-      book.subtitle ||
       book.description ||
+      book.subtitle ||
       `Buy and download ${book.title} from the Hubology digital bookstore.`
     ).slice(0, 160),
     path: `/store/${id}`,

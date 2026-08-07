@@ -26,7 +26,7 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-hairline bg-white/[0.02] px-4 py-3">
+    <div className="flex items-center gap-3 rounded-2xl border border-hairline bg-white/2 px-4 py-3">
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet-bright">
         <Icon className="h-4 w-4" />
       </span>
