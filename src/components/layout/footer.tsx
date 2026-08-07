@@ -10,6 +10,7 @@ const footerLinks = [
     heading: "Platform",
     links: [
       { label: "Services", href: "/services" },
+      { label: "Vendors", href: "/vendors" },
       { label: "Store", href: "/store" },
       { label: "Community Forum", href: "/forum" },
       { label: "Member Membership", href: "/membership" },
