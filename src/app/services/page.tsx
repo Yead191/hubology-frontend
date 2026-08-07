@@ -45,7 +45,7 @@ export default function ServicesPage() {
                 <span className="text-gradient">business</span>
               </>
             }
-            subtitle="Choose a service to meet verified vendors. Pricing starts where shown — you contact and book each expert directly."
+            subtitle="Choose a service to meet verified vendors. Pricing starts where shown."
           />
 
           {/* Header renders instantly; the cards stream in once fetched. */}
@@ -89,7 +89,11 @@ async function ServicesGrid() {
   return (
     <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {packages.map((pkg, i) => (
-        <Reveal key={pkg._id ?? pkg.slug ?? i} delay={(i % 3) * 80} className="h-full">
+        <Reveal
+          key={pkg._id ?? pkg.slug ?? i}
+          delay={(i % 3) * 80}
+          className="h-full"
+        >
           <PackageCard pkg={pkg} />
         </Reveal>
       ))}
@@ -100,10 +104,7 @@ async function ServicesGrid() {
 /** Loading placeholder shown while the services are being fetched. */
 function ServicesGridSkeleton() {
   return (
-    <div
-      aria-hidden
-      className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-    >
+    <div aria-hidden className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}

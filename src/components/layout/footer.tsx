@@ -20,7 +20,7 @@ const footerLinks = [
     heading: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      // { label: "Careers", href: "/" },
+      { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
       { label: "Our Partners", href: "/partners" },
     ],
@@ -46,8 +46,7 @@ const footerLinks = [
 export function Footer() {
   return (
     <footer className="relative mt-32 min-h-112.5 overflow-hidden border-t border-hairline bg-ink">
-
-      <div className="flex sm:hidden flex-col lg:col-span-4 items-start justify-start px-6 mt-6">
+      <div className="absolute top-2  sm:hidden flex-col lg:col-span-4 items-start justify-start px-6">
         <Logo />
       </div>
 
@@ -58,30 +57,50 @@ export function Footer() {
         {/* Decorative Images */}
 
         <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 md:h-48 opacity-100 overflow-hidden z-30">
-            <Image src="/assets/images/footer/left-footer.png" alt="Professional Man" fill className="object-cover object-top brightness-70" />
+          <div className="absolute  bottom-41 sm:bottom-30 left-0 w-40 h-40 md:w-48 lg:w-56 md:h-48 lg:h-72 opacity-100 overflow-hidden z-30">
+            <Image
+              src="/assets/images/footer/left-footer.png"
+              alt="Professional Man"
+              fill
+              className="object-cover object-top brightness-70"
+            />
           </div>
-          <div className="absolute  bottom-41 sm:bottom-30 left-22 lg:left-28 w-40 h-40 md:w-48 md:h-48 opacity-100 overflow-hidden z-10">
-            <Image src="/assets/images/footer/middle-footer.png" alt="Professional woman" fill className="object-cover object-top brightness-70" />
+          <div className="absolute  bottom-41 sm:bottom-30 left-22 lg:left-28 w-40 h-40 md:w-48 lg:w-56 md:h-48 lg:h-72 opacity-100 overflow-hidden z-10">
+            <Image
+              src="/assets/images/footer/middle-footer.png"
+              alt="Professional woman"
+              fill
+              className="object-cover object-top brightness-70"
+            />
           </div>
           <div className="absolute hidden sm:flex sm:bottom-28 right-0 w-32 h-32 md:w-60 md:h-40 opacity-100 overflow-hidden">
-            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover brightness-70" />
+            <Image
+              src="/assets/images/footer/right-footer.png"
+              alt="Student with Laptop"
+              fill
+              className="object-cover brightness-70"
+            />
           </div>
-          <div className="absolute sm:hidden -top-10 right-0 w-34 h-32 md:w-40 md:h-40 opacity-100 overflow-hidden">
-            <Image src="/assets/images/footer/right-footer.png" alt="Student with Laptop" fill className="object-cover brightness-70" />
+          <div className="absolute sm:hidden top-0 right-0 w-34 h-32 md:w-40 md:h-40 opacity-100 overflow-hidden z-0">
+            <Image
+              src="/assets/images/footer/right-footer.png"
+              alt="Student with Laptop"
+              fill
+              className="object-cover brightness-70"
+            />
           </div>
         </div>
 
         {/* Main Footer Content */}
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8 pb-20">
-
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8 pb-20 ">
           {/* Logo & Tagline (Left) */}
-          <div className="hidden sm:flex flex-col lg:col-span-4">
+          <div className="hidden sm:flex flex-col lg:col-span-4 absolute top-2">
             <Logo />
           </div>
+          <div className="hidden sm:flex flex-col lg:col-span-4 "></div>
 
           {/* Links Grid (Right) */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8 pt-16 sm:pt-0">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-8 pt-16 sm:pt-0 relative z-20">
             {footerLinks.map((col) => (
               <div key={col.heading} className="flex flex-col gap-5">
                 <h3 className="text-sm font-semibold text-cloud">
