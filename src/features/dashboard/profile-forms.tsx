@@ -236,6 +236,7 @@ export function ProfileForms({ user }: { user: ProfileUser }) {
       const res = await changePassword({
         currentPassword,
         newPassword,
+        confirmPassword,
       });
       if (!res.success) {
         toast.error(res.message || "Could not change password.", {

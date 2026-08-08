@@ -21,6 +21,7 @@ export async function updateUserProfile(formData: FormData) {
 export async function changePassword(body: {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }) {
   return nextFetch("/auth/change-password", {
     method: "POST",
