@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import type { MembershipPlan, MembershipRecurring } from "@/types";
+import type { Faq, MembershipPlan, MembershipRecurring } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Membership from "@/features/membership";
@@ -33,21 +33,30 @@ export default async function MembershipPage({ searchParams }: PageProps) {
   const recurring = parseRecurring(raw);
   const user = await getProfile();
 
-  const res = await nextFetch<MembershipPlan[]>(
-    `/membership?recurring=${recurring}&type=user`,
-    {
+  const [plansRes, faqsRes] = await Promise.all([
+    nextFetch<MembershipPlan[]>(
+      `/membership?recurring=${recurring}&type=user`,
+      {
+        method: "GET",
+        cache: "force-cache",
+        next: { tags: ["membership", "membership-user"], revalidate: 60 * 60 },
+      },
+    ),
+    nextFetch<Faq[]>(`/faq?audience=USER`, {
       method: "GET",
       cache: "force-cache",
-      next: { tags: ["membership", "membership-user"], revalidate: 60 * 60 },
-    },
-  );
+      next: { tags: ["faq", "faq-user"], revalidate: 60 * 60 },
+    }),
+  ]);
 
-  const plans = res.success ? (res.data ?? []) : [];
+  const plans = plansRes.success ? (plansRes.data ?? []) : [];
+  const faqs = faqsRes.success ? (faqsRes.data ?? []) : [];
 
   return (
     <Membership
       audience="user"
       plans={plans}
+      faqs={faqs}
       recurring={recurring}
       subscription={user?.subscription ?? null}
       isLoggedIn={Boolean(user)}

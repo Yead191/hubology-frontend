@@ -178,6 +178,14 @@ export interface UserSubscription {
   end_date: string;
 }
 
+/** FAQ as returned by GET /faq?audience=USER|VENDOR. */
+export interface Faq {
+  _id: string;
+  question: string;
+  answer: string;
+  audience: "USER" | "VENDOR";
+}
+
 /* ------------------------------------------------------------------ *
  * Store — books
  * ------------------------------------------------------------------ */

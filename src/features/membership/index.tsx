@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Eye, MessagesSquare, ShieldCheck, Sparkles } from "lucide-react";
 
 import type {
+  Faq,
   MembershipPlan,
   MembershipRecurring,
   UserSubscription,
@@ -64,6 +65,7 @@ const COPY: Record<
 export default function Membership({
   audience = "user",
   plans,
+  faqs,
   recurring,
   subscription,
   isLoggedIn,
@@ -71,6 +73,7 @@ export default function Membership({
 }: {
   audience?: MembershipAudience;
   plans: MembershipPlan[];
+  faqs: Faq[];
   recurring: MembershipRecurring;
   subscription: UserSubscription | null;
   isLoggedIn: boolean;
@@ -164,7 +167,7 @@ export default function Membership({
 
       <section className="relative px-4 pb-24 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <MembershipFaq audience={audience} />
+          <MembershipFaq faqs={faqs} />
         </div>
       </section>
 

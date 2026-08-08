@@ -92,7 +92,7 @@ export function Hero() {
 
           <Reveal delay={200}>
             <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-mist">
-              Access tools, resources, and a community of entrepreneurs in one
+              Access tools, resources, and a community of entrepreneurs and small business owners in one
               place.
             </p>
           </Reveal>
