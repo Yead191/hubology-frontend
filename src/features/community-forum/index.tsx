@@ -171,7 +171,7 @@ export default function CommunityForum({
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         {header}
 
-        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr] lg:gap-8">
+        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <ForumSidebar
               active={tab}
@@ -180,7 +180,7 @@ export default function CommunityForum({
             />
           </div>
 
-          <div className="flex flex-col gap-5">
+          <div className="flex min-w-0 flex-col gap-5">
             {tab === "feed" ? (
               <FeedToolbar
                 query={searchInput}

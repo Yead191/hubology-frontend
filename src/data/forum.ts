@@ -1,11 +1,13 @@
 import {
   Receipt,
-  ClipboardCheck,
-  TrendingUp,
   Scale,
   UserPlus,
   Sparkles,
   type LucideIcon,
+  Users,
+  Megaphone,
+  Calculator,
+  Coffee,
 } from "lucide-react";
 
 import type { ForumCategory } from "@/types";
@@ -22,25 +24,11 @@ export interface CategoryMeta {
 
 export const FORUM_CATEGORIES: CategoryMeta[] = [
   {
-    value: "Taxation",
-    label: "Taxation",
-    icon: Receipt,
+    value: "Networking",
+    label: "Networking",
+    icon: Users,
     accent: "text-emerald-300",
     tint: "bg-emerald-400/10 border-emerald-400/20",
-  },
-  {
-    value: "Audit",
-    label: "Audit",
-    icon: ClipboardCheck,
-    accent: "text-sky-300",
-    tint: "bg-sky-400/10 border-sky-400/20",
-  },
-  {
-    value: "Funding",
-    label: "Funding",
-    icon: TrendingUp,
-    accent: "text-violet-bright",
-    tint: "bg-violet/15 border-violet/25",
   },
   {
     value: "Legal",
@@ -50,18 +38,46 @@ export const FORUM_CATEGORIES: CategoryMeta[] = [
     tint: "bg-amber-400/10 border-amber-400/20",
   },
   {
-    value: "Hiring",
-    label: "Hiring",
+    value: "Taxation",
+    label: "Taxation",
+    icon: Receipt,
+    accent: "text-sky-300",
+    tint: "bg-sky-400/10 border-sky-400/20",
+  },
+  {
+    value: "Marketing",
+    label: "Marketing",
+    icon: Megaphone,
+    accent: "text-violet-bright",
+    tint: "bg-violet/15 border-violet/25",
+  },
+  {
+    value: "Finance & Accounting",
+    label: "Finance & Accounting",
+    icon: Calculator,
+    accent: "text-cyan-300",
+    tint: "bg-cyan-400/10 border-cyan-400/20",
+  },
+  {
+    value: "Operation & HR",
+    label: "Operation & HR",
     icon: UserPlus,
     accent: "text-rose-300",
     tint: "bg-rose-400/10 border-rose-400/20",
   },
   {
-    value: "Others",
-    label: "Others",
+    value: "The Water Cooler",
+    label: "The Water Cooler",
+    icon: Coffee,
+    accent: "text-orange-300",
+    tint: "bg-orange-400/10 border-orange-400/20",
+  },
+  {
+    value: "Other",
+    label: "Other",
     icon: Sparkles,
-    accent: "text-cyan-300",
-    tint: "bg-cyan-400/10 border-cyan-400/20",
+    accent: "text-indigo-300",
+    tint: "bg-indigo-400/10 border-indigo-400/20",
   },
 ];
 

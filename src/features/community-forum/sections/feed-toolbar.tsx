@@ -21,7 +21,9 @@ export function FeedToolbar({
   onCategoryChange: (c: CategoryFilter) => void;
 }) {
   return (
-    <div className="border-gradient rounded-3xl bg-panel/40 p-3 sm:p-4">
+    // min-w-0: let this shrink inside the grid's 1fr column so many chips
+    // scroll instead of blowing past max-w-6xl.
+    <div className="min-w-0 border-gradient rounded-3xl bg-panel/40 p-3 sm:p-4">
       <div className="relative">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
         <input
@@ -46,7 +48,7 @@ export function FeedToolbar({
         )}
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <div className="mt-3 flex min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1 [-webkit-overflow-scrolling:touch] max-md:scrollbar-none max-md:[&::-webkit-scrollbar]:hidden max-md:[&::-webkit-scrollbar-thumb]:hidden">
         <Chip
           active={category === "All"}
           onClick={() => onCategoryChange("All")}

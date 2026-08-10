@@ -24,9 +24,9 @@ export function PostCard({ post }: { post: ForumPost }) {
   return (
     <article className="border-gradient rounded-3xl bg-panel/40 p-5 transition-colors duration-300 hover:bg-panel/60 sm:p-6">
       <header className="flex items-start justify-between gap-3">
-        <AuthorByline author={post.author} timeAgo={post.timeAgo} />
+        <AuthorByline author={post?.author} timeAgo={post?.timeAgo} />
         <div className="flex items-center gap-1">
-          <CategoryBadge category={post.category} />
+          <CategoryBadge category={post?.category || "Other"} />
           <PostMenu post={post} />
         </div>
       </header>

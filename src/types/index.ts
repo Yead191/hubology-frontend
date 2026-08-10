@@ -91,12 +91,14 @@ export interface Testimonial {
  * Community forum
  * ------------------------------------------------------------------ */
 export type ForumCategory =
-  | "Taxation"
-  | "Audit"
-  | "Funding"
+  | "Networking"
   | "Legal"
-  | "Hiring"
-  | "Others";
+  | "Taxation"
+  | "Marketing"
+  | "Finance & Accounting"
+  | "Operation & HR"
+  | "The Water Cooler"
+  | "Other";
 
 /** Whether a post/comment author is a founder (member) or an expert (vendor). */
 export type ForumAuthorRole = "member" | "vendor";
