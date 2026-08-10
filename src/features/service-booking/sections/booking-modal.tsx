@@ -184,7 +184,7 @@ export function BookingModal({
     <Modal
       open={open}
       onClose={redirecting ? () => {} : onClose}
-      title={`Book ${service.title}`}
+      title={`${service.title}`}
       description="Pick a time that works, then continue to secure checkout."
     >
       <form
