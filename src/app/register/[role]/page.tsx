@@ -36,7 +36,7 @@ const copy: Record<Role, { title: string; subtitle: string }> = {
     subtitle: "Seek expert advice and connect with a community of founders.",
   },
   expert: {
-    title: "Apply to join as an expert",
+    title: "Apply to join as a Vendor",
     subtitle: "Share your expertise with high-level executives and founders.",
   },
 };
@@ -144,9 +144,9 @@ export default async function RegisterPage({ params }: PageProps) {
                   },
                 ]}
                 trust={{
-                  title: "Verified Expert Status",
+                  title: "Verified Vendor Status",
                   description:
-                    "Every expert is manually reviewed, so members trust who they are talking to.",
+                    "Every vendor is manually reviewed, so members trust who they are talking to.",
                 }}
               />
             ) : (
@@ -155,21 +155,21 @@ export default async function RegisterPage({ params }: PageProps) {
                 items={[
                   {
                     icon: Compass,
-                    title: "Browse verified experts",
+                    title: "Browse verified vendors",
                     description:
-                      "Explore an elite directory of consultants vetted across every business need.",
+                      "Explore an elite directory of vendors vetted across every business need.",
                   },
                   {
                     icon: MessagesSquare,
                     title: "Ask in secure forums",
                     description:
-                      "Get answers from verified experts in private, focused community spaces.",
+                      "Get answers from verified vendors in private, focused community spaces.",
                   },
                   {
                     icon: CalendarClock,
                     title: "Book 1-on-1 sessions",
                     description:
-                      "Schedule private strategy sessions with the right expert at the right moment.",
+                      "Schedule private strategy sessions with the right vendor at the right moment.",
                   },
                 ]}
                 trust={{
@@ -186,7 +186,7 @@ export default async function RegisterPage({ params }: PageProps) {
             >
               <Star className="h-4 w-4 fill-primary text-primary" />
               <p className="text-sm text-mist">
-                Trusted by founders and consultants worldwide.
+                Trusted by founders and vendors worldwide.
               </p>
             </Reveal>
           </Reveal>

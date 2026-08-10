@@ -28,7 +28,7 @@ export const registrationOptions: RegistrationOption[] = [
       "Earn through high-value 1-on-1 consultations",
       "Join an elite network of world-class consultants",
     ],
-    button: { text: "Apply as an Expert", variant: "solid" },
+    button: { text: "Apply as a Vendor", variant: "solid" },
   },
 ];
 

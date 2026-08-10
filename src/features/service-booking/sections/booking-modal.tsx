@@ -231,7 +231,7 @@ export function BookingModal({
                     onBlur={field.onBlur}
                     onChange={(e) => field.onChange(e.target.value)}
                     className={cn(
-                      "[color-scheme:dark]",
+                      "scheme-dark",
                       !field.value &&
                         "text-transparent [&::-webkit-datetime-edit]:text-transparent [&::-webkit-datetime-edit-fields-wrapper]:opacity-0",
                     )}

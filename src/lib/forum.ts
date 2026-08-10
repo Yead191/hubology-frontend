@@ -54,7 +54,7 @@ function normalizeCategory(raw?: string): ForumCategory {
   if (raw && (CATEGORY_VALUES as string[]).includes(raw)) {
     return raw as ForumCategory;
   }
-  return "Others";
+  return "Other";
 }
 
 export function mapForumAuthor(raw: any): ForumAuthor {
