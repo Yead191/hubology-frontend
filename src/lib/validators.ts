@@ -110,7 +110,10 @@ export const bookingSchema = z.object({
       (v) => v >= new Date().toISOString().slice(0, 10),
       "Choose a date in the future",
     ),
-  time: z.string().min(1, "Choose a preferred time"),
+  time: z
+    .string()
+    .min(1, "Choose a preferred time")
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a preferred time"),
   phone: z
     .string()
     .min(6, "Enter a valid contact number")

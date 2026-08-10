@@ -3,14 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Lock, CalendarClock, ShieldCheck } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
 import type { ServicePackage } from "@/types";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { bookingSchema, type BookingValues } from "@/lib/validators";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Modal } from "@/components/ui/modal";
@@ -18,11 +18,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FieldError } from "@/components/auth/field-error";
 
 // Change this if your create-booking route differs. On success the API is
 // expected to return a Stripe Checkout URL on `data` (see resolveStripeUrl).
 const BOOKING_ENDPOINT = "/bookings";
+
+const HOURS_24 = Array.from({ length: 24 }, (_, i) =>
+  String(i).padStart(2, "0"),
+);
+const MINUTES = ["00", "15", "30", "45"];
 
 /** Pulls the Stripe Checkout URL out of the various shapes an API might return. */
 function resolveStripeUrl(data: unknown): string | undefined {
@@ -48,6 +60,9 @@ export function BookingModal({
 }) {
   const [redirecting, setRedirecting] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  // Local parts so time stays empty until both hour + minute are chosen.
+  const [hour, setHour] = React.useState("");
+  const [minute, setMinute] = React.useState("");
   const today = new Date().toISOString().slice(0, 10);
   // Send the user back to the page they were booking from after they log in.
   const pathname = usePathname();
@@ -62,6 +77,8 @@ export function BookingModal({
     register,
     handleSubmit,
     reset,
+    control,
+    setValue,
     formState: { errors },
   } = useForm<BookingValues>({
     resolver: zodResolver(bookingSchema),
@@ -69,8 +86,21 @@ export function BookingModal({
   });
 
   React.useEffect(() => {
-    if (open) reset({ date: "", time: "", phone: "", note: "" });
+    if (!open) return;
+    reset({ date: "", time: "", phone: "", note: "" });
+    setHour("");
+    setMinute("");
   }, [open, reset]);
+
+  function setTimePart(nextHour: string, nextMinute: string) {
+    setHour(nextHour);
+    setMinute(nextMinute);
+    setValue(
+      "time",
+      nextHour && nextMinute ? `${nextHour}:${nextMinute}` : "",
+      { shouldValidate: true, shouldDirty: true },
+    );
+  }
 
   async function onSubmit(values: BookingValues) {
     if (!service._id) {
@@ -157,7 +187,11 @@ export function BookingModal({
       title={`Book ${service.title}`}
       description="Pick a time that works, then continue to secure checkout."
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-5"
+        autoComplete="off"
+      >
         {/* Order summary */}
         <div className="flex items-center justify-between rounded-2xl border border-hairline bg-white/3 px-4 py-3">
           <div className="flex flex-col">
@@ -176,24 +210,91 @@ export function BookingModal({
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
             <Label htmlFor="date">Preferred date</Label>
-            <Input
-              id="date"
-              type="date"
-              min={today}
-              aria-invalid={!!errors.date}
-              {...register("date")}
+            {/*
+              Safari paints date-spinner chrome even when value="". Hide that
+              chrome until the user actually picks a date so Mac matches Windows.
+            */}
+            <Controller
+              name="date"
+              control={control}
+              render={({ field }) => (
+                <div className="relative">
+                  <Input
+                    id="date"
+                    type="date"
+                    min={today}
+                    autoComplete="off"
+                    aria-invalid={!!errors.date}
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className={cn(
+                      "[color-scheme:dark]",
+                      !field.value &&
+                        "text-transparent [&::-webkit-datetime-edit]:text-transparent [&::-webkit-datetime-edit-fields-wrapper]:opacity-0",
+                    )}
+                  />
+                  {!field.value ? (
+                    <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-faint">
+                      Select a date
+                    </span>
+                  ) : null}
+                </div>
+              )}
             />
             <FieldError message={errors.date?.message} />
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="time">Preferred time</Label>
-            <Input
-              id="time"
-              type="time"
-              aria-invalid={!!errors.time}
-              {...register("time")}
-            />
+            <Label>Preferred time (24h)</Label>
+            {/*
+              Native <input type="time"> follows the OS locale (12h on most Macs)
+              and Safari often shows a fake default that never syncs to form state.
+              Hour/minute selects stay empty until chosen and always use 24h.
+            */}
+            <div className="grid grid-cols-2 gap-2">
+              <Select
+                value={hour || undefined}
+                onValueChange={(nextHour) => setTimePart(nextHour, minute)}
+              >
+                <SelectTrigger
+                  aria-label="Hour"
+                  aria-invalid={!!errors.time}
+                  className="w-full"
+                >
+                  <SelectValue placeholder="Hour" />
+                </SelectTrigger>
+                <SelectContent className="z-130 max-h-60">
+                  {HOURS_24.map((h) => (
+                    <SelectItem key={h} value={h}>
+                      {h}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={minute || undefined}
+                onValueChange={(nextMinute) => setTimePart(hour, nextMinute)}
+              >
+                <SelectTrigger
+                  aria-label="Minute"
+                  aria-invalid={!!errors.time}
+                  className="w-full"
+                >
+                  <SelectValue placeholder="Min" />
+                </SelectTrigger>
+                <SelectContent className="z-130">
+                  {MINUTES.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <FieldError message={errors.time?.message} />
           </div>
         </div>
