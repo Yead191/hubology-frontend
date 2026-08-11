@@ -123,6 +123,11 @@ export const bookingSchema = z.object({
     .max(500, "Please keep this under 500 characters")
     .optional()
     .or(z.literal("")),
+  coupon: z
+    .string()
+    .max(64, "Coupon code is too long")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type BookingValues = z.infer<typeof bookingSchema>;

@@ -82,12 +82,12 @@ export function BookingModal({
     formState: { errors },
   } = useForm<BookingValues>({
     resolver: zodResolver(bookingSchema),
-    defaultValues: { date: "", time: "", phone: "", note: "" },
+    defaultValues: { date: "", time: "", phone: "", note: "", coupon: "" },
   });
 
   React.useEffect(() => {
     if (!open) return;
-    reset({ date: "", time: "", phone: "", note: "" });
+    reset({ date: "", time: "", phone: "", note: "", coupon: "" });
     setHour("");
     setMinute("");
   }, [open, reset]);
@@ -112,6 +112,7 @@ export function BookingModal({
 
     setRedirecting(true);
     try {
+      const coupon = values.coupon?.trim();
       const response = await nextFetch(BOOKING_ENDPOINT, {
         method: "POST",
         body: {
@@ -121,6 +122,7 @@ export function BookingModal({
           preferredTime: values.time,
           phone: values.phone.trim(),
           note: values.note ?? "",
+          ...(coupon ? { coupon } : {}),
         },
       });
 
@@ -311,6 +313,22 @@ export function BookingModal({
             {...register("phone")}
           />
           <FieldError message={errors.phone?.message} />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="coupon">
+            Coupon code <span className="text-faint">(optional)</span>
+          </Label>
+          <Input
+            id="coupon"
+            type="text"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="e.g. COUPON27"
+            aria-invalid={!!errors.coupon}
+            {...register("coupon")}
+          />
+          <FieldError message={errors.coupon?.message} />
         </div>
 
         <div className="flex flex-col gap-2">
