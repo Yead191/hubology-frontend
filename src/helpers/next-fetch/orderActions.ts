@@ -9,6 +9,8 @@ export interface CreateOrderPayload {
   street_address: string;
   country: string;
   contact_number: string;
+  /** Optional coupon code — omit when empty. */
+  coupon?: string;
 }
 
 /** POST /order — creates order and returns Stripe checkout URL on `data`. */

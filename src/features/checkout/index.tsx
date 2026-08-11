@@ -53,6 +53,7 @@ export default function CheckoutExperience({
   const [streetAddress, setStreetAddress] = React.useState("");
   const [country, setCountry] = React.useState("");
   const [contactNumber, setContactNumber] = React.useState("");
+  const [coupon, setCoupon] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [updatingId, setUpdatingId] = React.useState<string | null>(null);
 
@@ -84,12 +85,14 @@ export default function CheckoutExperience({
 
     setSubmitting(true);
     try {
+      const couponCode = coupon.trim();
       const response = await createOrder({
         city: city.trim(),
         postal_code: postalCode.trim(),
         street_address: streetAddress.trim(),
         country: country.trim(),
         contact_number: contactNumber.trim(),
+        ...(couponCode ? { coupon: couponCode } : {}),
       });
 
       if (!response?.success) {
@@ -223,6 +226,23 @@ export default function CheckoutExperience({
                       placeholder="Phone number"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="coupon">
+                    Coupon code{" "}
+                    <span className="font-normal text-faint">(optional)</span>
+                  </Label>
+                  <Input
+                    id="coupon"
+                    type="text"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    className="border-hairline bg-ink/50"
+                    placeholder="Paste your coupon code"
+                  />
                 </div>
 
                 <div className="mt-8 border-t border-hairline pt-6">

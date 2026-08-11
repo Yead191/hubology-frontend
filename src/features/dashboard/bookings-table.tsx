@@ -206,7 +206,7 @@ function BookingDetailModal({ booking }: { booking: DashboardBooking }) {
   return (
     <div className="space-y-5">
       {/* Amount + status */}
-      <div className="relative overflow-hidden rounded-2xl border border-hairline-strong bg-white/[0.04] p-5">
+      <div className="relative overflow-hidden rounded-2xl border border-hairline-strong bg-white/4 p-5">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-violet/25 blur-3xl"
@@ -274,7 +274,7 @@ function BookingDetailModal({ booking }: { booking: DashboardBooking }) {
       {/* Pricing */}
       <section>
         <SectionLabel>Pricing</SectionLabel>
-        <div className="mt-2 rounded-2xl border border-hairline bg-white/[0.03] p-4">
+        <div className="mt-2 rounded-2xl border border-hairline bg-white/3 p-4">
           <PriceLine label="Original price" value={formatMoney(booking.price)} />
           {coupon ? (
             <div className="mt-3 flex items-center justify-between gap-3">
@@ -312,7 +312,7 @@ function BookingDetailModal({ booking }: { booking: DashboardBooking }) {
         <p
           className={cn(
             "mt-2 rounded-2xl border border-hairline px-4 py-3 text-sm leading-relaxed",
-            note ? "bg-white/[0.03] text-cloud" : "bg-transparent text-faint",
+            note ? "bg-white/3 text-cloud" : "bg-transparent text-faint",
           )}
         >
           {note || "No note provided."}
@@ -360,7 +360,7 @@ function InfoTile({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-2xl border border-hairline bg-white/[0.03] px-3.5 py-3",
+        "flex items-start gap-3 rounded-2xl border border-hairline bg-white/3 px-3.5 py-3",
         className,
       )}
     >
