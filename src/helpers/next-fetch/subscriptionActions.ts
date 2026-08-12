@@ -1,10 +1,39 @@
 "use server";
 
+import type { TrialEligibility } from "@/types";
 import { nextFetch } from "./NextFetch";
+import { revalidateTags } from "./revalidateTags";
 
 /** POST /subscription/subscribe/:planId — returns a Stripe payment link in `data`. */
 export async function subscribeToPlan(planId: string) {
   return nextFetch(`/subscription/subscribe/${planId}`, {
     method: "POST",
   });
+}
+
+/** GET /subscription/trial-eligibility — whether the signed-in user can start a trial. */
+export async function getTrialEligibility() {
+  return nextFetch<TrialEligibility>("/subscription/trial-eligibility", {
+    method: "GET",
+    cache: "no-store",
+  });
+}
+
+export type CancelType = "immediate" | "end_of_period";
+
+/** PATCH /subscription/cancel */
+export async function cancelSubscription(
+  subscriptionId: string,
+  cancelType: CancelType,
+) {
+  const result = await nextFetch("/subscription/cancel", {
+    method: "PATCH",
+    body: { subscriptionId, cancelType },
+  });
+
+  if (result.success) {
+    await revalidateTags(["user-profile"]);
+  }
+
+  return result;
 }

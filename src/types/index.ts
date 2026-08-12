@@ -170,6 +170,9 @@ export interface MembershipPlan {
   priceId?: string;
   /** Stripe payment link — open when the user chooses this plan. */
   paymentUrl?: string;
+  /** Plan offers a free trial for eligible users. */
+  has_trial?: boolean;
+  trial_period_days?: number;
 }
 
 /** Active subscription nested on GET /user/profile. */
@@ -178,8 +181,25 @@ export interface UserSubscription {
   name: string;
   start_date: string;
   end_date: string;
-  status: string;
+  status?: string;
   plan?: string;
+  user?: string;
+  recuring?: MembershipRecurring | string;
+  price?: number;
+  features?: string[];
+  payment_intent_id?: string;
+  trxId?: string;
+  is_trial?: boolean;
+  trial_period_days?: number;
+  trial_end_date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** GET /subscription/trial-eligibility */
+export interface TrialEligibility {
+  isEligible: boolean;
+  hasTakenTrial: boolean;
 }
 
 /** FAQ as returned by GET /faq?audience=USER|VENDOR. */

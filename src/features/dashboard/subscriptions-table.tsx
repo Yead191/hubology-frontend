@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,9 @@ export interface DashboardSubscription {
   trxId?: string;
   payment_intent_id?: string;
   createdAt?: string;
+  is_trial?: boolean;
+  trial_period_days?: number;
+  trial_end_date?: string;
 }
 
 export function SubscriptionsTable({
@@ -53,28 +56,65 @@ export function SubscriptionsTable({
       ) : (
         <div className="space-y-6">
           <DashboardTable
-            headers={["Plan", "Billing", "Price", "Period", "Status"]}
+            headers={["Plan", "Billing", "Price", "Period", "Trial", "Status"]}
           >
-            {subscriptions.map((s) => (
-              <tr key={s._id} className="hover:bg-white/2">
-                <td className="px-4 py-3 font-medium text-cloud">
-                  {s.name || "Plan"}
-                </td>
-                <td className="px-4 py-3 capitalize text-mist">
-                  {s.recuring || "—"}
-                </td>
-                <td className="px-4 py-3 text-cloud">{formatMoney(s.price)}</td>
-                <td className="px-4 py-3 text-mist">
-                  {formatDate(s.start_date)} → {formatDate(s.end_date)}
-                </td>
-                <td className="px-4 py-3">
-                  <StatusPill
-                    value={s.status || "—"}
-                    tone={statusTone(s.status)}
-                  />
-                </td>
-              </tr>
-            ))}
+            {subscriptions.map((s) => {
+              const isTrial = Boolean(s.is_trial);
+              const trialDays = s.trial_period_days ?? 0;
+
+              return (
+                <tr key={s._id} className="hover:bg-white/2">
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium text-cloud">
+                        {s.name || "Plan"}
+                      </span>
+                      {isTrial ? (
+                        <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-300">
+                          <Sparkles className="h-3 w-3" />
+                          Trial
+                        </span>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 capitalize text-mist">
+                    {s.recuring || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-cloud">
+                    {formatMoney(s.price)}
+                  </td>
+                  <td className="px-4 py-3 text-mist">
+                    {formatDate(s.start_date)} → {formatDate(s.end_date)}
+                  </td>
+                  <td className="px-4 py-3 text-mist">
+                    {isTrial || trialDays > 0 || s.trial_end_date ? (
+                      <div className="flex flex-col gap-0.5">
+                        {trialDays > 0 ? (
+                          <span className="text-cloud">
+                            {trialDays} day{trialDays === 1 ? "" : "s"}
+                          </span>
+                        ) : (
+                          <span className="text-cloud">Trial</span>
+                        )}
+                        {s.trial_end_date ? (
+                          <span className="text-xs text-faint">
+                            Ends {formatDate(s.trial_end_date)}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <span className="text-faint">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <StatusPill
+                      value={s.status || "—"}
+                      tone={statusTone(s.status)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </DashboardTable>
 
           {subscriptions[0]?.features?.length ? (

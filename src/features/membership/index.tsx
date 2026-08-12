@@ -7,6 +7,7 @@ import type {
   Faq,
   MembershipPlan,
   MembershipRecurring,
+  TrialEligibility,
   UserSubscription,
 } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
@@ -70,6 +71,7 @@ export default function Membership({
   subscription,
   isLoggedIn,
   userRole,
+  trialEligibility = null,
 }: {
   audience?: MembershipAudience;
   plans: MembershipPlan[];
@@ -78,8 +80,8 @@ export default function Membership({
   subscription: UserSubscription | null;
   isLoggedIn: boolean;
   userRole?: string | null;
+  trialEligibility?: TrialEligibility | null;
 }) {
-  console.log(plans, subscription, "plans, subscription");
   const router = useRouter();
   const copy = COPY[audience];
 
@@ -135,6 +137,7 @@ export default function Membership({
                     redirectBase={copy.basePath}
                     audience={audience}
                     userRole={userRole}
+                    trialEligibility={trialEligibility}
                   />
                 </Reveal>
               ))}

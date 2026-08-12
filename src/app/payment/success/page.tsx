@@ -31,7 +31,13 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
 
   return (
     <>
-      <PaymentCacheRefresh tags={tags} />
+      <PaymentCacheRefresh
+        tags={tags}
+        // Stripe webhooks can lag a few seconds after redirect.
+        retryMs={
+          t.includes("membership") || t.includes("subscription") ? 2500 : 0
+        }
+      />
       <PaymentResult status="success" sessionId={session_id} type={type} />
     </>
   );

@@ -6,7 +6,11 @@ import { Check, Loader2, Lock, Sparkles } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
-import type { MembershipPlan, UserSubscription } from "@/types";
+import type {
+  MembershipPlan,
+  TrialEligibility,
+  UserSubscription,
+} from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
 import { subscribeToPlan } from "@/helpers/next-fetch/subscriptionActions";
 import { Button } from "@/components/ui/button";
@@ -43,6 +47,7 @@ function resolveStripeUrl(data: unknown): string | undefined {
  * A single membership tier from the API. Purchase requires login, then
  * calls POST /subscription/subscribe/:planId and redirects to Stripe.
  * Vendors may only buy vendor plans; members may only buy user plans.
+ * Trial CTAs appear when the plan has_trial and the user is eligible.
  */
 export function PlanCard({
   plan,
@@ -51,6 +56,7 @@ export function PlanCard({
   redirectBase = "/membership",
   audience = "user",
   userRole,
+  trialEligibility = null,
 }: {
   plan: MembershipPlan;
   subscription?: UserSubscription | null;
@@ -59,6 +65,7 @@ export function PlanCard({
   redirectBase?: string;
   audience?: MembershipAudience;
   userRole?: string | null;
+  trialEligibility?: TrialEligibility | null;
 }) {
   const redirectPath =
     plan.recurring === "year" ? `${redirectBase}?recurring=year` : redirectBase;
@@ -73,9 +80,18 @@ export function PlanCard({
     setIsLoggedIn(isLoggedInProp || hasAccessToken());
   }, [isLoggedInProp]);
 
-  const isActive = Boolean(subscription?.plan) && subscription!.plan === plan._id;
+  const isActive =
+    Boolean(subscription?.plan) && subscription!.plan === plan._id;
 
   const periodLabel = plan.recurring === "year" ? "year" : "month";
+  const trialDays = plan.trial_period_days ?? 0;
+  const planOffersTrial = Boolean(plan.has_trial) && trialDays > 0;
+  // Guests: advertise trial. Logged-in: only if eligibility API says yes and
+  // they don't already have a subscription.
+  const showTrialCta =
+    planOffersTrial &&
+    !subscription &&
+    (!isLoggedIn || Boolean(trialEligibility?.isEligible));
 
   const roleMismatch =
     isLoggedIn &&
@@ -145,9 +161,13 @@ export function PlanCard({
         : "Member plans only"
       : submitting
         ? "Redirecting…"
-        : isLoggedIn
-          ? `Choose ${plan.name}`
-          : "Sign in to subscribe";
+        : !isLoggedIn
+          ? showTrialCta
+            ? "Sign in to start trial"
+            : "Sign in to subscribe"
+          : showTrialCta
+            ? `Start ${trialDays}-day free trial`
+            : `Choose ${plan.name}`;
 
   return (
     <>
@@ -171,6 +191,10 @@ export function PlanCard({
           <Badge className="absolute -top-3 right-8 border-emerald-400/30 bg-emerald-400/15 text-emerald-300">
             Active
           </Badge>
+        ) : showTrialCta ? (
+          <Badge className="absolute -top-3 right-8 border-amber-400/30 bg-amber-400/15 text-amber-300">
+            {trialDays}-day free trial
+          </Badge>
         ) : null}
 
         <header className="flex flex-col gap-2">
@@ -187,9 +211,11 @@ export function PlanCard({
           <span className="text-sm text-mist">/ {periodLabel}</span>
         </div>
         <p className="mt-1 text-xs text-faint">
-          {plan.recurring === "year"
-            ? "Billed yearly · cancel anytime"
-            : "Billed monthly · cancel anytime"}
+          {showTrialCta
+            ? `Free for ${trialDays} days, then ${formatPrice(plan.price)}/${periodLabel} · cancel anytime`
+            : plan.recurring === "year"
+              ? "Billed yearly · cancel anytime"
+              : "Billed monthly · cancel anytime"}
         </p>
 
         <ul className="mt-7 flex flex-1 flex-col gap-3.5">
@@ -249,7 +275,7 @@ export function PlanCard({
       <Modal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
-        title="Sign in to subscribe"
+        title={showTrialCta ? "Sign in to start your trial" : "Sign in to subscribe"}
         description="Memberships are tied to your Hubology account so your plan and forum access stay in sync."
       >
         <div className="flex flex-col items-center gap-5 py-2 text-center">
@@ -257,7 +283,8 @@ export function PlanCard({
             <Lock className="h-6 w-6" />
           </span>
           <p className="max-w-xs text-sm text-mist">
-            Sign in to subscribe to{" "}
+            Sign in to{" "}
+            {showTrialCta ? "start a free trial of" : "subscribe to"}{" "}
             <span className="text-cloud">{plan.name}</span>.
           </p>
           <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center">

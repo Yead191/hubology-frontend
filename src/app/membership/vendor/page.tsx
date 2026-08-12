@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 
-import type { Faq, MembershipPlan, MembershipRecurring } from "@/types";
+import type {
+  Faq,
+  MembershipPlan,
+  MembershipRecurring,
+  TrialEligibility,
+} from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Membership from "@/features/membership";
@@ -33,7 +38,7 @@ export default async function VendorMembershipPage({ searchParams }: PageProps) 
   const recurring = parseRecurring(raw);
   const user = await getProfile();
 
-  const [plansRes, faqsRes] = await Promise.all([
+  const [plansRes, faqsRes, eligibilityRes] = await Promise.all([
     nextFetch<MembershipPlan[]>(
       `/membership?recurring=${recurring}&type=vendor`,
       {
@@ -50,10 +55,20 @@ export default async function VendorMembershipPage({ searchParams }: PageProps) 
       cache: "force-cache",
       next: { tags: ["faq", "faq-vendor"], revalidate: 60 * 60 },
     }),
+    user
+      ? nextFetch<TrialEligibility>("/subscription/trial-eligibility", {
+          method: "GET",
+          cache: "no-store",
+        })
+      : Promise.resolve(null),
   ]);
 
   const plans = plansRes.success ? (plansRes.data ?? []) : [];
   const faqs = faqsRes.success ? (faqsRes.data ?? []) : [];
+  const trialEligibility =
+    eligibilityRes && eligibilityRes.success
+      ? (eligibilityRes.data ?? null)
+      : null;
 
   return (
     <Membership
@@ -64,6 +79,7 @@ export default async function VendorMembershipPage({ searchParams }: PageProps) 
       subscription={user?.subscription ?? null}
       isLoggedIn={Boolean(user)}
       userRole={user?.role ?? null}
+      trialEligibility={trialEligibility}
     />
   );
 }
