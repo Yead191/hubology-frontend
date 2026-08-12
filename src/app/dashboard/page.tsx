@@ -31,9 +31,13 @@ export default async function DashboardOverviewPage() {
   ]);
 
   const subscriptions = subscriptionsRes.success ? (subscriptionsRes.data ?? []) : [];
-  const activeSub = subscriptions.find(
-    (s) => (s.status ?? "").toLowerCase() === "active",
-  );
+  const activeSub = subscriptions.find((s) => {
+    const status = (s.status ?? "")
+      .toLowerCase()
+      .trim()
+      .replace(/[_\s]+/g, "-");
+    return status === "active" || status === "cancel-pending";
+  });
 
   const cards = [
     {

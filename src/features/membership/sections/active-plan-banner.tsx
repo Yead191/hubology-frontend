@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 import type { UserSubscription } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
+import { normalizeSubscriptionStatus } from "@/lib/forum";
 import {
   cancelSubscription,
   type CancelType,
@@ -49,11 +50,10 @@ export function ActivePlanBanner({
     React.useState<CancelType>("end_of_period");
   const [cancelling, setCancelling] = React.useState(false);
 
-  const status = (subscription.status ?? "active").toLowerCase();
-  const canCancel =
-    Boolean(subscription._id) &&
-    !status.includes("cancel") &&
-    !status.includes("expire");
+  const status = normalizeSubscriptionStatus(subscription.status);
+  const isCancelPending = status === "cancel-pending";
+  // Only fully active plans can start a new cancellation.
+  const canCancel = Boolean(subscription._id) && status === "active";
 
   async function handleCancel() {
     if (!subscription._id || cancelling) return;
@@ -101,11 +101,18 @@ export function ActivePlanBanner({
                     Trial
                   </span>
                 ) : null}
+                {isCancelPending ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-300">
+                    Ends {formatDate(subscription.end_date)}
+                  </span>
+                ) : null}
               </div>
               <p className="mt-0.5 text-sm text-mist">
-                {subscription.is_trial
-                  ? `Trial active through ${formatDate(subscription.end_date)}`
-                  : `Active through ${formatDate(subscription.end_date)}`}
+                {isCancelPending
+                  ? `Cancellation scheduled · access through ${formatDate(subscription.end_date)}`
+                  : subscription.is_trial
+                    ? `Trial active through ${formatDate(subscription.end_date)}`
+                    : `Active through ${formatDate(subscription.end_date)}`}
                 {subscription.price != null
                   ? ` · ${formatPrice(subscription.price)}/${subscription.recuring === "year" ? "year" : "month"}`
                   : ""}

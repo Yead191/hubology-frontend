@@ -12,6 +12,7 @@ import type {
   UserSubscription,
 } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
+import { hasActiveSubscription } from "@/lib/forum";
 import { subscribeToPlan } from "@/helpers/next-fetch/subscriptionActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -81,16 +82,18 @@ export function PlanCard({
   }, [isLoggedInProp]);
 
   const isActive =
-    Boolean(subscription?.plan) && subscription!.plan === plan._id;
+    hasActiveSubscription(subscription) &&
+    Boolean(subscription?.plan) &&
+    subscription!.plan === plan._id;
 
   const periodLabel = plan.recurring === "year" ? "year" : "month";
   const trialDays = plan.trial_period_days ?? 0;
   const planOffersTrial = Boolean(plan.has_trial) && trialDays > 0;
   // Guests: advertise trial. Logged-in: only if eligibility API says yes and
-  // they don't already have a subscription.
+  // they don't already have an active / cancel-pending subscription.
   const showTrialCta =
     planOffersTrial &&
-    !subscription &&
+    !hasActiveSubscription(subscription) &&
     (!isLoggedIn || Boolean(trialEligibility?.isEligible));
 
   const roleMismatch =

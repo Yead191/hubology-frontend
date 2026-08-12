@@ -9,10 +9,18 @@ import type {
 import { getImageUrl } from "@/lib/getImageUrl";
 import { CATEGORY_VALUES } from "@/data/forum";
 
+export function normalizeSubscriptionStatus(status?: string | null) {
+  return (status ?? "")
+    .toLowerCase()
+    .trim()
+    .replace(/[_\s]+/g, "-");
+}
+
+/** True when the plan still grants access: `active` or `cancel-pending`. */
 export function hasActiveSubscription(subscription?: UserSubscription | null) {
-  if (!subscription?.name) return false;
-  if (!subscription.end_date) return true;
-  return new Date(subscription.end_date).getTime() > Date.now();
+  if (!subscription) return false;
+  const status = normalizeSubscriptionStatus(subscription.status);
+  return status === "active" || status === "cancel-pending";
 }
 
 export function hasForumAccess(

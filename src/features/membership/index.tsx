@@ -10,6 +10,7 @@ import type {
   TrialEligibility,
   UserSubscription,
 } from "@/types";
+import { hasActiveSubscription } from "@/lib/forum";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/components/sections/cta-band";
@@ -84,6 +85,9 @@ export default function Membership({
 }) {
   const router = useRouter();
   const copy = COPY[audience];
+  const activeSubscription = hasActiveSubscription(subscription)
+    ? subscription
+    : null;
 
   function setRecurring(next: MembershipRecurring) {
     const params = new URLSearchParams();
@@ -110,9 +114,9 @@ export default function Membership({
             </p>
           </Reveal>
 
-          {subscription ? (
+          {activeSubscription ? (
             <Reveal className="mx-auto mt-10 max-w-3xl">
-              <ActivePlanBanner subscription={subscription} />
+              <ActivePlanBanner subscription={activeSubscription} />
             </Reveal>
           ) : null}
 
@@ -132,7 +136,7 @@ export default function Membership({
                 <Reveal key={plan._id} delay={(i % 3) * 90} className="h-full">
                   <PlanCard
                     plan={plan}
-                    subscription={subscription}
+                    subscription={activeSubscription}
                     isLoggedIn={isLoggedIn}
                     redirectBase={copy.basePath}
                     audience={audience}

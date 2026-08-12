@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { hasActiveSubscription } from "@/lib/forum";
+import type { UserSubscription } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DASHBOARD_NAV } from "@/features/dashboard/nav";
 
@@ -31,12 +33,15 @@ export function DashboardShell({
     email?: string;
     image?: string;
     role?: string;
-    subscription?: { name?: string } | null;
+    subscription?: UserSubscription | null;
   };
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const activePlan = hasActiveSubscription(user.subscription)
+    ? user.subscription
+    : null;
 
   /**
    * Production Router Cache can soft-navigate to the layout index (`/dashboard`)
@@ -86,9 +91,9 @@ export function DashboardShell({
               place.
             </p>
           </div>
-          {user.subscription?.name ? (
+          {activePlan?.name ? (
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-violet/30 bg-violet/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-violet-bright">
-              {user.subscription.name} plan
+              {activePlan.name} plan
             </span>
           ) : null}
         </div>
