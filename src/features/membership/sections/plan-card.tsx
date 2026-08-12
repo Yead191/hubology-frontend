@@ -61,9 +61,7 @@ export function PlanCard({
   userRole?: string | null;
 }) {
   const redirectPath =
-    plan.recurring === "year"
-      ? `${redirectBase}?recurring=year`
-      : redirectBase;
+    plan.recurring === "year" ? `${redirectBase}?recurring=year` : redirectBase;
   const loginHref = `/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   const [loginOpen, setLoginOpen] = React.useState(false);
@@ -75,9 +73,7 @@ export function PlanCard({
     setIsLoggedIn(isLoggedInProp || hasAccessToken());
   }, [isLoggedInProp]);
 
-  const isActive =
-    Boolean(subscription?.name) &&
-    subscription!.name.toLowerCase() === plan.name.toLowerCase();
+  const isActive = Boolean(subscription?.plan) && subscription!.plan === plan._id;
 
   const periodLabel = plan.recurring === "year" ? "year" : "month";
 
@@ -279,9 +275,7 @@ export function PlanCard({
         open={roleGateOpen}
         onClose={() => setRoleGateOpen(false)}
         title={
-          audience === "user"
-            ? "Vendor accounts only"
-            : "Member accounts only"
+          audience === "user" ? "Vendor accounts only" : "Member accounts only"
         }
         description={
           audience === "user"

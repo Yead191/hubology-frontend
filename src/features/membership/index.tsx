@@ -79,6 +79,7 @@ export default function Membership({
   isLoggedIn: boolean;
   userRole?: string | null;
 }) {
+  console.log(plans, subscription, "plans, subscription");
   const router = useRouter();
   const copy = COPY[audience];
 

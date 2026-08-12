@@ -30,9 +30,9 @@ export function Hero() {
     }
   };
 
-  const handleEnded = () => {
-    setIsPlaying(false);
-  };
+  // const handleEnded = () => {
+  //   setIsPlaying(false);
+  // };
 
   return (
     <section className="relative overflow-hidden pt-32 md:pt-36">
@@ -49,20 +49,22 @@ export function Hero() {
           <div className="group border-gradient relative aspect-16/7 w-full overflow-hidden rounded-[1.75rem] glow-soft">
             <video
               ref={videoRef}
-              src="https://res.cloudinary.com/dknmebeee/video/upload/v1782970981/Video_Project_vddrk9.mp4"
+              src="https://res.cloudinary.com/dknmebeee/video/upload/v1786501504/1C2198C3-43E5-4EAE-A015-177E468C6DA6_gi5ray.mp4"
               className="h-full w-full object-cover"
               playsInline
               autoPlay // Plays automatically on load
               muted
-              onEnded={handleEnded}
+              // onEnded={handleEnded}
+              loop
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
 
             <div
-              className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-500 ${isPlaying
-                ? "opacity-0 group-hover:opacity-100 bg-black/20"
-                : "opacity-100 bg-black/30"
-                }`}
+              className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-500 ${
+                isPlaying
+                  ? "opacity-0 group-hover:opacity-100 bg-black/20"
+                  : "opacity-100 bg-black/30"
+              }`}
               onClick={togglePlay}
             >
               <button
@@ -70,9 +72,15 @@ export function Hero() {
                 aria-label={isPlaying ? "Pause video" : "Play video"}
               >
                 {isPlaying ? (
-                  <Pause className="h-8 w-8 transition-transform group-hover/btn:scale-110" fill="currentColor" />
+                  <Pause
+                    className="h-8 w-8 transition-transform group-hover/btn:scale-110"
+                    fill="currentColor"
+                  />
                 ) : (
-                  <Play className="ml-1 h-8 w-8 transition-transform group-hover/btn:scale-110" fill="currentColor" />
+                  <Play
+                    className="ml-1 h-8 w-8 transition-transform group-hover/btn:scale-110"
+                    fill="currentColor"
+                  />
                 )}
               </button>
             </div>
@@ -81,19 +89,18 @@ export function Hero() {
 
         {/* Copy block below the image */}
         <div className="mx-auto mt-12 flex max-w-3xl flex-col items-center text-center">
-
           <Reveal delay={140}>
             <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-cloud sm:text-5xl md:text-[3.5rem]">
               The all-in-one digital workspace to{" "}
-              <span className="text-gradient">launch, grow, and scale</span> your
-              business.
+              <span className="text-gradient">launch, grow, and scale</span>{" "}
+              your business.
             </h1>
           </Reveal>
 
           <Reveal delay={200}>
             <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-mist">
-              Access tools, resources, and a community of entrepreneurs and small business owners in one
-              place.
+              Access tools, resources, and a community of entrepreneurs and
+              small business owners in one place.
             </p>
           </Reveal>
 
@@ -104,7 +111,12 @@ export function Hero() {
                   Join Now <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto"
+              >
                 <Link href="/services">Explore services</Link>
               </Button>
             </div>
