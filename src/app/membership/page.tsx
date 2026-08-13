@@ -3,34 +3,30 @@ import type { Metadata } from "next";
 import type {
   Faq,
   MembershipPlan,
-  MembershipRecurring,
   TrialEligibility,
 } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Membership from "@/features/membership";
+import { parseRecurring } from "@/lib/membership";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Member Membership Plans",
   description:
-    "Unlock the Hubology community forum, verified expert access, and member perks. Compare monthly and yearly plans for founders — cancel anytime.",
+    "Unlock the Hubology community forum, verified expert access, and member perks. Compare weekly, monthly, and yearly plans for founders — cancel anytime.",
   path: "/membership",
   keywords: [
     "Hubology membership",
     "founder membership plans",
     "community forum access",
     "entrepreneur membership",
-    "monthly yearly business membership",
+    "weekly monthly yearly business membership",
   ],
 });
 
 interface PageProps {
   searchParams: Promise<{ recurring?: string }>;
-}
-
-function parseRecurring(value?: string): MembershipRecurring {
-  return value === "year" ? "year" : "month";
 }
 
 export default async function MembershipPage({ searchParams }: PageProps) {

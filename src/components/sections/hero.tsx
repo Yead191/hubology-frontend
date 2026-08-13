@@ -49,7 +49,7 @@ export function Hero() {
           <div className="group border-gradient relative aspect-16/7 w-full overflow-hidden rounded-[1.75rem] glow-soft">
             <video
               ref={videoRef}
-              src="https://res.cloudinary.com/dknmebeee/video/upload/v1786501504/1C2198C3-43E5-4EAE-A015-177E468C6DA6_gi5ray.mp4"
+              src="https://res.cloudinary.com/dknmebeee/video/upload/v1786588325/DD9BA488-AC08-4690-94A0-C2CF32DD5679_ejcirr.mp4"
               className="h-full w-full object-cover"
               playsInline
               autoPlay // Plays automatically on load

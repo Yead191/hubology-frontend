@@ -5,9 +5,13 @@ import { nextFetch } from "./NextFetch";
 import { revalidateTags } from "./revalidateTags";
 
 /** POST /subscription/subscribe/:planId — returns a Stripe payment link in `data`. */
-export async function subscribeToPlan(planId: string) {
+export async function subscribeToPlan(
+  planId: string,
+  body?: { auto_renew?: boolean },
+) {
   return nextFetch(`/subscription/subscribe/${planId}`, {
     method: "POST",
+    body: body ?? {},
   });
 }
 

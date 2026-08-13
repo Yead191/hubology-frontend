@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 /**
  * Brand wordmark for the navbar. Renders the supplied SVG asset
@@ -33,13 +34,14 @@ export function Logo({ className, logoClass = "" }: { className?: string, logoCl
       />
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/logo-hubology.svg"
         alt="Hubology"
-        width={300}
-        height={40}
+        width={400}
+        height={100}
         className={`relative h-6 w-auto select-none transition-transform duration-500 ease-out-soft group-hover:scale-[1.03] md:h-7 ${logoClass}`}
         draggable={false}
+        priority
       />
     </Link>
   );

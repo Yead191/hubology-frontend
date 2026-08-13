@@ -8,17 +8,22 @@ import {
   User,
 } from "lucide-react";
 
+import type { UserSubscription } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import { Button } from "@/components/ui/button";
-import { DashboardPanel, formatDate, formatMoney, StatusPill, statusTone } from "@/features/dashboard/ui";
+import { DashboardPanel } from "@/features/dashboard/ui";
+import { DashboardMembershipCard } from "@/features/dashboard/membership-card";
 
 async function countTotal(url: string) {
   const res = await nextFetch(url, {
     method: "GET",
     cache: "no-store",
   });
-  return res.success ? (res.pagination?.total ?? (Array.isArray(res.data) ? res.data.length : 0)) : 0;
+  return res.success
+    ? (res.pagination?.total ??
+        (Array.isArray(res.data) ? res.data.length : 0))
+    : 0;
 }
 
 export default async function DashboardOverviewPage() {
@@ -27,17 +32,23 @@ export default async function DashboardOverviewPage() {
     countTotal("/bookings?page=1&limit=1"),
     countTotal("/digital?page=1&limit=1"),
     countTotal("/order?page=1&limit=1"),
-    nextFetch<any[]>("/subscription", { method: "GET", cache: "no-store" }),
+    nextFetch<UserSubscription[]>("/subscription", {
+      method: "GET",
+      cache: "no-store",
+    }),
   ]);
 
-  const subscriptions = subscriptionsRes.success ? (subscriptionsRes.data ?? []) : [];
-  const activeSub = subscriptions.find((s) => {
-    const status = (s.status ?? "")
-      .toLowerCase()
-      .trim()
-      .replace(/[_\s]+/g, "-");
-    return status === "active" || status === "cancel-pending";
-  });
+  const subscriptions = subscriptionsRes.success
+    ? (subscriptionsRes.data ?? [])
+    : [];
+  const activeSub =
+    subscriptions.find((s) => {
+      const status = (s.status ?? "")
+        .toLowerCase()
+        .trim()
+        .replace(/[_\s]+/g, "-");
+      return status === "active" || status === "cancel-pending";
+    }) ?? null;
 
   const cards = [
     {
@@ -125,43 +136,7 @@ export default async function DashboardOverviewPage() {
           </dl>
         </DashboardPanel>
 
-        <DashboardPanel
-          title="Membership"
-          description="Your current subscription status."
-          actions={
-            <Button asChild size="sm" variant="outline">
-              <Link href="/membership">View plans</Link>
-            </Button>
-          }
-        >
-          {activeSub ? (
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-display text-lg font-semibold text-cloud">
-                  {activeSub.name}
-                </p>
-                <StatusPill
-                  value={activeSub.status}
-                  tone={statusTone(activeSub.status)}
-                />
-              </div>
-              <p className="text-mist">
-                {formatMoney(activeSub.price)} / {activeSub.recuring || "month"}
-              </p>
-              <p className="text-mist">
-                Active {formatDate(activeSub.start_date)} →{" "}
-                {formatDate(activeSub.end_date)}
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-hairline-strong px-4 py-8 text-center">
-              <p className="text-sm text-mist">No active membership yet.</p>
-              <Button asChild className="mt-4" size="sm">
-                <Link href="/membership">Explore plans</Link>
-              </Button>
-            </div>
-          )}
-        </DashboardPanel>
+        <DashboardMembershipCard subscription={activeSub} />
       </div>
     </div>
   );

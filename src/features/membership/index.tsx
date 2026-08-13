@@ -11,6 +11,7 @@ import type {
   UserSubscription,
 } from "@/types";
 import { hasActiveSubscription } from "@/lib/forum";
+import { recurringHref } from "@/lib/membership";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/components/sections/cta-band";
@@ -90,10 +91,7 @@ export default function Membership({
     : null;
 
   function setRecurring(next: MembershipRecurring) {
-    const params = new URLSearchParams();
-    if (next === "year") params.set("recurring", "year");
-    const qs = params.toString();
-    router.push(qs ? `${copy.basePath}?${qs}` : copy.basePath);
+    router.push(recurringHref(copy.basePath, next));
   }
 
   return (
@@ -149,7 +147,7 @@ export default function Membership({
           ) : (
             <div className="mx-auto mt-12 max-w-md rounded-3xl border border-dashed border-hairline-strong bg-panel/30 px-6 py-12 text-center">
               <p className="text-mist">
-                No {recurring === "year" ? "yearly" : "monthly"}{" "}
+                No {recurring === "year" ? "yearly" : recurring === "week" ? "weekly" : "monthly"}{" "}
                 {audience === "vendor" ? "vendor" : "member"} plans available
                 right now.
               </p>

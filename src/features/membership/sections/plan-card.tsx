@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Check, Loader2, Lock, Sparkles } from "lucide-react";
+import { Check, Loader2, Lock, RefreshCw, Sparkles } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
@@ -13,6 +13,11 @@ import type {
 } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
 import { hasActiveSubscription } from "@/lib/forum";
+import {
+  recurringBillingCopy,
+  recurringHref,
+  recurringPeriodLabel,
+} from "@/lib/membership";
 import { subscribeToPlan } from "@/helpers/next-fetch/subscriptionActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,8 +52,7 @@ function resolveStripeUrl(data: unknown): string | undefined {
 /**
  * A single membership tier from the API. Purchase requires login, then
  * calls POST /subscription/subscribe/:planId and redirects to Stripe.
- * Vendors may only buy vendor plans; members may only buy user plans.
- * Trial CTAs appear when the plan has_trial and the user is eligible.
+ * When the plan supports auto-renew, the user chooses before checkout.
  */
 export function PlanCard({
   plan,
@@ -62,18 +66,18 @@ export function PlanCard({
   plan: MembershipPlan;
   subscription?: UserSubscription | null;
   isLoggedIn?: boolean;
-  /** Base path used after login (member vs vendor membership page). */
   redirectBase?: string;
   audience?: MembershipAudience;
   userRole?: string | null;
   trialEligibility?: TrialEligibility | null;
 }) {
-  const redirectPath =
-    plan.recurring === "year" ? `${redirectBase}?recurring=year` : redirectBase;
+  const redirectPath = recurringHref(redirectBase, plan.recurring);
   const loginHref = `/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [roleGateOpen, setRoleGateOpen] = React.useState(false);
+  const [autoRenewOpen, setAutoRenewOpen] = React.useState(false);
+  const [autoRenew, setAutoRenew] = React.useState(true);
   const [isLoggedIn, setIsLoggedIn] = React.useState(isLoggedInProp);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -86,11 +90,10 @@ export function PlanCard({
     Boolean(subscription?.plan) &&
     subscription!.plan === plan._id;
 
-  const periodLabel = plan.recurring === "year" ? "year" : "month";
+  const periodLabel = recurringPeriodLabel(plan.recurring);
   const trialDays = plan.trial_period_days ?? 0;
   const planOffersTrial = Boolean(plan.has_trial) && trialDays > 0;
-  // Guests: advertise trial. Logged-in: only if eligibility API says yes and
-  // they don't already have an active / cancel-pending subscription.
+  const planOffersAutoRenew = Boolean(plan.is_auto_renew);
   const showTrialCta =
     planOffersTrial &&
     !hasActiveSubscription(subscription) &&
@@ -104,34 +107,12 @@ export function PlanCard({
   const alternateHref =
     audience === "user" ? "/membership/vendor" : "/membership";
 
-  async function handleClick() {
-    if (isActive || submitting) return;
-
-    if (!hasAccessToken()) {
-      setIsLoggedIn(false);
-      setLoginOpen(true);
-      return;
-    }
-    setIsLoggedIn(true);
-
-    // Role gate — vendors can't buy member plans and vice versa.
-    if (
-      (audience === "user" && isVendorRole(userRole)) ||
-      (audience === "vendor" && !isVendorRole(userRole))
-    ) {
-      setRoleGateOpen(true);
-      toast.error(
-        audience === "user"
-          ? "Vendor accounts can only subscribe to vendor plans."
-          : "Member accounts can only subscribe to member plans.",
-        { id: "subscribe-role" },
-      );
-      return;
-    }
-
+  async function startSubscribe(nextAutoRenew: boolean) {
     setSubmitting(true);
     try {
-      const res = await subscribeToPlan(plan._id);
+      const res = await subscribeToPlan(plan._id, {
+        auto_renew: nextAutoRenew,
+      });
       if (!res.success) {
         toast.error(res.message || "Could not start subscription.", {
           id: "subscribe",
@@ -154,6 +135,39 @@ export function PlanCard({
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleClick() {
+    if (isActive || submitting) return;
+
+    if (!hasAccessToken()) {
+      setIsLoggedIn(false);
+      setLoginOpen(true);
+      return;
+    }
+    setIsLoggedIn(true);
+
+    if (
+      (audience === "user" && isVendorRole(userRole)) ||
+      (audience === "vendor" && !isVendorRole(userRole))
+    ) {
+      setRoleGateOpen(true);
+      toast.error(
+        audience === "user"
+          ? "Vendor accounts can only subscribe to vendor plans."
+          : "Member accounts can only subscribe to member plans.",
+        { id: "subscribe-role" },
+      );
+      return;
+    }
+
+    if (planOffersAutoRenew) {
+      setAutoRenew(true);
+      setAutoRenewOpen(true);
+      return;
+    }
+
+    await startSubscribe(false);
   }
 
   const ctaLabel = isActive
@@ -216,9 +230,7 @@ export function PlanCard({
         <p className="mt-1 text-xs text-faint">
           {showTrialCta
             ? `Free for ${trialDays} days, then ${formatPrice(plan.price)}/${periodLabel} · cancel anytime`
-            : plan.recurring === "year"
-              ? "Billed yearly · cancel anytime"
-              : "Billed monthly · cancel anytime"}
+            : recurringBillingCopy(plan.recurring)}
         </p>
 
         <ul className="mt-7 flex flex-1 flex-col gap-3.5">
@@ -274,6 +286,88 @@ export function PlanCard({
           )}
         </Button>
       </div>
+
+      <Modal
+        open={autoRenewOpen}
+        onClose={submitting ? () => {} : () => setAutoRenewOpen(false)}
+        title="Auto-renew preference"
+        description={`Choose whether ${plan.name} should renew automatically after each ${periodLabel}.`}
+        className="max-w-md"
+      >
+        <div className="space-y-4">
+          <button
+            type="button"
+            onClick={() => setAutoRenew(true)}
+            className={cn(
+              "flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition-colors",
+              autoRenew
+                ? "border-violet/50 bg-violet/10"
+                : "border-hairline bg-white/3 hover:bg-white/5",
+            )}
+          >
+            <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet-bright">
+              <RefreshCw className="h-4 w-4" />
+            </span>
+            <span>
+              <span className="block text-sm font-medium text-cloud">
+                Turn auto-renew on
+              </span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-mist">
+                Your plan renews each {periodLabel}. Cancel anytime before the
+                next billing date.
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAutoRenew(false)}
+            className={cn(
+              "flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition-colors",
+              !autoRenew
+                ? "border-violet/50 bg-violet/10"
+                : "border-hairline bg-white/3 hover:bg-white/5",
+            )}
+          >
+            <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/8 text-mist">
+              <Lock className="h-4 w-4" />
+            </span>
+            <span>
+              <span className="block text-sm font-medium text-cloud">
+                Keep auto-renew off
+              </span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-mist">
+                Access lasts for one {periodLabel}. You can subscribe again later
+                if you want to continue.
+              </span>
+            </span>
+          </button>
+
+          <div className="flex flex-col gap-2.5 pt-1 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={submitting}
+              onClick={() => setAutoRenewOpen(false)}
+            >
+              Back
+            </Button>
+            <Button
+              type="button"
+              disabled={submitting}
+              onClick={() => void startSubscribe(autoRenew)}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Redirecting…
+                </>
+              ) : (
+                "Continue to checkout"
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         open={loginOpen}

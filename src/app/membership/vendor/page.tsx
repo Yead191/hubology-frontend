@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import type {
   Faq,
   MembershipPlan,
-  MembershipRecurring,
   TrialEligibility,
 } from "@/types";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Membership from "@/features/membership";
+import { parseRecurring } from "@/lib/membership";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -27,10 +27,6 @@ export const metadata: Metadata = buildMetadata({
 
 interface PageProps {
   searchParams: Promise<{ recurring?: string }>;
-}
-
-function parseRecurring(value?: string): MembershipRecurring {
-  return value === "year" ? "year" : "month";
 }
 
 export default async function VendorMembershipPage({ searchParams }: PageProps) {

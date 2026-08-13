@@ -148,8 +148,8 @@ export interface ForumStats {
 /* ------------------------------------------------------------------ *
  * Membership
  * ------------------------------------------------------------------ */
-/** API query / plan field: `month` | `year`. */
-export type MembershipRecurring = "month" | "year";
+/** API query / plan field: `week` | `month` | `year`. */
+export type MembershipRecurring = "week" | "month" | "year";
 
 /** @deprecated Prefer MembershipRecurring — kept for older UI labels. */
 export type BillingCycle = "monthly" | "yearly";
@@ -173,6 +173,8 @@ export interface MembershipPlan {
   /** Plan offers a free trial for eligible users. */
   has_trial?: boolean;
   trial_period_days?: number;
+  /** When true, subscriber can choose auto-renew before checkout. */
+  is_auto_renew?: boolean;
 }
 
 /** Active subscription nested on GET /user/profile. */
@@ -192,6 +194,7 @@ export interface UserSubscription {
   is_trial?: boolean;
   trial_period_days?: number;
   trial_end_date?: string;
+  auto_renew?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
