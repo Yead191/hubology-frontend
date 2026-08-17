@@ -6,7 +6,7 @@ import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
-import { hasActiveSubscription } from "@/lib/forum";
+import { canAccessVendorDirectory } from "@/lib/forum";
 import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 import { buildMetadata } from "@/lib/seo";
 
@@ -84,7 +84,7 @@ async function VendorsLoader({
     return <VendorLoginGate />;
   }
 
-  if (!hasActiveSubscription(profile.subscription)) {
+  if (!canAccessVendorDirectory(profile)) {
     return <VendorLoginGate isLoggedIn={true} userRole={profile.role} />;
   }
 
@@ -105,6 +105,7 @@ async function VendorsLoader({
       viewer={{
         role: profile.role,
         subscription: profile.subscription ?? null,
+        isProfileVisible: profile.vendorProfile?.isProfileVisible === true,
       }}
     />
   );

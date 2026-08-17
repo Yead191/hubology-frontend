@@ -10,15 +10,18 @@ import {
   Check,
   Loader2,
   Lock,
+  TicketPercent,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
 import type { Book } from "@/types";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { bookId, bookFileUrl } from "@/lib/book";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 
 /** Pulls the Stripe Checkout URL from common API response shapes. */
@@ -68,6 +71,8 @@ export function BookBuyPanel({
 
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [paying, setPaying] = React.useState(false);
+  const [coupon, setCoupon] = React.useState("");
+  const [couponOpen, setCouponOpen] = React.useState(false);
   // Same pattern as booking modal: auth = accessToken cookie, checked on the client.
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
@@ -90,8 +95,12 @@ export function BookBuyPanel({
 
     setPaying(true);
     try {
+      const couponCode = coupon.trim();
       const response = await nextFetch(`/books/purchase/${id}`, {
         method: "POST",
+        body: {
+          ...(couponCode ? { coupon: couponCode } : {}),
+        },
       });
 
       if (!response?.success) {
@@ -161,30 +170,87 @@ export function BookBuyPanel({
             )}
           </>
         ) : (
-          <Button
-            type="button"
-            size="lg"
-            onClick={handleBuy}
-            disabled={paying}
-            className="w-full"
-          >
-            {paying ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Redirecting to
-                secure checkout…
-              </>
-            ) : isLoggedIn ? (
-              <>
-                <ShoppingCart className="h-4 w-4" />
-                Buy now
-              </>
-            ) : (
-              <>
-                <Lock className="h-4 w-4" />
-                Sign in to buy
-              </>
-            )}
-          </Button>
+          <>
+            <div className="rounded-2xl border border-hairline bg-white/3 p-3.5">
+              <button
+                type="button"
+                onClick={() => setCouponOpen((o) => !o)}
+                className="flex w-full items-center justify-between gap-3 text-left"
+                aria-expanded={couponOpen}
+              >
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-cloud">
+                  <span className="grid h-8 w-8 place-items-center rounded-xl bg-violet/15 text-violet-bright">
+                    <TicketPercent className="h-4 w-4" />
+                  </span>
+                  Have a coupon?
+                </span>
+                <span
+                  className={cn(
+                    "text-xs font-medium transition-colors",
+                    coupon.trim()
+                      ? "text-violet-bright"
+                      : "text-faint hover:text-mist",
+                  )}
+                >
+                  {coupon.trim() ? "Applied" : couponOpen ? "Hide" : "Add"}
+                </span>
+              </button>
+
+              {couponOpen || coupon.trim() ? (
+                <div className="mt-3 space-y-2 border-t border-hairline pt-3">
+                  <Label htmlFor="book-coupon" className="text-xs text-mist">
+                    Coupon code{" "}
+                    <span className="font-normal text-faint">(optional)</span>
+                  </Label>
+                  <Input
+                    id="book-coupon"
+                    type="text"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    placeholder="e.g. SUMMER25"
+                    disabled={paying}
+                    className="h-11 border-hairline bg-ink/40"
+                  />
+                  {coupon.trim() ? (
+                    <p className="text-xs text-mist">
+                      Code{" "}
+                      <span className="font-medium text-violet-bright">
+                        {coupon.trim()}
+                      </span>{" "}
+                      will be applied at checkout.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <Button
+              type="button"
+              size="lg"
+              onClick={handleBuy}
+              disabled={paying}
+              className="w-full"
+            >
+              {paying ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Redirecting to
+                  secure checkout…
+                </>
+              ) : isLoggedIn ? (
+                <>
+                  <ShoppingCart className="h-4 w-4" />
+                  Buy now
+                </>
+              ) : (
+                <>
+                  <Lock className="h-4 w-4" />
+                  Sign in to buy
+                </>
+              )}
+            </Button>
+          </>
         )}
       </div>
 

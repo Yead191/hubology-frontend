@@ -23,6 +23,19 @@ export function hasActiveSubscription(subscription?: UserSubscription | null) {
   return status === "active" || status === "cancel-pending";
 }
 
+/**
+ * Vendor directory access: active subscription OR admin-granted
+ * `vendorProfile.isProfileVisible`.
+ */
+export function canAccessVendorDirectory(user?: {
+  subscription?: UserSubscription | null;
+  vendorProfile?: { isProfileVisible?: boolean } | null;
+} | null) {
+  if (!user) return false;
+  if (hasActiveSubscription(user.subscription)) return true;
+  return user.vendorProfile?.isProfileVisible === true;
+}
+
 export function hasForumAccess(
   user: {
     role?: string;

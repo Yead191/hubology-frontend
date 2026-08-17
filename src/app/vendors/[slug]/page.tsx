@@ -6,7 +6,7 @@ import { getImageUrl } from "@/lib/getImageUrl";
 import { buildMetadata } from "@/lib/seo";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import { nextFetch } from "@/helpers/next-fetch/NextFetch";
-import { hasActiveSubscription } from "@/lib/forum";
+import { canAccessVendorDirectory } from "@/lib/forum";
 import { VendorDetail } from "@/features/vendors/sections/vendor-detail";
 import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 
@@ -67,7 +67,7 @@ export default async function VendorDetailPage({ params }: PageProps) {
     return <VendorLoginGate redirectPath={`/vendors/${id}`} />;
   }
 
-  if (!hasActiveSubscription(profile.subscription)) {
+  if (!canAccessVendorDirectory(profile)) {
     return (
       <VendorLoginGate
         redirectPath={`/vendors/${id}`}

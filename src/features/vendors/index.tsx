@@ -23,6 +23,7 @@ interface VendorsProps {
   viewer?: {
     role?: string;
     subscription?: UserSubscription | null;
+    isProfileVisible?: boolean;
   } | null;
 }
 
@@ -119,6 +120,7 @@ export default function Vendors({
       <VendorSubscriptionModal
         role={viewer?.role}
         subscription={viewer?.subscription}
+        isProfileVisible={viewer?.isProfileVisible}
       />
 
       <Aurora

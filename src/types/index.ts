@@ -49,6 +49,8 @@ export interface VendorProfile {
   availability: string;
   consultationTypes: string[];
   applicationStatus?: string;
+  /** Admin grant: directory access without an active subscription. */
+  isProfileVisible?: boolean;
 }
 
 /** Vendor / expert record as returned by GET /vendor. */

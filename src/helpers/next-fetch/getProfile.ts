@@ -30,7 +30,7 @@ const getProfile = async (): Promise<any | null> => {
     }
 
     const { data } = await res.json();
-
+    // console.log(data)
     return data ?? null;
   } catch (error) {
     // Backend is down / unreachable

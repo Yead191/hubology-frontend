@@ -20,12 +20,18 @@ function isVendorRole(role?: string) {
 export function VendorSubscriptionModal({
   role,
   subscription,
+  isProfileVisible = false,
 }: {
   role?: string;
   subscription?: UserSubscription | null;
+  /** Admin grant — directory access without a paid vendor plan. */
+  isProfileVisible?: boolean;
 }) {
+  // Nudge vendors without a plan (and without admin visibility) to subscribe.
   const needsSub =
-    isVendorRole(role) && !hasActiveSubscription(subscription);
+    isVendorRole(role) &&
+    !hasActiveSubscription(subscription) &&
+    !isProfileVisible;
 
   const [open, setOpen] = React.useState(false);
 
