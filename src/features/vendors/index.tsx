@@ -2,118 +2,113 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { SearchX } from "lucide-react";
 
-import type { Pagination, UserSubscription, Vendor } from "@/types";
+import type { UserSubscription } from "@/types";
 import { Aurora } from "@/components/ui/aurora";
 import { Reveal } from "@/components/ui/reveal";
-import { VendorCard } from "@/features/vendors/sections/vendor-card";
-import { VendorPagination } from "@/features/vendors/sections/vendor-pagination";
 import { VendorSubscriptionModal } from "@/features/vendors/sections/vendor-subscription-modal";
 import {
   VendorFilters,
   DEFAULT_FILTERS,
   type VendorFilterState,
 } from "@/features/vendors/sections/vendor-filters";
+import { buildVendorsHref } from "@/features/vendors/query";
 
 interface VendorsProps {
-  vendors: Vendor[];
-  pagination?: Pagination;
   filters: VendorFilterState & { page: number; limit: number };
   viewer?: {
     role?: string;
     subscription?: UserSubscription | null;
     isProfileVisible?: boolean;
   } | null;
+  /** Server-rendered vendor cards — only this slot suspends on search. */
+  children: React.ReactNode;
 }
 
-/** Build a /vendors query string from the current filter + page state. */
-function buildVendorsHref(
-  filters: VendorFilterState,
-  page: number,
-  limit: number,
-) {
-  const params = new URLSearchParams();
-  const search = (filters.search ?? "").trim();
-  if (search) params.set("searchTerm", search);
-  if (filters.availability) params.set("availability", filters.availability);
-  if (filters.hourlyRateRange) {
-    params.set("hourlyRateRange", filters.hourlyRateRange);
-  }
-  if (page > 1) params.set("page", String(page));
-  if (limit !== 10) params.set("limit", String(limit));
-  const qs = params.toString();
-  return qs ? `/vendors?${qs}` : "/vendors";
-}
-
-export default function Vendors({
-  vendors,
-  pagination,
-  filters,
-  viewer,
-}: VendorsProps) {
+export default function Vendors({ filters, viewer, children }: VendorsProps) {
   const router = useRouter();
-  // Local search text for responsive typing; URL updates are debounced.
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const keepSearchFocus = React.useRef(false);
   const [searchInput, setSearchInput] = React.useState(filters.search ?? "");
 
   React.useEffect(() => {
     setSearchInput(filters.search ?? "");
   }, [filters.search]);
 
-  const push = React.useCallback(
+  React.useEffect(() => {
+    if (!keepSearchFocus.current) return;
+    keepSearchFocus.current = false;
+    searchRef.current?.focus();
+  });
+
+  const replaceFilters = React.useCallback(
     (next: VendorFilterState, page = 1) => {
-      router.push(buildVendorsHref(next, page, filters.limit));
+      router.replace(buildVendorsHref(next, page, filters.limit), {
+        scroll: false,
+      });
     },
     [router, filters.limit],
   );
 
-  // Debounce search → URL so we don't refetch on every keystroke.
   React.useEffect(() => {
     if (searchInput === filters.search) return;
     const timer = setTimeout(() => {
-      push(
+      keepSearchFocus.current = true;
+      replaceFilters(
         {
           search: searchInput,
           availability: filters.availability,
           hourlyRateRange: filters.hourlyRateRange,
+          expertise: filters.expertise,
         },
         1,
       );
-    }, 400);
+      requestAnimationFrame(() => searchRef.current?.focus());
+    }, 600);
     return () => clearTimeout(timer);
-  }, [searchInput, filters, push]);
+  }, [searchInput, filters, replaceFilters]);
 
   const update = React.useCallback(
-    <K extends keyof VendorFilterState>(key: K, value: VendorFilterState[K]) => {
+    <K extends keyof VendorFilterState>(
+      key: K,
+      value: VendorFilterState[K],
+    ) => {
       if (key === "search") {
+        keepSearchFocus.current = true;
         setSearchInput(value as string);
         return;
       }
-      push(
+      replaceFilters(
         {
           search: searchInput,
           availability: filters.availability,
           hourlyRateRange: filters.hourlyRateRange,
+          expertise: filters.expertise,
           [key]: value,
         },
         1,
       );
     },
-    [push, searchInput, filters.availability, filters.hourlyRateRange],
+    [
+      replaceFilters,
+      searchInput,
+      filters.availability,
+      filters.hourlyRateRange,
+      filters.expertise,
+    ],
   );
 
   const reset = React.useCallback(() => {
     setSearchInput("");
-    router.push("/vendors");
+    router.replace("/vendors", { scroll: false });
   }, [router]);
 
   const uiFilters: VendorFilterState = {
     search: searchInput,
     availability: filters.availability,
     hourlyRateRange: filters.hourlyRateRange,
+    expertise: filters.expertise ?? [],
   };
-
-  const total = pagination?.total ?? vendors.length;
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
@@ -146,44 +141,11 @@ export default function Vendors({
             filters={uiFilters}
             onChange={update}
             onReset={reset}
-            resultCount={total}
+            searchRef={searchRef}
           />
         </Reveal>
 
-        {vendors?.length > 0 ? (
-          <>
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {vendors?.map((vendor, i) => (
-                <Reveal
-                  key={vendor._id}
-                  delay={(i % 3) * 80}
-                  className="h-full min-w-0"
-                >
-                  <VendorCard vendor={vendor} />
-                </Reveal>
-              ))}
-            </div>
-
-            {pagination ? (
-              <VendorPagination
-                pagination={pagination}
-                onPageChange={(page) => push(uiFilters, page)}
-              />
-            ) : null}
-          </>
-        ) : (
-          <Reveal className="border-gradient mt-8 flex flex-col items-center rounded-3xl bg-panel/30 px-6 py-16 text-center">
-            <span className="grid h-14 w-14 place-items-center rounded-2xl bg-white/4 text-violet-bright">
-              <SearchX className="h-7 w-7" />
-            </span>
-            <h3 className="mt-4 font-display text-lg font-semibold text-cloud">
-              No experts match your filters
-            </h3>
-            <p className="mt-1.5 max-w-sm text-sm text-mist">
-              Try broadening your search or clearing a filter to see more.
-            </p>
-          </Reveal>
-        )}
+        {children}
       </div>
     </section>
   );

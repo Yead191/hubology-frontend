@@ -1,10 +1,13 @@
 "use client";
 
+import type { Ref } from "react";
 import { Search, X } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import {
   hourlyRateOptions,
   availabilityOptions,
+  expertiseOptions,
 } from "@/lib/validators";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,12 +22,14 @@ export interface VendorFilterState {
   search: string;
   hourlyRateRange: string;
   availability: string;
+  expertise: string[];
 }
 
 export const DEFAULT_FILTERS: VendorFilterState = {
   search: "",
   hourlyRateRange: "",
   availability: "",
+  expertise: [],
 };
 
 /** Search + faceted filters for the vendors directory (URL-driven). */
@@ -32,7 +37,7 @@ export function VendorFilters({
   filters,
   onChange,
   onReset,
-  resultCount,
+  searchRef,
 }: {
   filters: VendorFilterState;
   onChange: <K extends keyof VendorFilterState>(
@@ -40,12 +45,21 @@ export function VendorFilters({
     value: VendorFilterState[K],
   ) => void;
   onReset: () => void;
-  resultCount: number;
+  searchRef?: Ref<HTMLInputElement>;
 }) {
+  const selectedExpertise = filters.expertise ?? [];
   const isFiltered =
     Boolean(filters.search?.trim()) ||
     Boolean(filters.hourlyRateRange) ||
-    Boolean(filters.availability);
+    Boolean(filters.availability) ||
+    selectedExpertise.length > 0;
+
+  function toggleExpertise(opt: string) {
+    const next = selectedExpertise.includes(opt)
+      ? selectedExpertise.filter((item) => item !== opt)
+      : [...selectedExpertise, opt];
+    onChange("expertise", next);
+  }
 
   return (
     <div className="border-gradient rounded-3xl bg-panel/40 p-4 sm:p-5">
@@ -53,6 +67,7 @@ export function VendorFilters({
       <div className="relative">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
         <Input
+          ref={searchRef}
           value={filters.search ?? ""}
           onChange={(e) => onChange("search", e.target.value)}
           placeholder="Search by name, company, or expertise…"
@@ -89,13 +104,33 @@ export function VendorFilters({
         />
       </div>
 
-      {/* Result meta */}
-      <div className="mt-4 flex items-center justify-between border-t border-hairline pt-3">
-        <span className="text-sm text-mist">
-          <span className="font-semibold text-cloud">{resultCount}</span>{" "}
-          {resultCount === 1 ? "expert" : "experts"}
-        </span>
-        {isFiltered && (
+      <div className="mt-4 flex flex-col gap-2">
+        <span className="pl-1 text-xs font-medium text-faint">Expertise</span>
+        <div className="flex flex-wrap gap-2">
+          {expertiseOptions.map((opt) => {
+            const active = selectedExpertise.includes(opt);
+            return (
+              <button
+                key={opt}
+                type="button"
+                aria-pressed={active}
+                onClick={() => toggleExpertise(opt)}
+                className={cn(
+                  "inline-flex shrink-0 items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                  active
+                    ? "border-transparent bg-brand-gradient text-white shadow-[0_8px_22px_-10px_rgba(129,49,240,0.9)]"
+                    : "border-hairline-strong bg-white/2 text-mist hover:bg-white/6 hover:text-cloud",
+                )}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {isFiltered ? (
+        <div className="mt-4 flex items-center justify-end border-t border-hairline pt-3">
           <button
             type="button"
             onClick={onReset}
@@ -104,8 +139,8 @@ export function VendorFilters({
             <X className="h-3.5 w-3.5" />
             Clear filters
           </button>
-        )}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import type { Pagination, Vendor } from "@/types";
-import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import getProfile from "@/helpers/next-fetch/getProfile";
 import Vendors from "@/features/vendors";
 import type { VendorFilterState } from "@/features/vendors/sections/vendor-filters";
+import { VendorResults } from "@/features/vendors/sections/vendor-results";
+import { VendorCardsSkeleton } from "@/features/vendors/sections/vendor-grid";
 import { canAccessVendorDirectory } from "@/lib/forum";
+import { expertiseOptions } from "@/lib/validators";
 import { VendorLoginGate } from "@/features/vendors/sections/vendor-login-gate";
 import { buildMetadata } from "@/lib/seo";
 
@@ -34,7 +35,22 @@ interface PageProps {
     hourlyRateRange?: string;
     page?: string;
     limit?: string;
+    "expertise[]"?: string | string[];
+    expertise?: string | string[];
   }>;
+}
+
+const ALLOWED_EXPERTISE = new Set<string>(expertiseOptions);
+
+function parseExpertise(raw?: string | string[]): string[] {
+  const values = !raw ? [] : Array.isArray(raw) ? raw : [raw];
+  return [
+    ...new Set(
+      values
+        .map((item) => item.trim())
+        .filter((item) => ALLOWED_EXPERTISE.has(item)),
+    ),
+  ];
 }
 
 function parseFilters(
@@ -44,42 +60,16 @@ function parseFilters(
     search: sp.searchTerm?.trim() ?? "",
     availability: sp.availability?.trim() ?? "",
     hourlyRateRange: sp.hourlyRateRange?.trim() ?? "",
+    expertise: parseExpertise(sp["expertise[]"] ?? sp.expertise),
     page: Math.max(1, Number(sp.page) || 1),
     limit: Math.max(1, Number(sp.limit) || 10),
   };
 }
 
-function buildQuery(
-  filters: VendorFilterState & { page: number; limit: number },
-) {
-  const params = new URLSearchParams();
-  params.set("page", String(filters.page));
-  params.set("limit", String(filters.limit));
-  const search = (filters.search ?? "").trim();
-  if (search) params.set("searchTerm", search);
-  if (filters.availability) params.set("availability", filters.availability);
-  if (filters.hourlyRateRange) {
-    params.set("hourlyRateRange", filters.hourlyRateRange);
-  }
-  return params.toString();
-}
-
 export default async function VendorsPage({ searchParams }: PageProps) {
   const filters = parseFilters(await searchParams);
-
-  return (
-    <Suspense fallback={<VendorsSkeleton />}>
-      <VendorsLoader filters={filters} />
-    </Suspense>
-  );
-}
-
-async function VendorsLoader({
-  filters,
-}: {
-  filters: VendorFilterState & { page: number; limit: number };
-}) {
   const profile = await getProfile();
+
   if (!profile?._id) {
     return <VendorLoginGate />;
   }
@@ -88,45 +78,18 @@ async function VendorsLoader({
     return <VendorLoginGate isLoggedIn={true} userRole={profile.role} />;
   }
 
-  const qs = buildQuery(filters);
-  const res = await nextFetch<Vendor[]>(`/vendor?${qs}`, {
-    method: "GET",
-    cache: "default",
-  });
-
-  const vendors = res.success ? (res.data ?? []) : [];
-  const pagination: Pagination | undefined = res.pagination;
-
   return (
     <Vendors
-      vendors={vendors}
-      pagination={pagination}
       filters={filters}
       viewer={{
         role: profile.role,
         subscription: profile.subscription ?? null,
         isProfileVisible: profile.vendorProfile?.isProfileVisible === true,
       }}
-    />
-  );
-}
-
-function VendorsSkeleton() {
-  return (
-    <section className="relative min-h-screen overflow-hidden pt-32 pb-20">
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="h-10 w-72 animate-pulse rounded-md bg-white/8" />
-        <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded-md bg-white/5" />
-        <div className="border-gradient mt-10 h-40 animate-pulse rounded-3xl bg-panel/40" />
-        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="border-gradient h-72 animate-pulse rounded-3xl bg-panel/40"
-            />
-          ))}
-        </div>
-      </div>
-    </section>
+    >
+      <Suspense fallback={<VendorCardsSkeleton />}>
+        <VendorResults filters={filters} />
+      </Suspense>
+    </Vendors>
   );
 }
