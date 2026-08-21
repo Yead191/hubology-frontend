@@ -207,44 +207,51 @@ export default function ContactPage() {
               </div>
 
               <div className={`${getCircleClasses("budget")} z-4`}>
-                <select
-                  required
-                  name="budget"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  onFocus={() => setActiveField("budget")}
-                  onBlur={() => setActiveField(null)}
-                  className="w-full cursor-pointer appearance-none bg-transparent px-6 py-4 text-center text-base font-medium text-mist transition-colors focus:text-cloud focus:outline-none lg:text-lg"
-                >
-                  <option value="" disabled className="bg-ink text-mist">
-                    Project budget
-                  </option>
-                  {BUDGET_OPTIONS.map((opt) => (
-                    <option
-                      key={opt.value}
-                      value={opt.value}
-                      className="bg-ink text-cloud"
-                    >
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-12 top-1/2 -translate-y-1/2 opacity-50 transition-opacity group-hover:opacity-100 lg:right-16">
-                  <svg
-                    width="12"
-                    height="8"
-                    viewBox="0 0 12 8"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                <div className="relative flex w-full max-w-[85%] flex-col items-center px-4">
+                  <select
+                    required
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    onFocus={() => setActiveField("budget")}
+                    onBlur={() => setActiveField(null)}
+                    className={`w-full cursor-pointer appearance-none truncate bg-transparent py-1 text-center text-base font-medium transition-colors focus:outline-none lg:text-lg ${
+                      formData.budget ? "text-cloud" : "text-mist"
+                    }`}
                   >
-                    <path
-                      d="M1 1.5L6 6.5L11 1.5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                    <option value="" disabled className="bg-ink text-mist">
+                      Project budget
+                    </option>
+                    {BUDGET_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.value}
+                        value={opt.value}
+                        className="bg-ink text-cloud"
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none mt-1.5 text-mist opacity-60 transition-opacity group-hover:opacity-100"
+                  >
+                    <svg
+                      width="12"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 1.5L6 6.5L11 1.5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
                 </div>
               </div>
 

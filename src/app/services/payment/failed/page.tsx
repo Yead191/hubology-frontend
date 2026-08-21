@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
-import { PaymentResult } from "@/features/service-booking/sections/payment-result";
 
 import { noIndexMetadata } from "@/lib/seo";
+import { PaymentResult } from "@/features/service-booking/sections/payment-result";
 
 export const metadata: Metadata = noIndexMetadata(
   "Payment not completed",

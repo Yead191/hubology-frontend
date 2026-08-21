@@ -77,7 +77,13 @@ export function statusTone(status?: string): "success" | "warning" | "danger" | 
   ) {
     return "success";
   }
-  if (s.includes("pend") || s.includes("process")) return "warning";
+  if (
+    s.includes("pend") ||
+    s.includes("process") ||
+    s.includes("refund request")
+  ) {
+    return "warning";
+  }
   if (s.includes("fail") || s.includes("cancel") || s.includes("expire")) {
     return "danger";
   }

@@ -4,7 +4,7 @@ import { nextFetch } from "@/helpers/next-fetch/NextFetch";
 import {
   OrdersTable,
   type DashboardOrder,
-} from "@/features/dashboard/orders-table";
+} from "@/features/dashboard/orders";
 import { DashboardPager } from "@/features/dashboard/pager";
 
 export const metadata: Metadata = { title: "Orders" };
