@@ -21,7 +21,7 @@ const footerLinks = [
     heading: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Careers", href: "/careers" },
+      { label: "Events", href: "/events" },
       { label: "Contact", href: "/contact" },
       { label: "Our Partners", href: "/partners" },
     ],

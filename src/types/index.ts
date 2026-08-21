@@ -336,6 +336,61 @@ export interface CartData {
 }
 
 /* ------------------------------------------------------------------ *
+ * Events — GET /event, GET /event/:slug
+ * ------------------------------------------------------------------ */
+export const EVENT_TYPE = {
+  NETWORKING: "NETWORKING",
+  CONFERENCE: "CONFERENCE",
+  WORKSHOP: "WORKSHOP",
+  SEMINAR: "SEMINAR",
+  MEETUP: "MEETUP",
+  SOCIAL: "SOCIAL",
+  OTHER: "OTHER",
+} as const;
+
+export type EventType = (typeof EVENT_TYPE)[keyof typeof EVENT_TYPE];
+
+export const EVENT_TYPES = Object.values(EVENT_TYPE);
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  NETWORKING: "Networking",
+  CONFERENCE: "Conference",
+  WORKSHOP: "Workshop",
+  SEMINAR: "Seminar",
+  MEETUP: "Meetup",
+  SOCIAL: "Social",
+  OTHER: "Other",
+};
+
+export type EventStatus = "DRAFT" | "PUBLISHED" | "CANCELLED" | "COMPLETED";
+
+export interface EventOrganization {
+  name?: string;
+  designation?: string;
+  email?: string;
+}
+
+export interface HubEvent {
+  _id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  shortDescription?: string;
+  eventDate?: string;
+  endDate?: string;
+  location?: string;
+  coverImage?: string | null;
+  images?: string[];
+  type?: EventType | string;
+  status?: EventStatus | string;
+  organization?: EventOrganization;
+  tags?: string[];
+  isFeatured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/* ------------------------------------------------------------------ *
  * Contact inquiry — POST /inquiry
  * ------------------------------------------------------------------ */
 export const PROJECT_BUDGETS = [

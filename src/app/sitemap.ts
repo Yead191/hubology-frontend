@@ -13,6 +13,7 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/membership/vendor", changeFrequency: "monthly", priority: 0.85 },
   { path: "/forum", changeFrequency: "daily", priority: 0.75 },
   { path: "/about", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/events", changeFrequency: "weekly", priority: 0.8 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
   { path: "/join", changeFrequency: "monthly", priority: 0.8 },
   { path: "/register/member", changeFrequency: "monthly", priority: 0.65 },
@@ -37,6 +38,19 @@ async function fetchIds(
     .map((item) => ({ id: item._id, updatedAt: item.updatedAt }));
 }
 
+async function fetchEventSlugs(): Promise<
+  { slug: string; updatedAt?: string }[]
+> {
+  const res = await nextFetch<{ slug?: string; updatedAt?: string }[]>(
+    "/event?page=1&limit=100",
+    { method: "GET", cache: "no-store" },
+  );
+  if (!res.success || !Array.isArray(res.data)) return [];
+  return res.data
+    .filter((item) => item?.slug)
+    .map((item) => ({ slug: item.slug!, updatedAt: item.updatedAt }));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -47,11 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [services, vendors, digital, office] = await Promise.all([
+  const [services, vendors, digital, office, events] = await Promise.all([
     fetchIds("/services?page=1&limit=100").catch(() => []),
     fetchIds("/vendor?page=1&limit=100").catch(() => []),
     fetchIds("/books?type=digital&page=1&limit=100").catch(() => []),
     fetchIds("/books?type=office&page=1&limit=100").catch(() => []),
+    fetchEventSlugs().catch(() => []),
   ]);
 
   const dynamicEntries: MetadataRoute.Sitemap = [
@@ -78,6 +93,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: b.updatedAt ? new Date(b.updatedAt) : now,
       changeFrequency: "weekly" as const,
       priority: 0.65,
+    })),
+    ...events.map((e) => ({
+      url: absoluteUrl(`/events/${e.slug}`),
+      lastModified: e.updatedAt ? new Date(e.updatedAt) : now,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
     })),
   ];
 
