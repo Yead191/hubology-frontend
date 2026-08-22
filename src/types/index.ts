@@ -391,6 +391,30 @@ export interface HubEvent {
 }
 
 /* ------------------------------------------------------------------ *
+ * Partners — GET /partner, GET /partner/:id, GET /partner/logos
+ * ------------------------------------------------------------------ */
+export interface PartnerLogo {
+  _id: string;
+  name: string;
+  image?: string | null;
+}
+
+export interface Partner {
+  _id: string;
+  name: string;
+  image?: string | null;
+  description?: string;
+  offers?: string[];
+  website?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  isActive?: boolean;
+  featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/* ------------------------------------------------------------------ *
  * Contact inquiry — POST /inquiry
  * ------------------------------------------------------------------ */
 export const PROJECT_BUDGETS = [
