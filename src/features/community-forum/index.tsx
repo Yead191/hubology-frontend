@@ -162,7 +162,7 @@ export default function CommunityForum({
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-28 pb-20">
+    <section className="relative min-h-screen overflow-x-clip pt-28 pb-20">
       <Aurora
         animated
         className="-top-10 left-1/2 h-120 w-176 -translate-x-1/2 opacity-40"
@@ -171,21 +171,21 @@ export default function CommunityForum({
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         {header}
 
-        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8">
-          <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <aside className="lg:sticky lg:top-28 lg:z-10 lg:self-start">
             <ForumSidebar
               active={tab}
               onChange={(next) => push({ tab: next, page: 1 })}
               onNewPost={() => setModalOpen(true)}
             />
-          </div>
+          </aside>
 
           <div className="flex min-w-0 flex-col gap-5">
             {tab === "feed" ? (
               <FeedToolbar
                 query={searchInput}
                 onQueryChange={setSearchInput}
-                category={filters.category as CategoryFilter}
+                category={filters.category as CategoryFilter} 
                 onCategoryChange={(c) =>
                   push({ category: c, searchTerm: searchInput, page: 1 })
                 }

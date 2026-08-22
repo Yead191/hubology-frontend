@@ -14,6 +14,7 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/forum", changeFrequency: "daily", priority: 0.75 },
   { path: "/about", changeFrequency: "monthly", priority: 0.7 },
   { path: "/events", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/partners", changeFrequency: "weekly", priority: 0.75 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
   { path: "/join", changeFrequency: "monthly", priority: 0.8 },
   { path: "/register/member", changeFrequency: "monthly", priority: 0.65 },
@@ -61,12 +62,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [services, vendors, digital, office, events] = await Promise.all([
+  const [services, vendors, digital, office, events, partners] = await Promise.all([
     fetchIds("/services?page=1&limit=100").catch(() => []),
     fetchIds("/vendor?page=1&limit=100").catch(() => []),
     fetchIds("/books?type=digital&page=1&limit=100").catch(() => []),
     fetchIds("/books?type=office&page=1&limit=100").catch(() => []),
     fetchEventSlugs().catch(() => []),
+    fetchIds("/partner?page=1&limit=100").catch(() => []),
   ]);
 
   const dynamicEntries: MetadataRoute.Sitemap = [
@@ -99,6 +101,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: e.updatedAt ? new Date(e.updatedAt) : now,
       changeFrequency: "weekly" as const,
       priority: 0.75,
+    })),
+    ...partners.map((p) => ({
+      url: absoluteUrl(`/partners/${p.id}`),
+      lastModified: p.updatedAt ? new Date(p.updatedAt) : now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
   ];
 
