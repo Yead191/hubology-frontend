@@ -398,6 +398,24 @@
   }
 }
 
+@keyframes partner-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-marquee-track {
+  animation: partner-marquee var(--partner-marquee-duration, 40s) linear infinite;
+}
+
+.partner-marquee-track[data-paused="true"] {
+  animation-play-state: paused;
+}
+
 /* SVG group rotations — origin at the view-box centre */
 .hub-rot,
 .hub-rot-rev,

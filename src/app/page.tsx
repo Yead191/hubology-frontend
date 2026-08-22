@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Hero } from "@/components/sections/hero";
 import { WhyHubology } from "@/components/sections/why-hubology";
+import { Partners } from "@/components/sections/partners";
 import { Testimonials } from "@/components/sections/testimonials";
 import { CtaBand } from "@/components/sections/cta-band";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -59,6 +60,7 @@ export default function HomePage() {
       />
       <Hero />
       <WhyHubology />
+      <Partners />
       <Testimonials />
       <CtaBand />
     </>
