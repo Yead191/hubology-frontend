@@ -26,5 +26,4 @@ export const navItems: NavItem[] = [
     ],
   },
   { label: "Contact", href: "/contact" },
-  // { label: "IFundAyiti", href: "/ifundayiti" },
 ];

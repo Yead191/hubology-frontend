@@ -1,0 +1,15 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "dev/yead",
+    "main"
+  ],
+  "parent": {
+    "dev/yead": "main",
+    "main": null
+  },
+  "order": [
+    "main",
+    "dev/yead"
+  ]
+}
