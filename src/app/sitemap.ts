@@ -19,7 +19,6 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/join", changeFrequency: "monthly", priority: 0.8 },
   { path: "/register/member", changeFrequency: "monthly", priority: 0.65 },
   { path: "/register/expert", changeFrequency: "monthly", priority: 0.65 },
-  { path: "/ifundayiti", changeFrequency: "monthly", priority: 0.6 },
   { path: "/privacy-policy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
   { path: "/refund", changeFrequency: "yearly", priority: 0.3 },
