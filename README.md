@@ -29,12 +29,7 @@ Built as a sleek, dark-themed frontend application, Hubology showcases modern Re
 ### 4. Membership Plans (`/membership`)
 - **Tier Options:** Tiered subscription structures (Starter, Professional, Enterprise) detailing resource access, exclusive workshops, and support levels.
 
-### 5. iFundAyiti Micro-Grant Cohort Platform (`/ifundayiti`)
-- **Cohort Tracking:** Dashboard for tracking micro-grant programs, application stats, and available funding resources.
-- **Application Flow:** Complete applicant sign-up flow, application search engine by ID, applicant galleries, finalists showcases, and program cohort winners.
-- **Crowdfunding Campaigns:** Built-in donation modal logic to support entrepreneurship projects directly.
-
-### 6. Interactive Simulator Settings
+### 5. Interactive Simulator Settings
 - **Demo State Toggler:** A visual toggle HUD positioned at the bottom-left of the screen allowing developers and stakeholders to switch between "Logged In" and "Logged Out" views instantly, verifying component responsiveness to user authentication states.
 
 ---
@@ -58,7 +53,6 @@ src/
 ├─ app/                         # App Router Pages & Layouts
 │  ├─ services/[slug]/          # Dynamic service detail pages
 │  ├─ register/[role]/          # Member and Expert registration routes
-│  ├─ ifundayiti/               # iFundAyiti micro-grant cohort space
 │  ├─ checkout/                 # Cart checkout screen
 │  └─ globals.css               # Design tokens, tailwind v4, & global CSS styles
 ├─ components/
@@ -69,7 +63,7 @@ src/
 │  ├─ services/                 # Cards representing consultants and packages
 │  ├─ register/                 # Register workflows (forms for members and experts)
 │  └─ ui/                       # Reusable shadcn-like primitives
-├─ features/                    # Core modules (Community, iFundAyiti, Store, Booking, etc.)
+├─ features/                    # Core modules (Community, Store, Booking, etc.)
 ├─ data/                        # Local Mock Datasets (Services, Memberships, Forums, etc.)
 ├─ hooks/                       # Custom hooks (e.g. useReveal scroll-reveals)
 ├─ lib/                         # Helper functions (utils, validators)
